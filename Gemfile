@@ -33,4 +33,10 @@ gem 'jquery-rails'
 group :test do
   # Pretty printed test output
   gem 'turn', '~> 0.8.3', :require => false
+  gem 'rspec-rails', '~> 2.7.0'
+  gem 'webrat', '~> 0.7.3'
+end
+
+group :development do
+  gem 'rspec-rails', '~> 2.7.0'
 end
