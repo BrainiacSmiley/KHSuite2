@@ -36,6 +36,7 @@ group :test do
   gem 'turn', '~> 0.8.3', :require => false
   gem 'rspec-rails', '~> 2.7.0'
   gem 'webrat', '~> 0.7.3'
+  gem 'spork', '~> 0.8.5'
 end
 
 group :development do
