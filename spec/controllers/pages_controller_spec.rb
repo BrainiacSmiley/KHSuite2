@@ -138,6 +138,14 @@ describe PagesController do
         title = @page_title + I18n.t(:title_khplanner)
         response.should have_selector('title', :content => title)
       end
+      
+      it "should contain the applet tag" do
+        response.should have_selector('applet')
+      end
+      
+      it "should contain the params tag with the locale as value" do
+        response.should have_selector('param', :value => I18n.locale.to_s)
+      end
 
       it "should not containt missing translation" do
         response.should_not contain('translation missing:')
