@@ -1,7 +1,12 @@
 KHSuite2::Application.routes.draw do
   scope "(:locale)", :locale => /de|en/ do
-    match '/:locale', :to => 'pages#home'
-    root              :to => 'pages#home'
+    match '/:locale',   :to => 'pages#home'
+    root                :to => 'pages#home'
+    match '/contact',   :to => 'pages#contact'
+    match '/about',     :to => 'pages#about'
+    match '/help',      :to => 'pages#help'
+    match '/tools',     :to => 'pages#tools'
+    match '/khplanner', :to => 'pages#khplanner'
   end
 
   # The priority is based upon order of creation:

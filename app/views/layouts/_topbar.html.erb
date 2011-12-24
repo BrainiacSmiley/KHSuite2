@@ -7,12 +7,12 @@
        <li class="dropdown">
           <a href="#" class="dropdown-toggle"><%= t(:link_tools)%></a>
           <ul class="dropdown-menu">
-            <%= topbar_active_list(@title, t(:title_tools_overview)) %><%= link_to t('link_tools_overview'), '#' %></li>
+            <%= topbar_active_list(@title, t(:title_tools_overview)) %><%= link_to t('link_tools_overview'), tools_path %></li>
             <li class="divider"></li>
-            <%= topbar_active_list(@title, t(:title_khplanner)) %><%= link_to t('link_khplanner'), '#' %></li>
+            <%= topbar_active_list(@title, t(:title_khplanner)) %><%= link_to t('link_khplanner'), khplanner_path %></li>
           </ul>
         </li>
-        <%= topbar_active_list(@title, t(:title_help)) %><%= link_to t('link_help'), '#' %></li>
+        <%= topbar_active_list(@title, t(:title_help)) %><%= link_to t('link_help'), help_path %></li>
       </ul>
       <ul class="nav secondary-nav">
         <li class="dropdown">
