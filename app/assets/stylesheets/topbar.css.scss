@@ -1,0 +1,78 @@
+$white: #fff;
+$darkBlue: #2c3e66;
+$inputBackground: #6e93c8;
+$gradientTopBarStart: #5f7aa9;
+$gradientTopBarEnd: #2b3a63;
+$gradientDropMenuStart: #e2eaff;
+$gradientDropMenuEnd: #d9e3ff;
+$linkColor: #cadceb;
+$dividerColor: #233153;
+$dividerBorderColor: #506D9D;
+
+.topbar a {
+  color: $linkColor;
+}
+.topbar a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.topbar h3 a:hover, .topbar .brand:hover, .topbar ul .active > a {
+  background-color: $darkBlue;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.topbar input {
+  background-color: $inputBackground;
+}
+.topbar-inner, .topbar .fill {
+  background-color: $gradientTopBarStart;
+  background-color: $gradientTopBarEnd;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from($gradientTopBarStart), to($gradientTopBarEnd));
+  background-image: -moz-linear-gradient(top, $gradientTopBarStart, $gradientTopBarEnd);
+  background-image: -ms-linear-gradient(top, $gradientTopBarStart, $gradientTopBarEnd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $gradientTopBarStart), color-stop(100%, $gradientTopBarEnd));
+  background-image: -webkit-linear-gradient(top, $gradientTopBarStart, $gradientTopBarEnd);
+  background-image: -o-linear-gradient(top, $gradientTopBarStart, $gradientTopBarEnd);
+  background-image: linear-gradient(top, $gradientTopBarStart, $gradientTopBarEnd);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$gradientTopBarStart', endColorstr='$gradientTopBarEnd', GradientType=0);
+}
+.topbar div > ul .active > a, .nav .active > a {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.topbar div > ul a.menu:hover,
+.nav a.menu:hover,
+.topbar div > ul li.open .menu,
+.nav li.open .menu,
+.topbar div > ul .dropdown-toggle:hover,
+.nav .dropdown-toggle:hover,
+.topbar div > ul .dropdown.open .dropdown-toggle,
+.nav .dropdown.open .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.1);
+}
+.topbar div > ul .menu-dropdown,
+.nav .menu-dropdown,
+.topbar div > ul .dropdown-menu,
+.nav .dropdown-menu {
+  background-color: $darkBlue;
+}
+.topbar div > ul .menu-dropdown li a:hover,
+.nav .menu-dropdown li a:hover,
+.topbar div > ul .dropdown-menu li a:hover,
+.nav .dropdown-menu li a:hover {
+  background-color: $gradientDropMenuEnd;
+  background-image: -khtml-gradient(linear, left top, left bottom, from($gradientDropMenuStart), to($gradientDropMenuEnd));
+  background-image: -moz-linear-gradient(top, $gradientDropMenuStart, $gradientDropMenuEnd);
+  background-image: -ms-linear-gradient(top, $gradientDropMenuStart, $gradientDropMenuEnd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $gradientDropMenuStart), color-stop(100%, $gradientDropMenuEnd));
+  background-image: -webkit-linear-gradient(top, $gradientDropMenuStart, $gradientDropMenuEnd);
+  background-image: -o-linear-gradient(top, $gradientDropMenuStart, $gradientDropMenuEnd);
+  background-image: linear-gradient(top, $gradientDropMenuStart, $gradientDropMenuEnd);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$gradientDropMenuStart', endColorstr='$gradientDropMenuEnd', GradientType=0);
+  color: $darkBlue;
+}
+.topbar div > ul .menu-dropdown .divider,
+.nav .menu-dropdown .divider,
+.topbar div > ul .dropdown-menu .divider,
+.nav .dropdown-menu .divider {
+  background-color: $dividerColor;
+  border-color: $dividerBorderColor;
+}
