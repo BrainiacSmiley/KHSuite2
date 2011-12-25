@@ -42,3 +42,7 @@ end
 group :development do
   gem 'rspec-rails', '~> 2.7.0'
 end
+
+group :production do
+  gem 'pg'
+end
