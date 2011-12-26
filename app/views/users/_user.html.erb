@@ -1,5 +1,7 @@
 <tr>
   <td><%= link_to user.name, user %></td> 
   <td><%= mail_to user.email %></td>
+  <% if current_user.admin? && current_user != user %>
   <td><%= link_to "delete", user, :method => :delete, :confirm => "You sure?", :title => "Delete #{user.name}" %></td>
+  <% end %>
 </tr>

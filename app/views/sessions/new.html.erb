@@ -1,0 +1,9 @@
+<%= form_for(:session, :url => sessions_path) do |f| %>
+  <%= bootstrap_formular_field(f, :email, :text_field) %>
+  <%= bootstrap_formular_field(f, :password, :password_field, :fieldname => t(:password)) %>
+  <div class="actions">
+    <%= f.submit t(:button_signin), :class => "btn primary" %>&nbsp;
+    <button type="reset" class="btn" style="margin-right:30px;"><%= t(:button_cancel) %></button>
+    <%= t(:question_new) %>?<%= link_to t(:link_signup), signup_path, :class => "btn", :style => "margin-left:10px;" %>    
+  </div>
+<% end %>

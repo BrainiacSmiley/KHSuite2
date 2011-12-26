@@ -34,6 +34,11 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khplanner))
     end
 
+    it "should have a signup page at '/signup'" do
+      get '/signup'
+      response.should have_selector('title', :content => I18n.t(:title_user_new))
+    end
+
     it "should have the right links on the layout" do
       visit root_path
       click_link I18n.t(:link_about)
@@ -48,6 +53,54 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_tools_overview))
       click_link I18n.t(:link_khplanner)
       response.should have_selector('title', :content => I18n.t(:title_khplanner))
+      click_link I18n.t(:link_signup)
+      response.should have_selector('title', :content => I18n.t(:title_user_new))
+    end
+
+    describe "when not signed in" do
+      it "should have a signin posiibility" do
+        visit root_path
+        response.should have_selector("input[name='session[email]'][type='text']")
+        response.should have_selector("input[name='session[password]'][type='password']")
+      end
+    end
+
+    describe "when signed in" do
+      describe "no admin user" do
+        before(:each) do
+          @user = Factory(:user)
+          integration_sign_in(@user)
+          visit root_path
+        end
+  
+        it "should have a signout link" do
+          response.should have_selector('a', :href => "/#{I18n.locale}#{signout_path}", :content => I18n.t(:link_signout))
+        end
+  
+        it "should have a profile link" do
+          response.should have_selector('a', :href => user_path(I18n.locale, @user), :content => I18n.t(:link_profile))
+        end
+        
+        it "should have a profile edit link" do
+          response.should have_selector('a', :href => edit_user_path(I18n.locale, @user), :content => I18n.t(:link_settings))
+        end
+
+        it "should not have a Users link" do
+          response.should_not have_selector('a', :href => "/#{I18n.locale}#{users_path}", :content => I18n.t(:link_userlist))
+        end
+      end
+      
+      describe "admin user" do
+        before(:each) do
+          admin = Factory(:user, :email => "admin@example.com", :admin => true)
+          integration_sign_in(admin)
+          visit root_path
+        end
+        
+        it "should have a Users link" do
+          response.should have_selector('a', :href => "/#{I18n.locale}#{users_path}", :content => I18n.t(:link_userlist))
+        end
+      end
     end
   end
 end

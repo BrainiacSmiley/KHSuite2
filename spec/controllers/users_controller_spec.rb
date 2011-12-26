@@ -10,56 +10,144 @@ describe UsersController do
       before(:each) do
         @user = Factory(:user)
       end
-     
-      it "should destroy the user" do
-        lambda do
+      
+      describe "as a non-signed-in user" do
+        it "should deny access" do
           delete :destroy, :id => @user
-        end.should change(User, :count).by(-1)
+          response.should redirect_to(signin_path)
+        end
       end
       
-      it "should display a success message" do
-        delete :destroy, :id => @user
-        flash[:success].should == I18n.t(:flash_user_deleted_success)
+      describe "as a non-admin user" do
+        it "should protect the page" do
+          test_sign_in(@user)
+          delete :destroy, :id => @user
+          response.should redirect_to(root_path)
+        end
+      end
+      
+      describe "as an admin user" do
+        before(:each) do
+          @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+          test_sign_in(@admin)
+        end
+        
+        it "should destroy the user" do
+          lambda do
+            delete :destroy, :id => @user
+          end.should change(User, :count).by(-1)
+        end
+        
+        it "should display a success message" do
+          delete :destroy, :id => @user
+          flash[:success].should == I18n.t(:flash_user_deleted_success)
+        end
+        
+        it "should not be able to delete himself" do
+          lambda do
+            delete :destroy, :id => @admin
+          end.should_not change(User, :count)
+          flash[:error].should == I18n.t(:flash_user_delete_himself)
+        end
       end
     end
     
     describe "GET 'index'" do
-      before(:each) do
-        @admin = Factory(:user, :email => "admin@example.com", :admin => true)
-        second = Factory(:user, :name => "Bob", :email => "another@example.com")
-        third  = Factory(:user, :name => "Ben", :email => "another@example.net")
+      describe "for non-signed-in users" do
+        it "should deny access" do
+          get :index
+          response.should redirect_to(signin_path)
+          flash[:notice].should == I18n.t(:access_denied)
+        end
+      end
+      
+      describe "for signed-in users" do
+        it "should protect the page" do
+          test_sign_in(Factory(:user))
+          get :index
+          response.should redirect_to(root_path)
+          flash[:error].should == I18n.t(:missing_rights)          
+        end
+      end
+      
+      describe "for admin users" do
+        before(:each) do
+          @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+          test_sign_in(@admin)
+          second = Factory(:user, :name => "Bob", :email => "another@example.com")
+          third  = Factory(:user, :name => "Ben", :email => "another@example.net")
+          
+          @users = [@admin, second, third]
+          30.times do
+            @users << Factory(:user, :email => Factory.next(:email))
+          end
+          get :index
+        end
         
-        @users = [@admin, second, third]
-        30.times do
-          @users << Factory(:user, :email => Factory.next(:email))
+        it "should be succesful" do
+          response.should be_success
         end
-        get :index
+        
+        it "should have the right title" do
+          response.should have_selector('title', :content => I18n.t(:title_user_all))
+        end
+        
+        it "should have an element for each user" do
+          @users[0..2].each do |user|
+            response.should have_selector('td', :content => user.name)
+          end
+        end
+        
+        it "should paginate users" do
+          response.should have_selector('div.pagination')
+          response.should have_selector('span.disabled', :content => I18n.t('paginate_test_prev'))
+          response.should have_selector('a', :href => "/#{I18n.locale}/users?page=2", :content => "2")
+          response.should have_selector('a', :href => "/#{I18n.locale}/users?page=2", :content => I18n.t('paginate_test_next'))
+        end
+        
+        it "should have delete links for each user except themselfs" do
+          @users[0..2].each do |user|
+            if user != @admin
+              response.should have_selector('a', :href => user_path(user), :content => "delete")            
+            else
+              response.should_not have_selector('a', :href => user_path(user), :content => "delete")            
+            end
+          end
+        end
+      end
+    end
+    
+    describe "authentication of edit/update pages" do
+      before(:each) do
+        @user = Factory(:user)
       end
       
-      it "should be succesful" do
-        response.should be_success
-      end
-      
-      it "should have the right title" do
-        response.should have_selector('title', :content => I18n.t(:title_user_all))
-      end
-      
-      it "should have an element for each user" do
-        @users[0..2].each do |user|
-          response.should have_selector('td', :content => user.name)
+      describe "for signed-in users" do
+        before(:each) do
+          wrong_user = Factory(:user, :email => "user@example.net")
+          test_sign_in(wrong_user)
+        end
+        
+        it "should require matching users for 'edit'" do
+          get :edit, :id => @user
+          response.should redirect_to(root_path)
+        end
+
+        it "should require matching users for 'update'" do
+          put :update, :id => @user, :user => {}
+          response.should redirect_to(root_path)
         end
       end
       
-      it "should paginate users" do
-        response.should have_selector('div.pagination')
-        response.should have_selector('span.disabled', :content => I18n.t('paginate_test_prev'))
-        response.should have_selector('a', :href => "/#{I18n.locale}/users?page=2", :content => "2")
-        response.should have_selector('a', :href => "/#{I18n.locale}/users?page=2", :content => I18n.t('paginate_test_next'))
-      end
-      
-      it "should have delete links for each user" do
-        @users[0..2].each do |user|
-          response.should have_selector('a', :href => user_path(user), :content => "delete")            
+      describe "for-nonsigned-in users" do
+        it "should deny access to 'edit'" do
+          get :edit, :id => @user
+          response.should redirect_to(signin_path)
+        end
+        
+        it "shoudl deny acces to 'update'" do
+          put :update, :id => @user, :user => {}
+          response.should redirect_to(signin_path)
         end
       end
     end
@@ -67,6 +155,7 @@ describe UsersController do
     describe "PUT 'update" do
       before(:each) do
         @user = Factory(:user)
+        test_sign_in(@user)
       end
       
       describe "failure" do
@@ -120,6 +209,7 @@ describe UsersController do
     describe "GET 'edit'" do
       before(:each) do
         @user = Factory(:user)
+        test_sign_in(@user)
         get :edit, :id => @user
       end
       
@@ -158,6 +248,11 @@ describe UsersController do
           post :create, :user => @attr
           flash[:success].should == I18n.t(:flash_user_create_success)
         end
+        
+        it "should sign the user in" do
+          post :create, :user => @attr
+          controller.should be_signed_in
+        end
       end
       
       describe "failure" do
@@ -193,23 +288,36 @@ describe UsersController do
     describe "GET 'show'" do
       before(:each) do
         @user = Factory(:user)
-        get :show, :id => @user
       end
       
-      it "should be successful" do
-        response.should be_success
+      describe "for a non-signed-in user" do
+        it "should redirect to signin page" do
+          get :show, :id => @user
+          response.should redirect_to(signin_path)
+        end
       end
       
-      it "should find the right user" do
-        assigns(:user).should == @user
-      end
-      
-      it "should have the right title" do
-        response.should have_selector('title', :content => @user.name)
-      end
-      
-      it "should include the user's name" do
-        response.should have_selector('h1', :content => @user.name)
+      describe "for a singed-in user" do
+        before(:each) do
+          test_sign_in(@user)
+          get :show, :id => @user
+        end
+        
+        it "should be successful" do
+          response.should be_success
+        end
+        
+        it "should find the right user" do
+          assigns(:user).should == @user
+        end
+        
+        it "should have the right title" do
+          response.should have_selector('title', :content => @user.name)
+        end
+        
+        it "should include the user's name" do
+          response.should have_selector('h1', :content => @user.name)
+        end
       end
     end
 

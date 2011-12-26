@@ -33,6 +33,16 @@ Spork.prefork do
     # automatically. This will be the default behavior in future versions of
     # rspec-rails.
     config.infer_base_class_for_anonymous_controllers = false
+    def test_sign_in(user)
+      controller.sign_in(user)
+    end
+    
+    def integration_sign_in(user)
+      visit signin_path
+      fill_in :email,            :with => user.email
+      fill_in I18n.t(:password), :with => user.password
+      click_button
+    end
   end
 end
 

@@ -1,6 +1,7 @@
 KHSuite2::Application.routes.draw do
   scope "(:locale)", :locale => /de|en/ do
     resources :users
+    resources :sessions, :only => [:new, :create, :destroy]
 
     match '/:locale',   :to => 'pages#home'
     root                :to => 'pages#home'
@@ -9,6 +10,9 @@ KHSuite2::Application.routes.draw do
     match '/help',      :to => 'pages#help'
     match '/tools',     :to => 'pages#tools'
     match '/khplanner', :to => 'pages#khplanner'
+    match '/signup',    :to => 'users#new'
+    match '/signin',    :to => 'sessions#new'
+    match '/signout',   :to => 'sessions#destroy'
   end
 
   # The priority is based upon order of creation:

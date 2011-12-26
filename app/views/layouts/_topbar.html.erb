@@ -23,6 +23,11 @@
           </ul>
         </li>
       </ul>
+      <% if signed_in? %>
+        <%= render 'layouts/signedin' %>
+      <% else %>
+        <%= render 'layouts/signin' %>
+      <% end %>
     </div>
   </div>
 </div>
