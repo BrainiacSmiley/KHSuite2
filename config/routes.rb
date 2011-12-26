@@ -1,5 +1,7 @@
 KHSuite2::Application.routes.draw do
   scope "(:locale)", :locale => /de|en/ do
+    resources :users
+
     match '/:locale',   :to => 'pages#home'
     root                :to => 'pages#home'
     match '/contact',   :to => 'pages#contact'

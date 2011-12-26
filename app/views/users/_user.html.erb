@@ -1,0 +1,5 @@
+<tr>
+  <td><%= link_to user.name, user %></td> 
+  <td><%= mail_to user.email %></td>
+  <td><%= link_to "delete", user, :method => :delete, :confirm => "You sure?", :title => "Delete #{user.name}" %></td>
+</tr>

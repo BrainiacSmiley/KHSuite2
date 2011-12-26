@@ -1,0 +1,11 @@
+<table class="profile" summary="Profile information">
+  <tr>
+    <td class="main">
+      <%= render 'users/user_main' %>
+    </td>
+    <td class="sidebar round">
+      <strong>Name:</strong> <%= @user.name %><br />
+      <strong>URL:</strong>  <%= link_to user_path(@user), @user %><br />
+    </td>
+  </tr>
+</table>

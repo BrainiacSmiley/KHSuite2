@@ -1,0 +1,31 @@
+<%= will_paginate %>
+
+<table>
+<tr>
+<td width="20"><<</td>
+<td width="20"><</td>
+<td width="*"></td>
+<td width="20">></td>
+<td width="20">>></td>
+</tr>
+</table>
+
+<table class="zebra-striped" id="userTable">
+<thead>
+  <tr>
+    <th class="header">User</td>
+    <th class="header">Email</td>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render @users %>
+  </tbody>
+</table>
+
+<%= will_paginate %>
+
+<script>
+$(document).ready(function(){
+  $("#userTable").tablesorter()
+})
+</script>
