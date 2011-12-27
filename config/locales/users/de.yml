@@ -9,6 +9,7 @@ de:
   error:                      "Fehler"
   button_user_new:            "Registrieren"
   button_user_update:         "Ändern"
+  button_cancel:              "Reset"
   flash_user_create_success:  "Willkommen in der KHSuite"
   flash_user_edit_success:    "Profil geändert"
   flash_user_deleted_success: "User erfolgreich gelöscht"

@@ -19,5 +19,6 @@ en:
   link_profile:          "Profile"
   link_settings:         "Settings"
   link_userlist:         "Users"
+  link_doctorlist:       "Doctors"
   tools_bar_description: "Tools"
   link_localization:     "Language"

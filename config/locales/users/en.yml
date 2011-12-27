@@ -9,6 +9,7 @@ en:
   error:                       "error"
   button_user_new:             "Sign up"
   button_user_update:          "Update"
+  button_cancel:               "Cancel"
   flash_user_create_success:   "Welcome to the KHSuite"
   flash_user_edit_success:     "Profile updated."
   flash_user_deleted_success:  "User successful deleted"
