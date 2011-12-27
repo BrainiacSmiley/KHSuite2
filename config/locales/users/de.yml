@@ -1,7 +1,7 @@
-﻿de:
+de:
   title_user_new:             "Registrieren"
   title_user_edit:            "User bearbeiten"
-  title_user_all:			  "Alle User"
+  title_user_all:             "Alle User"
   password:                   "Passwort"
   password_confirmation:      "Passwort wiederholen"
   errors_title:               "verhindern, das dieser %{error_object} gespeichert wird"
