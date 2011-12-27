@@ -29,6 +29,29 @@ describe User do
     }
   end
   
+  describe "doctor association" do
+    before(:each) do
+      @user = User.create(@attr)
+      @doc1 = Factory(:doctor, :user => @user, :server => 8)
+      @doc2 = Factory(:doctor, :user => @user, :server => 1)
+    end
+    
+    it "should hava a doctors attribute" do
+      @user.should respond_to(:doctors)
+    end
+    
+    it "should have the right doctors in the right order" do
+      @user.doctors.should == [@doc2, @doc1]
+    end
+    
+    it "should destroy associated doctors" do
+      @user.destroy
+      [@doc1, @doc2].each do |doctor|
+        Doctor.find_by_id(doctor.id).should be_nil
+      end
+    end
+  end
+  
   describe "admin attribute" do
     before(:each) do
       @user = User.create!(@attr)
@@ -142,6 +165,23 @@ describe User do
       
       it "should be false if the passwords don't match" do
         @user.has_password?("invalid").should be_false
+      end
+    end
+    
+    describe "authenticate method" do
+      it "should return nil on email/password mismatch" do
+        wrong_password_user = User.authenticate(@attr[:email], "wrongpass")
+        wrong_password_user.should be_nil
+      end
+      
+      it "should return nil for an email address with no user" do
+        nonexistent_user = User.authenticate("bar@foo.com", @attr[:password])
+        nonexistent_user.should be_nil
+      end
+      
+      it "should return the user on email/password match match" do
+        matching_user = User.authenticate(@attr[:email], @attr[:password])
+        matching_user.should == @user
       end
     end
   end
