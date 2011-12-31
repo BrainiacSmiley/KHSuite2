@@ -17,7 +17,18 @@
             <% flash.each do |key, value| %>
               <%= content_tag(:div, link_to("×", '#', :class => "close") + content_tag(:p, value), :class => "alert-message #{key}", 'data-alert' => "alert") %>
             <% end %>
-            <%= yield %>
+            <% if signed_in? && !@user.nil? %>
+              <div class="row">
+                <div class="span11">
+                  <%= yield %>
+                </div>
+                <div class="span5">
+                  <%= render 'doctors/sidebar' %>
+                </div>
+              </div>
+            <% else %>
+              <%= yield %>
+            <% end %>
           </div>
         </div>
       </div>

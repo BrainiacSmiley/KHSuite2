@@ -91,6 +91,14 @@ describe UsersController do
         it "should have the right title" do
           response.should have_selector('title', :content => I18n.t(:title_user_all))
         end
+
+        it "should not containt missing translation" do
+          response.should_not contain('translation missing:')
+        end
+  
+        it "should not containt <span class='translation_missing'>" do
+          response.should_not have_selector('span.translation_missing')
+        end
         
         it "should have an element for each user" do
           @users[0..2].each do |user|
@@ -210,6 +218,8 @@ describe UsersController do
       before(:each) do
         @user = Factory(:user)
         test_sign_in(@user)
+        Factory(:doctor, :user => @user)
+        @doctors = @user.doctors.all
         get :edit, :id => @user
       end
       
@@ -219,6 +229,62 @@ describe UsersController do
       
       it "should have the right title" do
         response.should have_selector('title', :content => I18n.t(:title_user_edit))
+      end
+
+      it "should not containt missing translation" do
+        response.should_not contain('translation missing:')
+      end
+
+      it "should not containt <span class='translation_missing'>" do
+        response.should_not have_selector('span.translation_missing')
+      end
+
+      describe "sidebar" do
+        it "should have the users name in it" do
+          response.should contain("Name: #{@user.name}")
+        end
+        
+        it "should have a link to the user profile" do
+          response.should have_selector('a',
+                                        :href => user_path(@user),
+                                        :content => user_path(@user)
+                                       )
+        end
+        
+        it "should have the number of doctors" do
+          response.should contain("#{I18n.t(:doctors)}: #{@user.doctors.count}")
+        end
+        
+        it "should have a new doctor link" do
+          response.should have_selector('a',
+                                        :href => new_doctor_path,
+                                        :content => I18n.t(:link_doctor_new)
+                                       )
+        end
+        
+        it "should have the doctors badge for every doctor" do
+          @doctors.each do |doctor|
+            response.should have_selector('a',
+                                          :href => '#',
+                                          :content => "Statistik"
+                                         )
+            response.should have_selector('a',
+                                          :href => edit_doctor_path(doctor),
+                                          :content => "Edit"
+                                         )
+            response.should have_selector('a',
+                                          :href => doctor_path(doctor),
+                                          :content => "Delete"
+                                         )
+            response.should have_selector('strong', :content => "S#{doctor.server}")
+            response.should have_selector('strong', :content => doctor.name)
+            response.should have_selector('img', :src => doctor.avatar)
+            response.should contain("#{I18n.t(:av)}: #{doctor.av}")
+            response.should contain("#{I18n.t(:level)}: #{doctor.level}")
+            response.should contain("#{I18n.t(:money)}: #{doctor.level} hT")
+            response.should contain("#{I18n.t(:points)}: #{doctor.level}")
+          end
+        end
       end
     end
     
@@ -300,6 +366,8 @@ describe UsersController do
       describe "for a singed-in user" do
         before(:each) do
           test_sign_in(@user)
+          Factory(:doctor, :user => @user)
+          @doctors = @user.doctors.all
           get :show, :id => @user
         end
         
@@ -318,6 +386,62 @@ describe UsersController do
         it "should include the user's name" do
           response.should have_selector('h1', :content => @user.name)
         end
+
+        it "should not containt missing translation" do
+          response.should_not contain('translation missing:')
+        end
+  
+        it "should not containt <span class='translation_missing'>" do
+          response.should_not have_selector('span.translation_missing')
+        end
+
+        describe "sidebar" do
+          it "should have the users name in it" do
+            response.should contain("Name: #{@user.name}")
+          end
+          
+          it "should have a link to the user profile" do
+            response.should have_selector('a',
+                                          :href => user_path(@user),
+                                          :content => user_path(@user)
+                                         )
+          end
+          
+          it "should have the number of doctors" do
+            response.should contain("#{I18n.t(:doctors)}: #{@user.doctors.count}")
+          end
+          
+          it "should have a new doctor link" do
+            response.should have_selector('a',
+                                          :href => new_doctor_path,
+                                          :content => I18n.t(:link_doctor_new)
+                                         )
+          end
+          
+          it "should have the doctors badge for every doctor" do
+            @doctors.each do |doctor|
+              response.should have_selector('a',
+                                            :href => '#',
+                                            :content => "Statistik"
+                                           )
+              response.should have_selector('a',
+                                            :href => edit_doctor_path(doctor),
+                                            :content => "Edit"
+                                           )
+              response.should have_selector('a',
+                                            :href => doctor_path(doctor),
+                                            :content => "Delete"
+                                           )
+              response.should have_selector('strong', :content => "S#{doctor.server}")
+              response.should have_selector('strong', :content => doctor.name)
+              response.should have_selector('img', :src => doctor.avatar)
+              response.should contain("#{I18n.t(:av)}: #{doctor.av}")
+              response.should contain("#{I18n.t(:level)}: #{doctor.level}")
+              response.should contain("#{I18n.t(:money)}: #{doctor.level} hT")
+              response.should contain("#{I18n.t(:points)}: #{doctor.level}")
+            end
+          end
+        end
       end
     end
 
@@ -332,6 +456,14 @@ describe UsersController do
       
       it "should have the right title" do
         response.should have_selector('title', :content => I18n.t(:title_user_new))
+      end
+
+      it "should not containt missing translation" do
+        response.should_not contain('translation missing:')
+      end
+
+      it "should not containt <span class='translation_missing'>" do
+        response.should_not have_selector('span.translation_missing')
       end
       
       it "should have a name field" do

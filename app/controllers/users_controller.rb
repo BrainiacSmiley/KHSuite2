@@ -33,10 +33,12 @@ class UsersController < ApplicationController
   
   def edit
     @title = t(:title_user_edit)
+    @user_doctors = @user.doctors
   end
   
   def show
     @user = User.find(params[:id])
+    @user_doctors = @user.doctors
     @title = @user.name
   end
   

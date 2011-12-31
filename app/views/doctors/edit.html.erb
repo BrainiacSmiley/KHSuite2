@@ -1,0 +1,7 @@
+<%= form_for @doctor do |f| %>
+  <%= render 'fields', :f => f %>
+  <div class="actions">
+    <%= f.submit t(:button_doctor_edit), :class => "btn primary" %>&nbsp;
+    <button type="reset" class="btn" style="margin-right:30px;"><%= t(:button_cancel) %></button>
+  </div>
+<% end %>

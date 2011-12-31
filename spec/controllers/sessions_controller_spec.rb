@@ -65,6 +65,14 @@ describe SessionsController do
       it "should have the right title" do
         response.should have_selector('title', :content => I18n.t(:title_signin))
       end
+
+      it "should not containt missing translation" do
+        response.should_not contain('translation missing:')
+      end
+
+      it "should not containt <span class='translation_missing'>" do
+        response.should_not have_selector('span.translation_missing')
+      end
     end
   end
 end

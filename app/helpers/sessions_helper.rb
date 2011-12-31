@@ -38,6 +38,13 @@ module SessionsHelper
     redirect_to(session[:return_to] || default)
     clear_location
   end
+
+  def find_needed_values
+    if signed_in?
+      @user = User.find(current_user.id)
+      @user_doctors = @user.doctors
+    end
+  end
   
   private
     def user_from_remember_token

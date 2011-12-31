@@ -1,0 +1,11 @@
+<strong>Name:</strong> <%= @user.name %><br />
+<strong>URL:</strong>  <%= link_to user_path(@user), @user %><br />
+<strong><%= t(:doctors) %>:</strong>  <%= @user.doctors.count %>&nbsp;
+    <%= link_to t(:link_doctor_new), new_doctor_path %>
+<% unless @user_doctors.nil? %>
+  <table class="doctors" summary="User doctors">
+    <% @user_doctors.each do |doctor| %>
+      <%= render 'doctors/doctors_badge', :doctor => doctor %>
+    <% end %>
+  </table>
+<% end %>

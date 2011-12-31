@@ -1,0 +1,8 @@
+<tr>
+  <td><%= doctor.server %></td>
+  <td><%= doctor.name %></td>
+  <td><%= doctor.level %></td>
+  <td><%= doctor.av %></td>
+  <td><%= User.find_by_id(doctor.user_id).name %></td>
+  <td><%= link_to "delete", doctor, :method => :delete, :confirm => "You sure?", :title => "Delete #{doctor.name}" %></td>
+</tr>

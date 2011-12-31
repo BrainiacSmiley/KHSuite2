@@ -1,0 +1,24 @@
+<%= will_paginate %>
+
+<table class="zebra-striped" id="doctorTable">
+<thead>
+  <tr>
+    <th class="header">Server</th>
+    <th class="header">Name</td>
+    <th class="header">Level</td>
+    <th class="header">AV</td>
+    <th class="header">User</td>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render @doctors %>
+  </tbody>
+</table>
+
+<%= will_paginate %>
+
+<script>
+$(document).ready(function(){
+  $("#doctorTable").tablesorter()
+})
+</script>

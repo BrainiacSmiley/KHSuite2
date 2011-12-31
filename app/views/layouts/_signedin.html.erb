@@ -7,6 +7,7 @@
     <a href="#" class="dropdown-toggle">Admin</a>
     <ul class="dropdown-menu">
       <%= topbar_active_list(@title, t(:title_user_all)) %><%= link_to t('link_userlist'), users_path %></li>
+      <%= topbar_active_list(@title, t(:title_doctor_all)) %><%= link_to t('link_doctorlist'), doctors_path %></li>
     </ul>
   </li>
 </ul>

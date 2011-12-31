@@ -88,6 +88,10 @@ describe "LayoutLinks" do
         it "should not have a Users link" do
           response.should_not have_selector('a', :href => "/#{I18n.locale}#{users_path}", :content => I18n.t(:link_userlist))
         end
+
+        it "should not have a Doctors link" do
+          response.should_not have_selector('a', :href => "/#{I18n.locale}#{doctors_path}", :content => I18n.t(:link_doctorlist))
+        end
       end
       
       describe "admin user" do
@@ -99,6 +103,10 @@ describe "LayoutLinks" do
         
         it "should have a Users link" do
           response.should have_selector('a', :href => "/#{I18n.locale}#{users_path}", :content => I18n.t(:link_userlist))
+        end
+
+        it "should have a Doctors link" do
+          response.should have_selector('a', :href => "/#{I18n.locale}#{doctors_path}", :content => I18n.t(:link_doctorlist))
         end
       end
     end

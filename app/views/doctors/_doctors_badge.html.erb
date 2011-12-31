@@ -1,0 +1,10 @@
+<tr>
+  <td class="doctorsbadgesidebar">
+    <%= link_to simple_format(doctors_badge_html(doctor)), "#" %>
+    <div class="doctorslinks">
+      <%= link_to "Statistik", "#" %>
+      | <%= link_to "Edit", edit_doctor_path(doctor) %>
+      | <%= link_to "Delete", doctor, :method => :delete, :confirm => "You sure?", :title => "Delete #{doctor.name}" %>
+    </div
+  </td>
+</tr>
