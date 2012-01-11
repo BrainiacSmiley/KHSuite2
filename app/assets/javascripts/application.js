@@ -9,3 +9,4 @@
 //= require_tree .
 //= require bootstrap-dropdown
 //= require bootstrap-alerts
+//= require google-code-prettify/prettify
