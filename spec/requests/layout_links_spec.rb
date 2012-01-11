@@ -34,6 +34,11 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khplanner))
     end
 
+    it "should have a KHAdvancement page at '/khadvancement'" do
+      get '/khadvancement'
+      response.should have_selector('title', :content => I18n.t(:title_khadvancement))
+    end
+
     it "should have a signup page at '/signup'" do
       get '/signup'
       response.should have_selector('title', :content => I18n.t(:title_user_new))
@@ -53,6 +58,8 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_tools_overview))
       click_link I18n.t(:link_khplanner)
       response.should have_selector('title', :content => I18n.t(:title_khplanner))
+      click_link I18n.t(:link_khadvancement)
+      response.should have_selector('title', :content => I18n.t(:title_khadvancement))
       click_link I18n.t(:link_signup)
       response.should have_selector('title', :content => I18n.t(:title_user_new))
     end

@@ -11,7 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111227134917) do
+ActiveRecord::Schema.define(:version => 20111231120913) do
+
+  create_table "doctor_levels", :force => true do |t|
+    t.string   "level_name"
+    t.integer  "points"
+    t.string   "level_text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "doctors", :force => true do |t|
     t.integer  "server",     :default => 1

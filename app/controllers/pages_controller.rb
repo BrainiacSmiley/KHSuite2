@@ -27,4 +27,8 @@ class PagesController < ApplicationController
   def khplanner
     @title = t(:title_khplanner)
   end
+
+  def khadvancement
+    @title = t(:title_khadvancement)
+  end
 end

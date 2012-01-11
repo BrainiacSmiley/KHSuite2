@@ -1,0 +1,65 @@
+<p>
+<strong>Was ist KHAdvancement?</strong><br />
+KHAdvancement ist die Überweisungsmappe so wie ich sie mir vorstelle.
+</p>
+<p>
+<strong>Welche Version hat KHAdvancement?</strong><br />
+Stand 10.01.12 ist Version 0.5 (Es sind noch nicht alle Funktionen aus der Liste unten realisiert).
+</p>
+<p>
+<strong>Wie ist KHAdvancement entstanden?</strong><br />
+Ich habe die Überweisungsmappe mit den Funktionen versehen, die mir fehlten:
+<ul>
+<li>Wird ein Patient an die Börse gestellt, wird der MinPreis automatisch eingetragen</li>
+<li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der Max-Preis eingetragen.</li>
+<li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
+<li>Die Mappe zählt mir wieviel Patienten gerade ausgewählt sind.</li>
+<li>Die Mappe gibt mir den Gesamterlös der ausgewählten Patienten an.</li>
+<li>Vier Filterblöcke in der Überweisungsmappe:</li>
+<ul>
+  <li>Block 1:</li>
+  <li>keine Pats mit einer Restkrankheit anzeigen</li>
+  <li>nur Pats mit einer Restkrankheit anzeigen</li>
+  <li>keine Pats mit multi Behandlungen für einen Raum anzeigen</li>
+  <li>nur Pats mit multi Behandlungen für einen Raum anzeigen</li>
+
+  <li>Block 2:</li>
+  <li>Nach Anzahl Krankheiten filtern</li>
+
+  <li>Block 3:</li>
+  <li>Nach Empfänger filtern</li>
+
+  <li>Block 4:</li>
+  <li>Nach Raum filtern</li>
+</ul>
+</ul>
+</p>
+<p>
+<strong>Wie installiere ich KHAdvancement?</strong><br />
+Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
+</p>
+<p>
+<strong>Wo bekomme ich Greasemonkey her?</strong><br />
+Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
+</p>
+<p>
+<strong>Wo bekomme ich KHAdvancement her?</strong><br />
+Das gibt es hier: <a href="../tools/khadvancement/KHAdvancement.user.js">KHAdvancement Script</a>
+</p>
+<p>
+<strong>Wie installiere ich KHAdvancement?</strong><br />
+Im Firefox erst mal das Addon installieren, danach einfach den Link vom KHAdvancement anklicken und der Installation zustimmen.<br />Danach einfach KH mit F5 neu laden und es ist aktiv.
+</p>
+<p>
+<strong>Wie passe ich den Standad-Auslageraccount an?</strong><br />
+Dazu müßt ihr im Moment das Script noch mit rechter Maustaste bei euch auf dem Rechner speichern und in einem Editor öffnen. Der Windows Editor reicht völlig.<br />
+Am einfachsten und schnellsten ist aber auf dem Desktop speichern von dort den Editor aufrufen, die Änderungen durchführen und dann per Drag & Drop vom Desktop in den Browser ziehen.<br />
+Zum anpassen nach folgendem Eintrag suchen:
+<pre class="prettyprint">
+if (document.location.href.search("s1.de.kapihospital.com")!=-1) {
+  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
+}
+</pre>
+Es gibt für jeden Server einen. Einfach den für euren Server auswählen, und
+<pre>Euer Auslager Ärztename</pre> durch den von euch benutzen Ärtenamen ersetzen. Wichtig ist das die <pre>\"</pre> vor und hinter dem Namen erhalten bleiben. Dann abspeichern und fertig. Spielt ihr auf mehreren Servern, entsprechend die anderen Einträge auch anpassen. Nun die abgespeicherte Datei "KHAdvancement.user.js" einfach per Drag and Drop in den Browser ziehen, die Installation bestätigen und fertig seit ihr.
+</p>
