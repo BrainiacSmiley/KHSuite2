@@ -146,10 +146,12 @@ function changeAssignmentTarget(newTarget) {
   changeActiveAssignmentIcon()
 }
 function addAssignmentIcon() {
+  jQuery(jQuery('#addressbook').children()[2]).css('width',"250px")
+  jQuery(jQuery('#addressbook').children()[2]).css('left',"15px")
   $allAddresses.each(function() {
     var actualName = jQuery(this).text()
     if (!jQuery('[id="' + actualName +'"]').length) {
-      jQuery('<div id=\"' + actualName + '\" style=\"float: right; margin-left:5px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: ' + isNameSelected(actualName) + 'px 0px;\" onclick=\"changeAssignmentTarget(\'' + actualName + '\')\">&nbsp;</div>').insertAfter(this)
+      jQuery('<div id=\"' + actualName + '\" style=\"float: left; margin-left: 10px; margin-right: 5px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: ' + isNameSelected(actualName) + 'px 0px;\" onclick=\"changeAssignmentTarget(\'' + actualName + '\')\">&nbsp;</div>').insertAfter(this)
     }
   })
 }
