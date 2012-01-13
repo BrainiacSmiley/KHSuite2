@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancement
-// @version       0.5
+// @version       0.6
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -14,61 +14,53 @@ function addJQuery(callback) {
   }, false);
   document.body.appendChild(script);
 }
-function ready() {
+function readyJQuery() {
   jQuery.noConflict();
   //insert MainFunction
   jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
+  storedAssignmentTarget = getCookie("KHAssignmentTarget" + jQuery('#username').text())
+  if (storedAssignmentTarget != null) {
+    assignmentTarget = storedAssignmentTarget
+  } else {
+    assignmentTarget = "Bitte Arzt aus dem Addressbuch bestimmen!"
+  }
+}
+
+function addAccounting(callback) {
+  var script = document.createElement("script");
+  script.setAttribute("src", "https://raw.github.com/josscrowcroft/accounting.js/master/accounting.min.js");
+  script.addEventListener('load', function() {
+    var script = document.createElement("script");
+    script.textContent = "(" + callback.toString() + ")();";
+    document.body.appendChild(script);
+  }, false);
+  document.body.appendChild(script);
+}
+function readyAccounting() {
 }
 
 var variablen = new Array()
-if (document.location.href.search("s1.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s2.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s3.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s4.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s5.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s6.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s7.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s8.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s9.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
-if (document.location.href.search("s10.de.kapihospital.com")!=-1) {
-  variablen[0] = "assignmentTarget = \"Euer Auslager Ärztename\""
-}
+variablen[0] = "assignmentTarget"
 variablen[1]  = "minPrice = 0"
 variablen[2]  = "maxPrice = 0"
 variablen[3]  = "send_head = \"Von dir überwiesene Patienten\""
-variablen[4]  = "$allPats"
-variablen[5]  = "actualNumberOfPats = 0"
-variablen[6]  = "actualNumberOfHiddenPats = 0"
-variablen[7]  = "referralVisible = false"
-variablen[8]  = "actualPatientsIndex = 0"
-variablen[9]  = "actualNumberOfDiseases = \"# Krankheiten\""
-variablen[10] = "actualRecieverName = \"alle Empfänger\""
-variablen[11] = "actualRoomsName = \"alle Räume\""
-variablen[12] = "referralVisible = false"
-variablen[13] = "sendReciever"
-variablen[14] = "sendRooms"
-variablen[15] = "patStored"
+variablen[4] = "$allAddresses"
+variablen[5]  = "$allPats"
+variablen[6]  = "actualNumberOfPats = 0"
+variablen[7]  = "actualNumberOfHiddenPats = 0"
+variablen[8]  = "referralVisible = false"
+variablen[9]  = "actualPatientsIndex = 0"
+variablen[10]  = "actualNumberOfDiseases = \"# Krankheiten\""
+variablen[11] = "actualRecieverName = \"alle Empfänger\""
+variablen[12] = "actualRoomsName = \"alle Räume\""
+variablen[13] = "referralVisible = false"
+variablen[14] = "sendDiseases"
+variablen[15] = "sendReciever"
+variablen[16] = "sendRooms"
+variablen[17] = "patStored"
 
 function addFunctions() {
-  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, storePats, getRecieverOptions, getRoomOptions, addSendOptions)
+  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, isNameSelected, changeActiveAssignmentIcon, changeAssignmentTarget, addAssignmentIcon, storePats, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, getDiseasesOptions, getRecieverOptions, getRoomOptions, storePats, getSelectOptionsArray, addSendOptions, getPrice, summPrices, changePrice, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -82,6 +74,7 @@ function addFunctions() {
   }
   document.body.appendChild(script);
 }
+
 //Beginn Main Function
 function recogniseWindow() {
   if (jQuery('input#ref_recipient').length) {
@@ -99,6 +92,13 @@ function recogniseWindow() {
       $allPats = jQuery('div[id^="sPat"][class^="cursorclickable"]')
       populateSendOptions()
       addSendOptions()
+      hidePatients()
+    }
+  }
+  if (jQuery('div#addressbook').length) {
+    if ($allAddresses != jQuery('a[class=cursorclickable]', jQuery('div#addressbook'))) {
+      $allAddresses = jQuery('a[class=cursorclickable]', jQuery('div#addressbook'))
+      addAssignmentIcon()
     }
   }
 }
@@ -125,6 +125,38 @@ function getPrices(pricesToParse) {
 function formatPrices(priceToFormat) {
   return priceToFormat.replace(".", "")
 }
+function isNameSelected(nameToCheck) {
+  if (assignmentTarget == nameToCheck) {
+    return -60
+  } else {
+    return -15
+  }
+}
+function changeActiveAssignmentIcon() {
+  $allAddresses.each(function() {
+    var actualName = jQuery(this).text()
+    jQuery('[id="' + actualName +'"]').css('background-position', isNameSelected(actualName) + "px 0px")
+  })
+}
+function changeAssignmentTarget(newTarget) {
+  assignmentTarget = newTarget
+  var cookieName = "KHAssignmentTarget" + jQuery('#username').text()
+  setCookie(cookieName, assignmentTarget, 100, "/", window.location.hostname)
+  jQuery('input#ref_recipient').val(assignmentTarget)
+  changeActiveAssignmentIcon()
+}
+function addAssignmentIcon() {
+  $allAddresses.each(function() {
+    var actualName = jQuery(this).text()
+    if (!jQuery('[id="' + actualName +'"]').length) {
+      jQuery('<div id=\"' + actualName + '\" style=\"float: right; margin-left:5px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: ' + isNameSelected(actualName) + 'px 0px;\" onclick=\"changeAssignmentTarget(\'' + actualName + '\')\">&nbsp;</div>').insertAfter(this)
+    }
+  })
+}
+function storePats(id) {
+  patStored = true
+  Referral.sendReferral(id)
+}
 //End Assignment
 
 //Begin Referral
@@ -147,7 +179,6 @@ function hidePats(anzahlKrankheiten) {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsGreater(anzahlKrankheiten) {
   $allPats.each(function() {
@@ -156,7 +187,6 @@ function hidePatsGreater(anzahlKrankheiten) {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsExcept(anzahlKrankheiten) {
   $allPats.each(function() {
@@ -165,7 +195,6 @@ function hidePatsExcept(anzahlKrankheiten) {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsNotTo(reciever) {
   $allPats.each(function() {
@@ -174,7 +203,6 @@ function hidePatsNotTo(reciever) {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsNotForRoom(room) {
   $allPats.each(function() {
@@ -183,7 +211,6 @@ function hidePatsNotForRoom(room) {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsNotMulti(room) {
   $allPats.each(function() {
@@ -199,7 +226,6 @@ function hidePatsNotMulti(room) {
       }
     }
   })
-  showNumberOfPats(false)
 }
 function hidePatsMulti() {
   $allPats.each(function() {
@@ -208,7 +234,6 @@ function hidePatsMulti() {
       actualNumberOfHiddenPats++
     }
   })
-  showNumberOfPats(false)
 }
 function showAllPats() {
   $allPats.each(function() {
@@ -226,12 +251,12 @@ function changePatientView() {
   actualIndex = document.getElementById("toggle_rooms").selectedIndex
   actualRoomsName = document.getElementById("toggle_rooms")[actualIndex].value
   hidePatients()
+  populateSendOptions()
 }
 function hidePatients() {
   showAllPats()
   //toggle Patients
   if (actualPatientsIndex == 1) {
-    console.log('')
     hidePats(1)
   } else if (actualPatientsIndex == 2) {
     hidePatsGreater(1)
@@ -252,16 +277,18 @@ function hidePatients() {
   if (actualRoomsName != "alle Räume") {
     hidePatsNotForRoom(actualRoomsName)
   }
+  changePrice(summPrices())
+  showNumberOfPats(false)
 }
 function removeAllFilter() {
   document.getElementById("toggle_patients").selectedIndex = 0
   actualPatientsIndex = 0
   document.getElementById("toggle_diseases").selectedIndex = 0
-  actualNumberOfDiseases = 0
+  actualNumberOfDiseases = "# Krankheiten"
   document.getElementById("toggle_recievers").selectedIndex = 0
-  actualRecieverName = 0
+  actualRecieverName = "alle Empfänger"
   document.getElementById('toggle_rooms').selectedIndex = 0
-  actualRoomsName = 0
+  actualRoomsName = "alle Räume"
   hidePatients()
 }
 function findInArray(array, value) {
@@ -381,23 +408,48 @@ function getRoomForDisease(diseaseId) {
   }
 }
 function populateSendOptions() {
+  sendDiseases = new Array()
   sendReciever = new Array()
   sendRooms = new Array()
   $allPats.each(function() {
-    reciever = getReciever(this)
-    if (!isInArray(sendReciever, reciever)) {
-      sendReciever.push(reciever)
-    }
-    rooms = getRooms(this)
-    for (var i = 0; i < rooms.length; i++) {
-      if (!isInArray(sendRooms, rooms[i])) {
-        sendRooms.push(rooms[i])
+    if (jQuery(this).is(":visible")) {
+      numberOfDiseases = countDiseases(this)
+      if (!isInArray(sendDiseases, numberOfDiseases)) {
+        sendDiseases.push(numberOfDiseases)
+      }
+      reciever = getReciever(this)
+      if (!isInArray(sendReciever, reciever)) {
+        sendReciever.push(reciever)
+      }
+      rooms = getRooms(this)
+      for (var i = 0; i < rooms.length; i++) {
+        if (!isInArray(sendRooms, rooms[i])) {
+          sendRooms.push(rooms[i])
+        }
       }
     }
   })
+  if (jQuery("#toggle_diseases").length) {
+    jQuery("#toggle_diseases").html("<option># Krankheiten</option>" + getDiseasesOptions());
+  }
+  if (jQuery("#toggle_recievers").length) {
+    jQuery("#toggle_recievers").html("<option>alle Empfänger</option>" + getRecieverOptions());
+  }
+  if (jQuery("#toggle_rooms").length) {
+    jQuery("#toggle_rooms").html("<option>alle Räume</option>" + getRoomOptions());
+  }
+}
+function getDiseasesOptions() {
+  var diseasesOptions = ""
+  sendDiseases.sort(function(a,b){return b - 1})
+  for (var i = 0; i < sendDiseases.length; i++) {
+    diseasesOptions += "<option>" + sendDiseases[i] + "</option>"
+  }
+  return diseasesOptions
 }
 function getRecieverOptions() {
   var recieverOptions = ""
+  sendReciever.sort()
   for (var i = 0; i < sendReciever.length; i++) {
     recieverOptions += "<option>" + sendReciever[i] + "</option>"
   }
@@ -405,27 +457,122 @@ function getRecieverOptions() {
 }
 function getRoomOptions() {
   var roomOptions = ""
+  sendRooms.sort()
   for (var i = 0; i < sendRooms.length; i++) {
     roomOptions += "<option>" + sendRooms[i] + "</option>"
   }
   return roomOptions
 }
-function addSendOptions() {
-  if (jQuery('div#send_options').length) {
-    jQuery.remove('div#send_options')
+function getSelectOptionsArray(object) {
+  var selectOptionArray = new Array()
+  for (var i = 0; i < object.length; i++) {
+    selectOptionArray.push(object.options[i].text)
   }
-  jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option><option>6</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getRecieverOptions() + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle Räume</option>' + getRoomOptions() + '</select><div style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeAllFilter()\">&nbsp;</div></div>').insertAfter('div#referral_send_head')
-  showNumberOfPats(true)
+  return selectOptionArray
+}
+function addSendOptions() {
+  if (jQuery('div#send_options').length === 0) {
+    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getDiseasesOptions() + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getRecieverOptions() + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle Räume</option>' + getRoomOptions() + '</select><div style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeAllFilter()\">&nbsp;</div></div>').insertAfter('div#referral_send_head')
+  }
+  if (jQuery('div#total_price').length === 0) {
+    jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 370px;">Summe: ' + summPrices() + '</div>').insertAfter('div#referrals')
+  }
   document.getElementById("toggle_patients").selectedIndex = actualPatientsIndex
-  /*document.getElementById("toggle_diseases").selectedIndex = actualNumberOfDiseases
-  document.getElementById("toggle_recievers").selectedIndex = actualRecieverName
-  document.getElementById("toggle_rooms").selectedIndex = actualRoomsName*/
-  hidePatients()
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualNumberOfDiseases)
+  if (index != -1) {
+    document.getElementById("toggle_diseases").selectedIndex = index
+  } else {
+    document.getElementById("toggle_diseases").selectedIndex = 0
+  }
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_recievers")), actualRecieverName)
+  if (index != -1) {
+    document.getElementById("toggle_recievers").selectedIndex = index
+  } else {
+    document.getElementById("toggle_recievers").selectedIndex = 0
+  }
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualRoomsName)
+  if (index != -1) {
+    document.getElementById("toggle_rooms").selectedIndex = index
+  } else {
+    document.getElementById("toggle_rooms").selectedIndex = 0
+  }
 }
-function storePats(id) {
-  patStored = true
-  Referral.sendReferral(id)
+function getPrice(object) {
+  var priceToParse = jQuery(jQuery('.ref_spatline', object)[3]).text()
+  return formatPrices(priceToParse.substr(0, priceToParse.indexOf(' '))).replace(",",".")
 }
+function summPrices() {
+  totalPrice = 0
+  $allPats.each(function() {
+    if (jQuery(this).is(":visible")) {
+      var numPrice = getPrice(this)*1
+      totalPrice += numPrice
+    }
+  })
+  var options = {
+	symbol : "hT",
+	decimal : ",",
+	thousand: ".",
+	precision : 2,
+	format: "%v %s"
+  };
+  return accounting.formatMoney(totalPrice, options)
+}
+function changePrice(price) {
+  jQuery('div#total_price').text("Summe: " + price)
+}
+//End Referral
 
-addJQuery(ready)
+//Begin Generall
+function setCookie(name, value, expires, path, domain) {
+  // set time, it's in milliseconds
+  var today = new Date();
+  today.setTime(today.getTime());
+  if (expires) {
+    expires = expires * 1000 * 60 * 60 * 24;
+  }
+  var expires_date = new Date(today.getTime() + (expires));
+  
+  document.cookie = name + "=" + escape(value) +
+  ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
+  ( ( path ) ? ";path=" + path : "" ) +
+  ( ( domain ) ? ";domain=" + domain : "" );
+}
+function getCookie(check_name) {
+  var a_all_cookies = document.cookie.split( ';' );
+  var a_temp_cookie = '';
+  var cookie_name = '';
+  var cookie_value = '';
+  var b_cookie_found = false; // set boolean t/f default f
+
+  for (i = 0; i < a_all_cookies.length; i++) {
+    // now we'll split apart each name=value pair
+    a_temp_cookie = a_all_cookies[i].split( '=' );
+
+    // and trim left/right whitespace while we're at it
+    cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
+
+    // if the extracted name matches passed check_name
+    if (cookie_name == check_name) {
+      b_cookie_found = true;
+      // we need to handle case where cookie has no value but exists (no = sign, that is):
+      if ( a_temp_cookie.length > 1 ) {
+      	cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
+      }
+      // note that in cases where cookie is initialized but no value, null is returned
+      return cookie_value;
+      break;
+    }
+    a_temp_cookie = null;
+    cookie_name = '';
+  }
+  if (!b_cookie_found) {
+    return null;
+  }
+}
+//End Generall
+
+//Begin Script
+addJQuery(readyJQuery)
+addAccounting(readyAccounting)
 addFunctions()
