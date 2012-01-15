@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name          KHAdvancement
-// @version       0.6
+// @version       1.0
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
 function addJQuery(callback) {
   var script = document.createElement("script");
-  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js");
+  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
   script.addEventListener('load', function() {
     var script = document.createElement("script");
     script.textContent = "(" + callback.toString() + ")();";
@@ -16,6 +16,71 @@ function addJQuery(callback) {
 }
 function readyJQuery() {
   jQuery.noConflict();
+  //add Merge Sort
+  (function () {
+    'use strict';
+    // Add stable merge sort method to Array prototype
+    if (!Array.mergeSort) {
+      Array.prototype.mergeSort = function (compare) {
+        var length = this.length,
+          middle = Math.floor(length / 2);
+  
+        // define default comparison function if none is defined
+        if (!compare) {
+          compare = function (left, right) {
+            if (left  <  right) {
+              return -1;
+            } else if (left === right) {
+              return 0;
+            } else {
+              return 1;
+            }
+          };
+        }
+  
+        if (length < 2) {
+          return this;
+        }
+  
+        function merge(left, right, compare) {
+          var result = [];
+          while (left.length > 0 || right.length > 0) {
+            if (left.length > 0 && right.length > 0) {
+              if (compare(left[0], right[0]) <= 0) {
+                result.push(left[0]);
+                left = left.slice(1);
+              } else {
+                result.push(right[0]);
+                right = right.slice(1);
+              }
+            } else if (left.length > 0) {
+              result.push(left[0]);
+              left = left.slice(1);
+            } else if (right.length > 0) {
+              result.push(right[0]);
+              right = right.slice(1);
+            }
+          }
+          return result;
+        }
+        return merge(
+          this.slice(0, middle).mergeSort(compare),
+          this.slice(middle, length).mergeSort(compare),
+          compare
+        );
+      };
+    }
+    // Add merge sort to jQuery if it's present
+    if (window.jQuery !== undefined) {
+      jQuery.fn.mergeSort = function (compare) {
+        return jQuery(Array.prototype.mergeSort.call(this, compare));
+      };
+      jQuery.mergeSort = function (array, compare) {
+        return Array.prototype.mergeSort.call(array, compare);
+      };
+    }
+  }());
+  //End Merge Sort
   //insert MainFunction
   jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
   storedAssignmentTarget = getCookie("KHAssignmentTarget" + jQuery('#username').text())
@@ -24,6 +89,7 @@ function readyJQuery() {
   } else {
     assignmentTarget = "Bitte Arzt aus dem Addressbuch bestimmen!"
   }
+  //End MainFunction
 }
 
 function addAccounting(callback) {
@@ -40,17 +106,17 @@ function readyAccounting() {
 }
 
 var variablen = new Array()
-variablen[0] = "assignmentTarget"
+variablen[0]  = "assignmentTarget"
 variablen[1]  = "minPrice = 0"
 variablen[2]  = "maxPrice = 0"
 variablen[3]  = "send_head = \"Von dir überwiesene Patienten\""
-variablen[4] = "$allAddresses"
+variablen[4]  = "$allAddresses"
 variablen[5]  = "$allPats"
 variablen[6]  = "actualNumberOfPats = 0"
 variablen[7]  = "actualNumberOfHiddenPats = 0"
 variablen[8]  = "referralVisible = false"
 variablen[9]  = "actualPatientsIndex = 0"
-variablen[10]  = "actualNumberOfDiseases = \"# Krankheiten\""
+variablen[10] = "actualNumberOfDiseases = \"# Krankheiten\""
 variablen[11] = "actualRecieverName = \"alle Empfänger\""
 variablen[12] = "actualRoomsName = \"alle Räume\""
 variablen[13] = "referralVisible = false"
@@ -58,9 +124,12 @@ variablen[14] = "sendDiseases"
 variablen[15] = "sendReciever"
 variablen[16] = "sendRooms"
 variablen[17] = "patStored"
+variablen[18] = "columnToSort"
+variablen[19] = "sortingDirection"
+variablen[20] = "headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empfänger\", \"Kosten\")"
 
 function addFunctions() {
-  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, isNameSelected, changeActiveAssignmentIcon, changeAssignmentTarget, addAssignmentIcon, storePats, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, getDiseasesOptions, getRecieverOptions, getRoomOptions, storePats, getSelectOptionsArray, addSendOptions, getPrice, summPrices, changePrice, setCookie, getCookie)
+  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, isNameSelected, changeActiveAssignmentIcon, changeAssignmentTarget, addAssignmentIcon, storePats, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getName, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, getDiseasesOptions, getRecieverOptions, getRoomOptions, storePats, getSelectOptionsArray, addSendOptions, getPrice, summPrices, changePrice, setCookie, getCookie, sortPats)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -309,6 +378,9 @@ function isInArray(array, value) {
   }
   return false
 }
+function getName(object) {
+  return jQuery('div[class^="ref_spatline"]', object)[0].innerHTML
+}
 function getReciever(object) {
   return jQuery('div[class^="ref_spatline"]', object)[2].innerHTML
 }
@@ -479,6 +551,12 @@ function addSendOptions() {
   if (jQuery('div#total_price').length === 0) {
     jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 370px;">Summe: ' + summPrices() + '</div>').insertAfter('div#referrals')
   }
+  if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length === 5) {
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'sortPats(0)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'sortPats(1)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'sortPats(2)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'sortPats(3)')
+  }
   document.getElementById("toggle_patients").selectedIndex = actualPatientsIndex
   index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualNumberOfDiseases)
   if (index != -1) {
@@ -522,6 +600,83 @@ function summPrices() {
 }
 function changePrice(price) {
   jQuery('div#total_price').text("Summe: " + price)
+}
+function sortPats(column) {
+  if (columnToSort != column) {
+    columnToSort = column
+    sortingDirection = 1
+  } else {
+    sortingDirection++
+    if (sortingDirection === 2) {
+      sortingDirection = -1
+    }
+  }
+  if (sortingDirection === 0) {
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort])
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '0px')
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '0px')
+  } else if (sortingDirection === 1) {
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort] + "  ")
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/up.gif" />')
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '2px')
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '-2px')
+  } else if (sortingDirection === -1) {
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort] + "  ")
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/down.gif" />')
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '2px')
+    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '-2px')
+  }
+  jQuery('div[id^="sPat"][class^="cursorclickable"]').remove()
+  if (columnToSort === 0) {
+    $sortedPats = $allPats.mergeSort(function (left, right) {
+      left = getName(left)
+      right = getName(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  } else if (columnToSort === 1) {
+    $sortedPats = $allPats.mergeSort(function (left, right) {
+      left = countDiseases(left)
+      right = countDiseases(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  } else if (columnToSort === 2) {
+    $sortedPats = $allPats.mergeSort(function (left, right) {
+      left = getReciever(left)
+      right = getReciever(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  } else if (columnToSort === 3) {
+    $sortedPats = $allPats.mergeSort(function (left, right) {
+      left = getPrice(left)*1
+      right = getPrice(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  }
+  $sortedPats.insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4])
 }
 //End Referral
 
