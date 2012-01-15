@@ -17,6 +17,16 @@ function addJQuery(callback) {
 function readyJQuery() {
   jQuery.noConflict();
   //add Merge Sort
+  /*!
+   * Merge Sort in JavaScript v1.0
+   * http://github.com/sidewaysmilk/merge-sort
+   *
+   * Copyright (c) 2011, Justin Force
+   * Licensed under the BSD 3-Clause License
+   */
+  
+  /*jslint browser: true, indent: 2 */
+  /*global jQuery */
   (function () {
     'use strict';
     // Add stable merge sort method to Array prototype
@@ -127,9 +137,10 @@ variablen[17] = "patStored"
 variablen[18] = "columnToSort"
 variablen[19] = "sortingDirection"
 variablen[20] = "headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empfänger\", \"Kosten\")"
+variablen[21] = "$sortedPats"
 
 function addFunctions() {
-  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, isNameSelected, changeActiveAssignmentIcon, changeAssignmentTarget, addAssignmentIcon, storePats, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getName, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, getDiseasesOptions, getRecieverOptions, getRoomOptions, storePats, getSelectOptionsArray, addSendOptions, getPrice, summPrices, changePrice, setCookie, getCookie, sortPats)
+  var functionsToAdd = new Array(recogniseWindow, enterAssignmentValues, getPrices, formatPrices, isNameSelected, changeActiveAssignmentIcon, changeAssignmentTarget, addAssignmentIcon, storePats, countDiseases, showNumberOfPats, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, showAllPats, changePatientView, hidePatients, removeAllFilter, isInArray, findInArray, getName, getReciever, getRooms, getMultiRooms, getRoomForDisease, populateSendOptions, getDiseasesOptions, getRecieverOptions, getRoomOptions, storePats, getSelectOptionsArray, addSendOptions, getPrice, summPrices, changePrice, setCookie, getCookie, changeSorting, setSortingIcons, sortPatients)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -162,6 +173,8 @@ function recogniseWindow() {
       populateSendOptions()
       addSendOptions()
       hidePatients()
+      $sortedPats = $allPats
+      sortPatients()
     }
   }
   if (jQuery('div#addressbook').length) {
@@ -552,10 +565,10 @@ function addSendOptions() {
     jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 370px;">Summe: ' + summPrices() + '</div>').insertAfter('div#referrals')
   }
   if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length === 5) {
-    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'sortPats(0)')
-    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'sortPats(1)')
-    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'sortPats(2)')
-    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'sortPats(3)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'changeSorting(0)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'changeSorting(1)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'changeSorting(2)')
+    jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'changeSorting(3)')
   }
   document.getElementById("toggle_patients").selectedIndex = actualPatientsIndex
   index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualNumberOfDiseases)
@@ -576,6 +589,7 @@ function addSendOptions() {
   } else {
     document.getElementById("toggle_rooms").selectedIndex = 0
   }
+  setSortingIcons()
 }
 function getPrice(object) {
   var priceToParse = jQuery(jQuery('.ref_spatline', object)[3]).text()
@@ -601,7 +615,7 @@ function summPrices() {
 function changePrice(price) {
   jQuery('div#total_price').text("Summe: " + price)
 }
-function sortPats(column) {
+function changeSorting(column) {
   if (columnToSort != column) {
     columnToSort = column
     sortingDirection = 1
@@ -611,6 +625,10 @@ function sortPats(column) {
       sortingDirection = -1
     }
   }
+  setSortingIcons()
+  sortPatients()
+}
+function setSortingIcons() {
   if (sortingDirection === 0) {
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort])
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '0px')
@@ -626,6 +644,8 @@ function sortPats(column) {
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '2px')
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '-2px')
   }
+}
+function sortPatients() {
   jQuery('div[id^="sPat"][class^="cursorclickable"]').remove()
   if (columnToSort === 0) {
     $sortedPats = $allPats.mergeSort(function (left, right) {
