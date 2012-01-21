@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancement
-// @version       1.0
+// @version       1.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -92,7 +92,9 @@ function readyJQuery() {
   }());
   //End Merge Sort
   //insert MainFunction
-  jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
+  //jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
+  window.setInterval("recogniseWindow()", 200)
+
   storedAssignmentTarget = getCookie("KHAssignmentTarget" + jQuery('#username').text())
   if (storedAssignmentTarget != null) {
     assignmentTarget = storedAssignmentTarget
@@ -256,68 +258,69 @@ function showNumberOfPats(reset) {
   }
   jQuery('div#referral_send_head').text(send_head + ": " + actualNumberOfPats)
 }
-function hidePats(anzahlKrankheiten) {
-  $allPats.each(function() {
-    if (countDiseases(this) === anzahlKrankheiten && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
-      actualNumberOfHiddenPats++
-    }
-  })
+function hidePats(Patient, anzahlKrankheiten) {
+  if (countDiseases(Patient) === anzahlKrankheiten) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
-function hidePatsGreater(anzahlKrankheiten) {
-  $allPats.each(function() {
-    if (countDiseases(this) > anzahlKrankheiten && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
-      actualNumberOfHiddenPats++
-    }
-  })
+function hidePatsGreater(Patient, anzahlKrankheiten) {
+  if (countDiseases(Patient) > anzahlKrankheiten) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
-function hidePatsExcept(anzahlKrankheiten) {
-  $allPats.each(function() {
-    if (countDiseases(this) != anzahlKrankheiten && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
-      actualNumberOfHiddenPats++
-    }
-  })
+function hidePatsExcept(Patient, anzahlKrankheiten) {
+  if (countDiseases(Patient) != anzahlKrankheiten) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
-function hidePatsNotTo(reciever) {
-  $allPats.each(function() {
-    if (getReciever(this) != reciever && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
-      actualNumberOfHiddenPats++
-    }
-  })
+function hidePatsNotTo(Patient, reciever) {
+  if (getReciever(Patient) != reciever) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
-function hidePatsNotForRoom(room) {
-  $allPats.each(function() {
-    if (!isInArray(getRooms(this), room) && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
-      actualNumberOfHiddenPats++
-    }
-  })
+function hidePatsNotForRoom(Patient, room) {
+  if (!isInArray(getRooms(Patient), room)) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
-function hidePatsNotMulti(room) {
-  $allPats.each(function() {
-    if (room == "alle Räume") {
-      if (!getMultiRooms(this).length && jQuery(this).is(':visible')) {
-        jQuery(this).hide()
-        actualNumberOfHiddenPats++
-      }
-    } else {
-      if (!isInArray(getMultiRooms(this), room) && jQuery(this).is(':visible')) {
-        jQuery(this).hide()
-        actualNumberOfHiddenPats++
-      }
-    }
-  })
-}
-function hidePatsMulti() {
-  $allPats.each(function() {
-    if (getMultiRooms(this).length && jQuery(this).is(':visible')) {
-      jQuery(this).hide()
+function hidePatsNotMulti(Patient, room) {
+  if (room == "alle Räume") {
+    if (!getMultiRooms(Patient).length) {
+      jQuery(Patient).hide()
       actualNumberOfHiddenPats++
+      return true
     }
-  })
+  } else {
+    if (!isInArray(getMultiRooms(Patient), room)) {
+      jQuery(Patient).hide()
+      actualNumberOfHiddenPats++
+      return true
+    }
+  }
+  return false
+}
+function hidePatsMulti(Patient) {
+  if (getMultiRooms(Patient).length) {
+    jQuery(Patient).hide()
+    actualNumberOfHiddenPats++
+    return true
+  }
+  return false
 }
 function showAllPats() {
   $allPats.each(function() {
@@ -338,30 +341,51 @@ function changePatientView() {
   populateSendOptions()
 }
 function hidePatients() {
-  showAllPats()
-  //toggle Patients
-  if (actualPatientsIndex == 1) {
-    hidePats(1)
-  } else if (actualPatientsIndex == 2) {
-    hidePatsGreater(1)
-  } else if (actualPatientsIndex == 3) {
-    hidePatsMulti()
-  } else if (actualPatientsIndex == 4) {
-    hidePatsNotMulti(actualRoomsName)
-  }
-  //toggle Dieseases
-  if (actualNumberOfDiseases != "# Krankheiten") {
-    hidePatsExcept(actualNumberOfDiseases)
-  }
-  //toggle Recievers
-  if (actualRecieverName != "alle Empfänger") {
-    hidePatsNotTo(actualRecieverName)
-  }
-  //toggle Rooms
-  if (actualRoomsName != "alle Räume") {
-    hidePatsNotForRoom(actualRoomsName)
-  }
-  changePrice(summPrices())
+  showNumberOfPats(true)
+  var totalPrice = 0
+  $allPats.each(function() {
+    //to ensure that all are visible
+    jQuery(this).show()
+    //Patients Filter
+    if (actualPatientsIndex == 1) {
+      if (hidePats(this, 1))
+        return
+    } else if (actualPatientsIndex == 2) {
+      if (hidePatsGreater(this, 1))
+        return
+    } else if (actualPatientsIndex == 3) {
+      if (hidePatsMulti(this))
+        return
+    } else if (actualPatientsIndex == 4) {
+      if (hidePatsNotMulti(this, actualRoomsName))
+        return
+    }
+    //Dieseases Filter
+    if (actualNumberOfDiseases != "# Krankheiten") {
+      if (hidePatsExcept(this, actualNumberOfDiseases))
+        return
+    }
+    //Recievers Filter
+    if (actualRecieverName != "alle Empfänger") {
+      if (hidePatsNotTo(this, actualRecieverName))
+        return
+    }
+    //Rooms Filter
+    if (actualRoomsName != "alle Räume") {
+      if (hidePatsNotForRoom(this, actualRoomsName))
+        return
+    }
+    totalPrice += getPrice(this)*1
+  })
+
+  var options = {
+	symbol : "hT",
+	decimal : ",",
+	thousand: ".",
+	precision : 2,
+	format: "%v %s"
+  };
+  changePrice(accounting.formatMoney(totalPrice, options))
   showNumberOfPats(false)
 }
 function removeAllFilter() {
@@ -422,76 +446,51 @@ function getMultiRooms(object) {
  })
  return multiRooms
 }
-function getRoomForDisease(diseaseId) {
-  //Behandlungsraum
-  var room1Diseases = new Array("d_3_15", "d_4_15", "d_5_15", "d_6_15", "d_10_15", "d_11_15", "d_12_15", "d_909_15")
-  if (isInArray(room1Diseases, diseaseId)) {
-    return "Behandlungsraum"
-  }
-  //Röntgenraum
-  var room2Diseases = new Array("d_1_15", "d_2_15", "d_18_15", "d_58_15", "d_73_15")
-  if (isInArray(room2Diseases, diseaseId)) {
-    return "Röntgenraum"
-  }
-  //Ultraschall
-  var room3Diseases = new Array("d_26_15", "d_30_15", "d_44_15", "d_52_15", "d_75_15", "d_94_15", "d_99_15", "d_113_15")
-  if (isInArray(room3Diseases, diseaseId)) {
-    return "Ultraschall"
-  }
-  //Orthopädie
-  var room4Diseases = new Array("d_48_15", "d_49_15", "d_55_15", "d_60_15", "d_66_15", "d_80_15", "d_103_15", "d_110_15", "d_904_15")
-  if (isInArray(room4Diseases, diseaseId)) {
-    return "Orthopädie"
-  }
-  //Psychotherapie
-  var room5Diseases = new Array("d_8_15", "d_9_15", "d_27_15", "d_33_15", "d_34_15", "d_50_15", "d_88_15", "d_96_15", "d_108_15", "d_902_15")
-  if (isInArray(room5Diseases, diseaseId)) {
-    return "Psychotherapie"
-  }
-  //EKG / EEG
-  var room6Diseases = new Array("d_37_15", "d_41_15", "d_46_15", "d_67_15", "d_71_15", "d_79_15", "d_83_15", "d_100_15", "d_907_15")
-  if (isInArray(room6Diseases, diseaseId)) {
-    return "EKG / EEG"
-  }
-  //Operationssaal
-  var room7Diseases = new Array("d_19_15", "d_39_15", "d_40_15", "d_53_15", "d_65_15", "d_77_15", "d_101_15", "d_107_15")
-  if (isInArray(room7Diseases, diseaseId)) {
-    return "Operationssaal"
-  }
-  //Laboratorium
-  var room8Diseases = new Array("d_21_15", "d_22_15", "d_38_15", "d_43_15", "d_61_15", "d_74_15", "d_86_15", "d_98_15", "d_105_15", "d_905_15")
-  if (isInArray(room8Diseases, diseaseId)) {
-    return "Laboratorium"
-  }
-  //Dunkelkammer
-  var room9Diseases = new Array("d_20_15", "d_32_15", "d_36_15", "d_45_15", "d_56_15", "d_76_15", "d_78_15", "d_84_15", "d_90_15", "d_111_15", "d_900_15")
-  if (isInArray(room9Diseases, diseaseId)) {
-    return "Dunkelkammer"
-  }
-  //Gummizelle
-  var room10Diseases = new Array("d_24_15", "d_31_15", "d_35_15", "d_57_15", "d_64_15", "d_82_15", "d_93_15", "d_95_15", "d_901_15")
-  if (isInArray(room10Diseases, diseaseId)) {
-    return "Gummizelle"
-  }
-  //Tomographie
-  var room11Diseases = new Array("d_13_15", "d_16_15", "d_29_15", "d_63_15", "d_72_15", "d_91_15", "d_97_15", "d_106_15")
-  if (isInArray(room11Diseases, diseaseId)) {
-    return "Tomographie"
-  }
-  //Tropenmedizin
-  var room12Diseases = new Array("d_7_15", "d_14_15", "d_15_15", "d_17_15", "d_47_15", "d_51_15", "d_87_15", "d_104_15", "d_114_15", "d_908_15")
-  if (isInArray(room12Diseases, diseaseId)) {
-    return "Tropenmedizin"
-  }
-  //Nuklearmedizin
-  var room13Diseases = new Array("d_23_15", "d_42_15", "d_54_15", "d_59_15", "d_69_15", "d_81_15", "d_92_15", "d_109_15", "d_112_15", "d_903_15")
-  if (isInArray(room13Diseases, diseaseId)) {
-    return "Nuklearmedizin"
-  }
-  //Zahnmedizin
-  var room14Diseases = new Array("d_28_15", "d_62_15", "d_68_15", "d_70_15", "d_85_15", "d_89_15", "d_102_15", "d_906_15")
-  if (isInArray(room14Diseases, diseaseId)) {
-    return "Zahnmedizin"
+function getRoomForDisease(diseaseIdString) {
+  diseaseId = diseaseIdString.substr(diseaseIdString.indexOf("_")+1, diseaseIdString.lastIndexOf("_")-2)*1
+  switch (diseaseId) {
+    //Behandlungsraum
+    case 3: case 4: case 5: case 6: case 10: case 11: case 12: case 909:
+      return "Behandlungsraum"
+    //Röntgenraum
+    case 1: case 2: case 18: case 58: case 73:
+      return "Röntgenraum"
+    //Ultraschall
+    case 26: case 30: case 44: case 52: case 75: case 94: case 99: case 113:
+      return "Ultraschall"
+    //Orthopädie
+    case 48: case 49: case 55: case 60: case 66: case 80: case 103: case 110: case 904:
+      return "Orthopädie"
+    //Psychotherapie
+    case 8: case 9: case 27: case 33: case 34: case 50: case 88: case 96: case 108: case 902:
+      return "Psychotherapie"
+    //EKG / EEG
+    case 37: case 41: case 46: case 67: case 71: case 79: case 83: case 100: case 907:
+      return "EKG / EEG"
+    //Operationssaal
+    case 19: case 39: case 40: case 53: case 65: case 77: case 101: case 107:
+      return "Operationssaal"
+    //Laboratorium
+    case 21: case 22: case 38: case 43: case 61: case 74: case 86: case 98: case 105: case 905:
+      return "Laboratorium"
+    //Dunkelkammer
+    case 20: case 32: case 36: case 45: case 56: case 76: case 78: case 84: case 90: case 111: case 900:
+      return "Dunkelkammer"
+    //Gummizelle
+    case 24: case 31: case 35: case 57: case 64: case 82: case 93: case 95: case 901:
+      return "Gummizelle"
+    //Tomographie
+    case 13: case 16: case 29: case 63: case 72: case 91: case 97: case 106:
+      return "Tomographie"
+    //Tropenmedizin
+    case 7: case 14: case 15: case 17: case 47: case 51: case 87: case 104: case 114: case 908:
+      return "Tropenmedizin"
+    //Nuklearmedizin
+    case 23: case 42: case 54: case 59: case 69: case 81: case 92: case 109: case 112: case 903:
+      return "Nuklearmedizin"
+    //Zahnmedizin
+    case 28: case 62: case 68: case 70: case 85: case 89: case 102: case 906:
+      return "Zahnmedizin"
   }
 }
 function populateSendOptions() {
