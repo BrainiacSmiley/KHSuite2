@@ -481,5 +481,28 @@ describe PagesController do
         response.should_not have_selector('span.translation_missing')
       end
     end
+
+    describe "GET 'khopticalfixes'" do
+      before(:each) do
+        get 'khopticalfixes'
+      end
+  
+      it "returns http success" do
+        response.should be_success
+      end
+      
+      it "should have the right title" do
+        title = @page_title + I18n.t(:title_khopticalfixes)
+        response.should have_selector('title', :content => title)
+      end
+      
+      it "should not containt missing translation" do
+        response.should_not contain('translation missing:')
+      end
+
+      it "should not containt <span class='translation_missing'>" do
+        response.should_not have_selector('span.translation_missing')
+      end
+    end
   end
 end

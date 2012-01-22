@@ -13,6 +13,7 @@ KHSuite2::Application.routes.draw do
     match '/khplanner',         :to => 'pages#khplanner'
     match '/khadvancedmedrack', :to => 'pages#khadvancedmedrack'
     match '/khadvancement',     :to => 'pages#khadvancement'
+    match '/khopticalfixes',    :to => 'pages#khopticalfixes'
     match '/signup',            :to => 'users#new'
     match '/signin',            :to => 'sessions#new'
     match '/signout',           :to => 'sessions#destroy'

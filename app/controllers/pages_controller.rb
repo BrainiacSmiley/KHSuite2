@@ -35,4 +35,8 @@ class PagesController < ApplicationController
   def khadvancement
     @title = t(:title_khadvancement)
   end
+
+  def khopticalfixes
+    @title = t(:title_khopticalfixes)
+  end
 end
