@@ -28,6 +28,10 @@ class PagesController < ApplicationController
     @title = t(:title_khplanner)
   end
 
+  def khadvancedmedrack
+    @title = t(:title_khadvancedmedrack)
+  end
+
   def khadvancement
     @title = t(:title_khadvancement)
   end
