@@ -92,8 +92,8 @@ function readyJQuery() {
   }());
   //End Merge Sort
   //insert MainFunction
-  //jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
-  window.setInterval("recogniseWindow()", 200)
+  jQuery('div#newswindow').attr('onMouseOver', 'recogniseWindow()')
+  //window.setInterval("recogniseWindow()", 200)
 
   storedAssignmentTarget = getCookie("KHAssignmentTarget" + jQuery('#username').text())
   if (storedAssignmentTarget != null) {
