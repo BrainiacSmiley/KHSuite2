@@ -119,7 +119,7 @@ var variablen = new Array()
 variablen[0]  = "assignmentTarget"
 variablen[1]  = "minPrice = 0"
 variablen[2]  = "maxPrice = 0"
-variablen[3]  = "send_head = \"Von dir ¸berwiesene Patienten\""
+variablen[3]  = "send_head = \"Von dir √ºberwiesene Patienten\""
 variablen[4]  = "$allAddresses"
 variablen[5]  = "$allPats"
 variablen[6]  = "actualNumberOfPats = 0"
@@ -127,8 +127,8 @@ variablen[7]  = "actualNumberOfHiddenPats = 0"
 variablen[8]  = "referralVisible = false"
 variablen[9]  = "actualPatientsIndex = 0"
 variablen[10] = "actualNumberOfDiseases = \"# Krankheiten\""
-variablen[11] = "actualRecieverName = \"alle Empf‰nger\""
-variablen[12] = "actualRoomsName = \"alle R‰ume\""
+variablen[11] = "actualRecieverName = \"alle Empf√§nger\""
+variablen[12] = "actualRoomsName = \"alle R√§ume\""
 variablen[13] = "referralVisible = false"
 variablen[14] = "sendDiseases"
 variablen[15] = "sendReciever"
@@ -136,7 +136,7 @@ variablen[16] = "sendRooms"
 variablen[17] = "patStored"
 variablen[18] = "columnToSort"
 variablen[19] = "sortingDirection"
-variablen[20] = "headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empf‰nger\", \"Kosten\")"
+variablen[20] = "headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empf√§nger\", \"Kosten\")"
 variablen[21] = "$sortedPats"
 
 function addFunctions() {
@@ -298,7 +298,7 @@ function hidePatsNotForRoom(room) {
 }
 function hidePatsNotMulti(room) {
   $allPats.each(function() {
-    if (room == "alle R‰ume") {
+    if (room == "alle R√§ume") {
       if (!getMultiRooms(this).length && jQuery(this).is(':visible')) {
         jQuery(this).hide()
         actualNumberOfHiddenPats++
@@ -354,11 +354,11 @@ function hidePatients() {
     hidePatsExcept(actualNumberOfDiseases)
   }
   //toggle Recievers
-  if (actualRecieverName != "alle Empf‰nger") {
+  if (actualRecieverName != "alle Empf√§nger") {
     hidePatsNotTo(actualRecieverName)
   }
   //toggle Rooms
-  if (actualRoomsName != "alle R‰ume") {
+  if (actualRoomsName != "alle R√§ume") {
     hidePatsNotForRoom(actualRoomsName)
   }
   changePrice(summPrices())
@@ -370,9 +370,9 @@ function removeAllFilter() {
   document.getElementById("toggle_diseases").selectedIndex = 0
   actualNumberOfDiseases = "# Krankheiten"
   document.getElementById("toggle_recievers").selectedIndex = 0
-  actualRecieverName = "alle Empf‰nger"
+  actualRecieverName = "alle Empf√§nger"
   document.getElementById('toggle_rooms').selectedIndex = 0
-  actualRoomsName = "alle R‰ume"
+  actualRoomsName = "alle R√§ume"
   hidePatients()
 }
 function findInArray(array, value) {
@@ -428,20 +428,20 @@ function getRoomForDisease(diseaseId) {
   if (isInArray(room1Diseases, diseaseId)) {
     return "Behandlungsraum"
   }
-  //Rˆntgenraum
+  //R√∂ntgenraum
   var room2Diseases = new Array("d_1_15", "d_2_15", "d_18_15", "d_58_15", "d_73_15")
   if (isInArray(room2Diseases, diseaseId)) {
-    return "Rˆntgenraum"
+    return "R√∂ntgenraum"
   }
   //Ultraschall
   var room3Diseases = new Array("d_26_15", "d_30_15", "d_44_15", "d_52_15", "d_75_15", "d_94_15", "d_99_15", "d_113_15")
   if (isInArray(room3Diseases, diseaseId)) {
     return "Ultraschall"
   }
-  //Orthop‰die
+  //Orthop√§die
   var room4Diseases = new Array("d_48_15", "d_49_15", "d_55_15", "d_60_15", "d_66_15", "d_80_15", "d_103_15", "d_110_15", "d_904_15")
   if (isInArray(room4Diseases, diseaseId)) {
-    return "Orthop‰die"
+    return "Orthop√§die"
   }
   //Psychotherapie
   var room5Diseases = new Array("d_8_15", "d_9_15", "d_27_15", "d_33_15", "d_34_15", "d_50_15", "d_88_15", "d_96_15", "d_108_15", "d_902_15")
@@ -520,10 +520,10 @@ function populateSendOptions() {
     jQuery("#toggle_diseases").html("<option># Krankheiten</option>" + getDiseasesOptions());
   }
   if (jQuery("#toggle_recievers").length) {
-    jQuery("#toggle_recievers").html("<option>alle Empf‰nger</option>" + getRecieverOptions());
+    jQuery("#toggle_recievers").html("<option>alle Empf√§nger</option>" + getRecieverOptions());
   }
   if (jQuery("#toggle_rooms").length) {
-    jQuery("#toggle_rooms").html("<option>alle R‰ume</option>" + getRoomOptions());
+    jQuery("#toggle_rooms").html("<option>alle R√§ume</option>" + getRoomOptions());
   }
 }
 function getDiseasesOptions() {
@@ -559,7 +559,7 @@ function getSelectOptionsArray(object) {
 }
 function addSendOptions() {
   if (jQuery('div#send_options').length === 0) {
-    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getDiseasesOptions() + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empf‰nger</option>' + getRecieverOptions() + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle R‰ume</option>' + getRoomOptions() + '</select><div style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeAllFilter()\">&nbsp;</div></div>').insertAfter('div#referral_send_head')
+    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getDiseasesOptions() + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empf√§nger</option>' + getRecieverOptions() + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle R√§ume</option>' + getRoomOptions() + '</select><div style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeAllFilter()\">&nbsp;</div></div>').insertAfter('div#referral_send_head')
   }
   if (jQuery('div#total_price').length === 0) {
     jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 370px;">Summe: ' + summPrices() + '</div>').insertAfter('div#referrals')
