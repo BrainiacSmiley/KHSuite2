@@ -39,4 +39,8 @@ class PagesController < ApplicationController
   def khopticalfixes
     @title = t(:title_khopticalfixes)
   end
+
+  def khshortcuts
+    @title = t(:title_khshortcuts)
+  end
 end
