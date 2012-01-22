@@ -30,17 +30,21 @@ class PagesController < ApplicationController
 
   def khadvancedmedrack
     @title = t(:title_khadvancedmedrack)
+    find_needed_values
   end
 
   def khadvancement
     @title = t(:title_khadvancement)
+    find_needed_values
   end
 
   def khopticalfixes
     @title = t(:title_khopticalfixes)
+    find_needed_values
   end
 
   def khshortcuts
     @title = t(:title_khshortcuts)
+    find_needed_values
   end
 end
