@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHShortcuts
-// @version       0.1
+// @version       1.0
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 

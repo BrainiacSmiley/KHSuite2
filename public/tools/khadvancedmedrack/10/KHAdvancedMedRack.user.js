@@ -60,15 +60,16 @@ function readyAccounting() {
 var variablen = new Array()
 variablen[0] = "allMeds"
 variablen[1] = "oldRackLength"
-variablen[2] = "oldMedSum"
-variablen[3] = "currentPage = 0"
-variablen[4] = "allMedsPages"
-variablen[5] = "numberOfRackItems"
-variablen[6] = "medStackSize"
-variablen[7] = "epidemicStackSize"
+variablen[2] = "oldCountedAvailabledMeds = 0"
+variablen[3] = "oldMedSum"
+variablen[4] = "currentPage = 0"
+variablen[5] = "allMedsPages"
+variablen[6] = "numberOfRackItems"
+variablen[7] = "medStackSize"
+variablen[8] = "epidemicStackSize"
 
 function addFunctions() {
-  var functionsToAdd = new Array(initMeds, getRackObject, setMedPrices, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, checkForOptionsWindow, checkForSalesAmountWindow, saveConfig, setCookie, getCookie, openMedShop, enterShoppingAmount)
+  var functionsToAdd = new Array(initMeds, getRackObject, setMedPrices, countAvailableMeds, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, checkForOptionsWindow, checkForSalesAmountWindow, saveConfig, setCookie, getCookie, openMedShop, enterShoppingAmount)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -116,6 +117,13 @@ function setMedPrices() {
     jQuery('<div id="medPrices" class="medamount" style="height: 28px; position: absolute; left: 4px; width: 210px; top: 485px; z-index: 100">Medikamentenwert: ' + sumMedPrices() + '<br />Neuauffüllung: ' + sumMedShopPrices() + '</div>').appendTo('div#toprack')
   }
 }
+function countAvailableMeds() {
+  countedAvailableMeds = 0
+  for (var i = 0; i < Rack.elements.length; i++) {
+    countedAvailableMeds += Rack.elements[i].amount
+  }
+  return countedAvailableMeds
+}
 function checkMedRack() {
   if (oldRackLength != Rack.elements.length) {
     oldRackLength = Rack.elements.length
@@ -123,9 +131,13 @@ function checkMedRack() {
     generateRackPages()
     generateMedRack(currentPage)
   }
-  /*if (numberOfRackItems != jQuery('div', jQuery('div#rackItems')).length/3) {
+
+  if (allMedsPages[currentPage].length > (jQuery('div', jQuery('div#rackItems')).length/3) ||
+      oldCountedAvailabledMeds != countAvailableMeds()) {
+    oldCountedAvailabledMeds = countAvailableMeds()
     generateMedRack(currentPage)
-  }*/
+  }
+
   if (oldMedSum != sumMedPrices()) {
     oldMedSum = sumMedPrices()
     setMedPrices()
@@ -443,12 +455,10 @@ function generateMedRack(page) {
   }
 
   currentPage = page
-  numberOfRackItems = 0
   jQuery('div', jQuery('div#rackItems')).remove()
   Global.rackItems = new Array();
   for (var i = 0; i < allMedsPages[page].length; i++) {
     Global.rackItems.push(new RackItem(getRackObject(allMedsPages[page][i])))
-    numberOfRackItems++
   }
 }
 function checkForOptionsWindow() {
