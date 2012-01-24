@@ -23,5 +23,6 @@ function readyJQuery() {
     jQuery('div#schatzsuche').css('z-index', '-1')
   }
 }
-
+//Begin Script
 addJQuery(readyJQuery)
+//End Script

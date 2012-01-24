@@ -53,6 +53,7 @@ function readyJQuery() {
     },false);
   })
 }
+//Begin Injection
 function addFunctions() {
   var functionsToAdd = new Array(openGarage, openExchange, goToFloor)
   var script = document.createElement("script");
@@ -62,6 +63,8 @@ function addFunctions() {
   }
   document.body.appendChild(script);
 }
+//End Injection
+//Begin Shortcuts
 function openGarage() {
   show_page('garage')
 }
@@ -73,6 +76,8 @@ function goToFloor(level) {
     jQuery('#floor_jump_' + level).click()
   }
 }
-
+//End Shortcuts
+//Begin Script
 addFunctions()
 addJQuery(readyJQuery)
+//End Script

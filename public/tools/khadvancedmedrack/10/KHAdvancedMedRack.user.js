@@ -17,31 +17,18 @@ function addJQuery(callback) {
 function readyJQuery() {
   jQuery.noConflict();
   jQuery(document).ready(function() {
+    initAdvancedMedRack()
+    
+    //Add new Functions to KH
     jQuery('div#racknavigation_left').attr('onClick', 'generateMedRack(currentPage -1)')
     jQuery('div#racknavigation_right').attr('onClick', 'generateMedRack(currentPage +1)')
-    initMeds()
-    currentPage = 0;
-
-    storedMedStackSize = getCookie("KHMedStackSize" + jQuery('#username').text())
-    if (storedMedStackSize != null) {
-      medStackSize = storedMedStackSize
-    } else {
-      medStackSize = 50
-    }
-    storedEpidemicStackSize = getCookie("KHEpidemicStackSize" + jQuery('#username').text())
-    if (storedEpidemicStackSize != null) {
-      epidemicStackSize = storedEpidemicStackSize
-    } else {
-      epidemicStackSize = 5
-    }
-    
-    //Interval Functions
-    window.setInterval("checkMedRack()", 200)
-    window.setInterval("checkForOptionsWindow()", 200)
-    window.setInterval("checkForSalesAmountWindow()", 200)
     jQuery('div#rackItems').on("dblclick", function(event) {
       openMedShop(Global.availableMedics._object["med"+event.target.getAttribute("medid")]["shop"])
     })
+    
+    //Interval Functions
+    window.setInterval("checkMedRack()", 200)
+    window.setInterval("recogniseAdvancedMedRackWindows()", 200)
   })
 }
 function addAccounting(callback) {
@@ -56,20 +43,21 @@ function addAccounting(callback) {
 }
 function readyAccounting() {
 }
-
+//Begin Injection
 var variablen = new Array()
-variablen[0] = "allMeds"
-variablen[1] = "oldRackLength"
-variablen[2] = "oldCountedAvailabledMeds = 0"
-variablen[3] = "oldMedSum"
-variablen[4] = "currentPage = 0"
-variablen[5] = "allMedsPages"
-variablen[6] = "numberOfRackItems"
-variablen[7] = "medStackSize"
-variablen[8] = "epidemicStackSize"
-
+variablen[0]  = "allMeds"
+variablen[1]  = "oldRackLength"
+variablen[2]  = "oldCountedAvailabledMeds = 0"
+variablen[3]  = "oldMedSum"
+variablen[4]  = "currentPage = 0"
+variablen[5]  = "allMedsPages"
+variablen[6]  = "numberOfRackItems"
+variablen[7]  = "medStackSize"
+variablen[8]  = "epidemicStackSize"
+variablen[9]  = "amountAlreadyEntered"
+variablen[10] = "lastEnteredMed"
 function addFunctions() {
-  var functionsToAdd = new Array(initMeds, getRackObject, setMedPrices, countAvailableMeds, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, checkForOptionsWindow, checkForSalesAmountWindow, saveConfig, setCookie, getCookie, openMedShop, enterShoppingAmount)
+  var functionsToAdd = new Array(initAdvancedMedRack, initMeds, recogniseAdvancedMedRackWindows, progressAccountOptionsWindow, getRackObject, setMedPrices, countAvailableMeds, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, saveConfig, setCookie, getCookie, openMedShop, progressShoppingAmountWindow)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -82,6 +70,25 @@ function addFunctions() {
     script.textContent += (functionsToAdd[x].toString() + "\n\n");
   }
   document.body.appendChild(script);
+}
+//End Injection
+//Begin AdvancedMedRack
+function initAdvancedMedRack() {
+  initMeds()
+  currentPage = 0;
+
+  storedMedStackSize = getCookie("KHMedStackSize" + jQuery('#username').text())
+  if (storedMedStackSize != null) {
+    medStackSize = storedMedStackSize
+  } else {
+    medStackSize = 50
+  }
+  storedEpidemicStackSize = getCookie("KHEpidemicStackSize" + jQuery('#username').text())
+  if (storedEpidemicStackSize != null) {
+    epidemicStackSize = storedEpidemicStackSize
+  } else {
+    epidemicStackSize = 5
+  }
 }
 function initMeds() {
   allMeds = new Array(15)
@@ -101,6 +108,20 @@ function initMeds() {
   allMeds[13] = new Array(68, 28, 906, 85, 102, 89, 62, 70)
   allMeds[14] = new Array(1)
   allMeds[14][0] = 899
+}
+function recogniseAdvancedMedRackWindows() {
+  if (jQuery('div#b').length && !jQuery('div#KHAdvancedMedRackConfig').length) {
+    progressAccountOptionsWindow()
+  } else if (jQuery('div#dlg_message').is(':visible')) {
+    if (jQuery('div#dlg_header').text() == "Frage") {
+      if (jQuery('input[class^=inputamount]').length) {
+        progressShoppingAmountWindow()
+      }
+    }
+  }
+}
+function progressAccountOptionsWindow() {
+  jQuery('<div id="KHAdvancedMedRackConfig" style="margin-top: 60px;">Normale Meds pro Stapel: <input id="medicStackSize" type="number" onChange="saveConfig()" value="' + medStackSize + '"><br />Seuchen Meds pro Stapel: <input id="epidemicStackSize" type="number" onChange="saveConfig()" value="' + epidemicStackSize + '"></div>').insertAfter('div#b')
 }
 function getRackObject(id) {
   for (var i = 0; i < Rack.elements.length; i++) {
@@ -461,20 +482,6 @@ function generateMedRack(page) {
     Global.rackItems.push(new RackItem(getRackObject(allMedsPages[page][i])))
   }
 }
-function checkForOptionsWindow() {
-  if (jQuery('div#b').length && !jQuery('div#KHAdvancedMedRackConfig').length) {
-    jQuery('<div id="KHAdvancedMedRackConfig" style="margin-top: 60px;">Normale Meds pro Stapel: <input id="medicStackSize" type="number" onChange="saveConfig()" value="' + medStackSize + '"><br />Seuchen Meds pro Stapel: <input id="epidemicStackSize" type="number" onChange="saveConfig()" value="' + epidemicStackSize + '"></div>').insertAfter('div#b')
-  }
-}
-function checkForSalesAmountWindow() {
-  if (jQuery('div#dlg_message').is(':visible')) {
-    if (jQuery('div#dlg_header').text() == "Frage") {
-      if (jQuery('input[class^=inputamount]').length) {
-        enterShoppingAmount()
-      }
-    }
-  }
-}
 function saveConfig() {
   medStackSize = jQuery('#medicStackSize').val()
   epidemicStackSize = jQuery('#epidemicStackSize').val()
@@ -484,6 +491,34 @@ function saveConfig() {
   setCookie(cookieName, epidemicStackSize, 100, "/", window.location.hostname)
   checkMedRack()
 }
+function openMedShop(shop) {
+  var today = (new Date()).getDay();
+  if (shop < 3 || Global.ISPREMIUM || today === 3 || today === 6) {
+    if (shop > 0) {
+      show_page("shop"+shop)
+    } else {
+     alert("Wunderpillen können nicht gekauft werden. Du bekommst sie einmal täglich durch den Fernseher, oder durch die Pillenwerkstatt.")
+    }
+  } else {
+    alert("Dieser Shop kann heute nicht erreicht werden! Als nicht PA Spieler bitte bis Mittwoch oder Samstag warten. Oder auf PA upgraden.")
+  }
+}
+function progressShoppingAmountWindow() {
+  if (lastEnteredMed != jQuery('b', jQuery('div#inputme')).text()) {
+    lastEnteredMed = jQuery('b', jQuery('div#inputme')).text()
+    amountAlreadyEntered = false
+  }
+  if (jQuery('input[class^=inputamount]').val() == 0 && !amountAlreadyEntered) {
+    missingAmount = getMedAmountNeeded(getMedId(jQuery('b', jQuery('div#inputme')).text()))
+    if (missingAmount > 0) {
+      amountAlreadyEntered = true
+      jQuery('input[class^=inputamount]').val(missingAmount)
+      Cart.validateItemValue(0, 1000, jQuery('input[class^=inputamount]')[0]);
+    }
+  }
+}
+//End AdvancedMedRack
+//Begin General
 function setCookie(name, value, expires, path, domain) {
   // set time, it's in milliseconds
   var today = new Date();
@@ -530,28 +565,9 @@ function getCookie(check_name) {
     return null;
   }
 }
-function openMedShop(shop) {
-  var today = (new Date()).getDay();
-  if (shop < 3 || Global.ISPREMIUM || today === 3 || today === 6) {
-    if (shop > 0) {
-      show_page("shop"+shop)
-    } else {
-     alert("Wunderpillen können nicht gekauft werden. Du bekommst sie einmal täglich durch den Fernseher, oder durch die Pillenwerkstatt.")
-    }
-  } else {
-    alert("Dieser Shop kann heute nicht erreicht werden! Als nicht PA Spieler bitte bis Mittwoch oder Samstag warten. Oder auf PA upgraden.")
-  }
-}
-function enterShoppingAmount() {
-  if (jQuery('input[class^=inputamount]').val() == 0) {
-    missingAmount = getMedAmountNeeded(getMedId(jQuery('b', jQuery('div#inputme')).text()))
-    if (missingAmount > 0) {
-      jQuery('input[class^=inputamount]').val(missingAmount)
-      Cart.validateItemValue(0, 1000, jQuery('input[class^=inputamount]')[0]);
-    }
-  }
-}
-
+//End General
+//Begin Script
 addFunctions()
 addAccounting(readyAccounting)
 addJQuery(readyJQuery)
+//End Script
