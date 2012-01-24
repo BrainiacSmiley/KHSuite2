@@ -34,6 +34,11 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khplanner))
     end
 
+    it "should have a KHAdvancedAssignment page at '/khadvancedassignment'" do
+      get '/khadvancedassignment'
+      response.should have_selector('title', :content => I18n.t(:title_khadvancedassignment))
+    end
+
     it "should have a KHAdvancedMedRack page at '/khadvancedmedrack'" do
       get '/khadvancedmedrack'
       response.should have_selector('title', :content => I18n.t(:title_khadvancedmedrack))

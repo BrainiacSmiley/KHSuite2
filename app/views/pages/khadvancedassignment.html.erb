@@ -1,0 +1,49 @@
+<p>
+<strong>Was ist KHAdvancedAssignment?</strong><br />
+KHAdvancedAssignment ist das Überweisen von Patienten, wie ich es mir vorstelle.
+</p>
+<p>
+<strong>Welche Version hat KHAdvancedAssignment?</strong><br />
+Stand 23.01.12 ist Version 1.0<br />
+</p>
+<p>
+<strong>Wie ist KHAdvancedAssignment entstanden?</strong><br />
+Ich habe das Überweisen mit den Funktionen versehen, die mir fehlten:
+<ul>
+<li>Wird ein Patient an die Börse gestellt, wird der MinPreis automatisch eingetragen</li>
+<li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der Max-Preis eingetragen.</li>
+<li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
+</ul>
+</p>
+<p>
+<strong>Wie installiere ich KHAdvancedAssignment?</strong><br />
+Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
+</p>
+<p>
+<strong>Wo bekomme ich Greasemonkey her?</strong><br />
+Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
+</p>
+<p>
+<strong>Wo bekomme ich KHAdvancedAssignment her?</strong><br />
+Das gibt es hier:<br />
+<a href="../tools/khadvancedassignment/10/KHAdvancedAssignment.user.js">KHAdvancedAssignment 1.0</a>
+</p>
+<p>
+<strong>Wie installiere ich KHAdvancedAssignment?</strong><br />
+<b>Firefox:</b><br />
+1. Das Addon installieren<br />
+2. Link vom KHAdvancedAssignment anklicken und der Installation zustimmen.<br />
+<b>Chrome:</b><br />
+1. Link vom KHAdvancedAssignment anklicken und der Installation zustimmen.<br />
+Danach einfach KH mit F5 neu laden und es ist aktiv.
+</p>
+<p>
+<strong>Wie bestimme ich an welchen Account ausgelagert wird?</strong><br />
+Wenn ihr das erste mal nach dem installieren des Skriptes einen Patienten überweisen wollt. Sieht der Überweisungseintrag so aus:
+<%= image_tag 'tools/khadvancedassignment/screenshot_referral_new.jpg' %><br />
+Nun öffnet ihr einfach das Überweisungsaddressbuch<br />
+<%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_new.jpg' %><br />
+Klickt auf den Namen eurer Wahl</br>
+<%= image_tag 'tools/lhadvancedassignment/screenshot_addressbook_assigned.jpg' %><br />
+Und schon habt ihr den Arzt bestimmt, der nun immer automatisch eingetragen wird. Wollt ihr in ändern. Addressbuch auf und anderen Namen anklicken. Der Name wird sich gemerkt, und zwar in der Kombination Server + Arztname. Wenn ihr also auf mehreren Serven spielt, müßt ihr das erste mal auf allen Servern einen Namen bestimmen.
+</p>
