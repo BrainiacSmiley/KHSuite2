@@ -673,9 +673,9 @@ describe PagesController do
       end
     end
 
-    describe "GET 'khopticalfixes'" do
+    describe "GET 'khopticalimprovements'" do
       before(:each) do
-        get 'khopticalfixes'
+        get 'khopticalimprovements'
       end
   
       it "returns http success" do
@@ -683,7 +683,7 @@ describe PagesController do
       end
       
       it "should have the right title" do
-        title = @page_title + I18n.t(:title_khopticalfixes)
+        title = @page_title + I18n.t(:title_khopticalimprovements)
         response.should have_selector('title', :content => title)
       end
       

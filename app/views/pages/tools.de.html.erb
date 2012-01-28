@@ -10,6 +10,7 @@
 
 <p>
 <strong><%= link_to t('link_khadvancedassignment'), khadvancedassignment_path %></strong><br />
+<div><span class="label important">Achtung</span> KHAdvancement und KHAdvancedAssignment dürfen nicht zusammen aktiv sein. Das kann zu Problemem führen! Also bitte für eins von beiden entscheiden</div>
 <div><span class="label success">Neu</span> in 1.0</div>
 <ul>
 <li>Einfaches Überweisen von Patienten an einen konfigurierbaren Empfänger, zum Max Preis</li>
@@ -28,6 +29,7 @@
 </p>
 <p>
 <strong><%= link_to t('link_khadvancement'), khadvancement_path %></strong><br />
+<div><span class="label important">Achtung</span> KHAdvancement und KHAdvancedAssignment dürfen nicht zusammen aktiv sein. Das kann zu Problemem führen! Also bitte für eins von beiden entscheiden</div>
 <div><span class="label success">Neu</span> in 1.0</div>
 <ul>
 <li>Einfaches Überweisen von Patienten an einen konfigurierbaren Empfänger</li>
@@ -36,8 +38,13 @@
 </ul>
 </p>
 <p>
-<strong><%= link_to t('link_khopticalfixes'), khopticalfixes_path %></strong><br />
-<div><span class="label success">Neu</span> in 1.0</div>
+<strong><%= link_to t('link_khopticalimprovements'), khopticalimprovements_path %></strong><br />
+<div><span class="label notice">Hinweis</span> KHOpticalFixes wurde in KHOpticalImpovements umbenannt</div>
+<div><span class="label success">Neu</span> in 1.1</div>
+<ul>
+<li>Solange die Wunderpille am Fernseher nich abgeholt wurde, erscheint ein Ausrufezeichen</li>
+</ul>
+<div>1.0</div>
 <ul>
 <li>Die Pats laufen nun nicht mehr unter dem Fernseher durch</li>
 </ul>

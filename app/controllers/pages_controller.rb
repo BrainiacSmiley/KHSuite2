@@ -43,8 +43,8 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
-  def khopticalfixes
-    @title = t(:title_khopticalfixes)
+  def khopticalimprovements
+    @title = t(:title_khopticalimprovements)
     find_needed_values
   end
 
