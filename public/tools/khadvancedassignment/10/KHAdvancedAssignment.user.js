@@ -58,10 +58,12 @@ function initAdvancedAssignment() {
 }
 function recogniseAdvancedAssignmentWindows() {
   if (jQuery('div#ref_divdetailsbig').is(':visible')) {
-    if (jQuery('div#ref_divdetailsbig').css('background-image') == "url(http://pics.kapihospital.de/bg_referral_03.jpg)") {
+    if (jQuery('div#ref_divdetailsbig').css('background-image') == "url(http://pics.kapihospital.de/bg_referral_03.jpg)" ||
+        jQuery('div#ref_divdetailsbig').css('background-image') == "url(\"http://pics.kapihospital.de/bg_referral_03.jpg\")") {
       progressAssignmentWindow()
     }
-    else if (jQuery('div#ref_divdetailsbig').css('background-image') == "url(http://pics.kapihospital.de/bg_exchange_03.jpg)") {
+    else if (jQuery('div#ref_divdetailsbig').css('background-image') == "url(http://pics.kapihospital.de/bg_exchange_03.jpg)" ||
+             jQuery('div#ref_divdetailsbig').css('background-image') == "url(\"http://pics.kapihospital.de/bg_exchange_03.jpg\")") {
       progressExchangeWindow()
     }
     if (jQuery('div#addressbook').is(':visible')) {
