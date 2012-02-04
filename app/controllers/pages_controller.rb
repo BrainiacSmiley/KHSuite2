@@ -48,6 +48,11 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
+  def khpatientcounter
+    @title = t(:title_khpatientcounter)
+    find_needed_values
+  end
+
   def khshortcuts
     @title = t(:title_khshortcuts)
     find_needed_values

@@ -54,6 +54,11 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khopticalimprovements))
     end
 
+    it "should have a KHPatientCounter page at '/khpatientcounter'" do
+      get '/khpatientcounter'
+      response.should have_selector('title', :content => I18n.t(:title_khpatientcounter))
+    end
+
     it "should have a KHShortcuts page at '/khshortcuts'" do
       get '/khshortcuts'
       response.should have_selector('title', :content => I18n.t(:title_khshortcuts))
@@ -84,6 +89,8 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khadvancement))
       click_link I18n.t(:link_khopticalimprovements)
       response.should have_selector('title', :content => I18n.t(:title_khopticalimprovements))
+      click_link I18n.t(:link_khpatientcounter)
+      response.should have_selector('title', :content => I18n.t(:title_khpatientcounter))
       click_link I18n.t(:link_khshortcuts)
       response.should have_selector('title', :content => I18n.t(:title_khshortcuts))
       click_link I18n.t(:link_signup)

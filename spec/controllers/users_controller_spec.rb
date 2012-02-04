@@ -247,7 +247,7 @@ describe UsersController do
         it "should have a link to the user profile" do
           response.should have_selector('a',
                                         :href => user_path(@user),
-                                        :content => user_path(@user)
+                                        :content => @user.name
                                        )
         end
         
@@ -403,7 +403,8 @@ describe UsersController do
           it "should have a link to the user profile" do
             response.should have_selector('a',
                                           :href => user_path(@user),
-                                          :content => user_path(@user)
+                                          :content => @user.name
+
                                          )
           end
           

@@ -15,6 +15,7 @@ KHSuite2::Application.routes.draw do
     match '/khadvancedmedrack',     :to => 'pages#khadvancedmedrack'
     match '/khadvancement',         :to => 'pages#khadvancement'
     match '/khopticalimprovements', :to => 'pages#khopticalimprovements'
+    match '/khpatientcounter',      :to => 'pages#khpatientcounter'
     match '/khshortcuts',           :to => 'pages#khshortcuts'
     match '/signup',                :to => 'users#new'
     match '/signin',                :to => 'sessions#new'
