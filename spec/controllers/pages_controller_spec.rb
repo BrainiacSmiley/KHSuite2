@@ -594,6 +594,85 @@ describe PagesController do
       end
     end
 
+    describe "GET 'khadvancedpatientview'" do
+      before(:each) do
+        get 'khadvancedpatientview'
+      end
+  
+      it "returns http success" do
+        response.should be_success
+      end
+      
+      it "should have the right title" do
+        title = @page_title + I18n.t(:title_khadvancedpatientview)
+        response.should have_selector('title', :content => title)
+      end
+      
+      it "should not containt missing translation" do
+        response.should_not contain('translation missing:')
+      end
+
+      it "should not containt <span class='translation_missing'>" do
+        response.should_not have_selector('span.translation_missing')
+      end
+  
+      describe "sidebar" do
+        before(:each) do
+          @user = Factory(:user)
+          test_sign_in(@user)
+          Factory(:doctor, :user => @user)
+          @doctors = @user.doctors.all
+          get 'tools'
+        end
+  
+        it "should have the users name in it" do
+          response.should contain("Name: #{@user.name}")
+        end
+        
+        it "should have a link to the user profile" do
+          response.should have_selector('a',
+                                        :href => user_path(@user),
+                                        :content => @user.name
+                                       )
+        end
+        
+        it "should have the number of doctors" do
+          response.should contain("#{I18n.t(:doctors)}: #{@user.doctors.count}")
+        end
+        
+        it "should have a new doctor link" do
+          response.should have_selector('a',
+                                        :href => new_doctor_path,
+                                        :content => I18n.t(:link_doctor_new)
+                                       )
+        end
+        
+        it "should have the doctors badge for every doctor" do
+          @doctors.each do |doctor|
+            response.should have_selector('a',
+                                          :href => '#',
+                                          :content => "Statistik"
+                                         )
+            response.should have_selector('a',
+                                          :href => edit_doctor_path(doctor),
+                                          :content => "Edit"
+                                         )
+            response.should have_selector('a',
+                                          :href => doctor_path(doctor),
+                                          :content => "Delete"
+                                         )
+            response.should have_selector('strong', :content => "S#{doctor.server}")
+            response.should have_selector('strong', :content => doctor.name)
+            response.should have_selector('img', :src => doctor.avatar)
+            response.should contain("#{I18n.t(:av)}: #{doctor.av}")
+            response.should contain("#{I18n.t(:level)}: #{doctor.level}")
+            response.should contain("#{I18n.t(:money)}: #{doctor.level} hT")
+            response.should contain("#{I18n.t(:points)}: #{doctor.level}")
+          end
+        end
+      end
+    end
+
     describe "GET 'khadvancement'" do
       before(:each) do
         get 'khadvancement'
