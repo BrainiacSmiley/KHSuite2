@@ -10,9 +10,14 @@
 
 <p>
 <h3><%= link_to t('link_khadvancedassignment'), khadvancedassignment_path %></h3>
-<span class="label important">Achtung</span> KHAdvancement und KHAdvancedAssignment dürfen nicht zusammen aktiv sein. Das kann zu Problemem führen! Also bitte für eins von beiden entscheiden
+<span class="label important">Achtung</span> KHAdvancement und KHAdvancedAssignment dürfen nicht zusammen aktiv sein. Das kann zu Problemem führen! Also bitte für eins von beiden entscheiden<br />
+<span class="label important">Achtung</span> Es wird Version 1.1 für KHAdvancedPatientView benötigt
 <ul class="unstyled">
   <li><span class="label success">Neu</span> in 1.0</li>
+  <ul>
+    <li>Fix für KHAdvancedPatientView</li>
+  </ul>
+  <li>1.0</li>
   <ul>
     <li>Einfaches Überweisen von Patienten an einen konfigurierbaren Empfänger, zum Max Preis</li>
     <li>Einfaches Einstellen von Patienten an die Börse, zum Min Preis</li>
@@ -33,6 +38,7 @@
 </p>
 <p>
 <h3><%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %></h3>
+<span class="label important">Achtung</span> wenn KHAdvancedPatientView zusammen mit KHAdvancedAssignment benutzt wird dann unbedingt Version 1.1 von KHAdvancedAssignment.
 <ul class="unstyled">
   <li><span class="label success">Neu</span> in 1.0</li>
   <ul>
