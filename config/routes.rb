@@ -18,6 +18,7 @@ KHSuite2::Application.routes.draw do
     match '/khopticalimprovements', :to => 'pages#khopticalimprovements'
     match '/khpatientcounter',      :to => 'pages#khpatientcounter'
     match '/khshortcuts',           :to => 'pages#khshortcuts'
+    match '/khtimer',               :to => 'pages#khtimer'
     match '/signup',                :to => 'users#new'
     match '/signin',                :to => 'sessions#new'
     match '/signout',               :to => 'sessions#destroy'

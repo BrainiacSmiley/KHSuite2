@@ -62,4 +62,9 @@ class PagesController < ApplicationController
     @title = t(:title_khshortcuts)
     find_needed_values
   end
+
+  def khtimer
+    @title = t(:title_khtimer)
+    find_needed_values
+  end
 end
