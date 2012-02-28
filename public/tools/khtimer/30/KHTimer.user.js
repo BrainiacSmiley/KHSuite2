@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHTimer
-// @version       3.0
+// @version       3.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -40,6 +40,7 @@ variablen.push("FloorTimerConfig = false")
 variablen.push("RoomTimerConfig = false")
 variablen.push("GarageTimerConfig = false")
 variablen.push("SusiTimerConfig = false")
+variablen.push("FinishedTimerConfig = false")
 
 function addFunctions() {
   var functionsToAdd = new Array(initKHTimer, recogniseTimerWindows, recogniseTimerOptionsWindow, progressGarageTimerWindow, progressGarageFinished, progressKHTimerAccountOptionsWindow, getTimeString, getTimeStringShort, getTodaysDate, resetCounter, progressTimer, setKHTimerCookies, getMinTimerForFloor, getMinTimerForKH, saveKHTimerConfig, summArray, getFinishedPlaces, setCookie, getCookie)
@@ -155,6 +156,17 @@ function initKHTimer() {
   } else {
     SusiTimerConfig = true
   }
+
+  storedFinishedTimerConfig = getCookie("FinishedTimerConfig" + jQuery('#username').text())
+  if (storedFinishedTimerConfig != null) {
+    if (storedFinishedTimerConfig == "true") {
+      FinishedTimerConfig = true
+    } else if (storedFinishedTimerConfig == "false") {
+      FinishedTimerConfig = false
+    }
+  } else {
+    FinishedTimerConfig = true
+  }
 }
 function recogniseTimerWindows() {
   if (jQuery('div#msgwindow').is(':visible')) {
@@ -174,7 +186,7 @@ function progressKHTimerAccountOptionsWindow() {
   if (!jQuery('div#KHOptions').length) {
     jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
   }
-  jQuery('<div id="KHTimerOptions">Welche Timer:<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="KHTimerConfig">&nbsp;KH<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="FloorTimerConfig">&nbsp;Etage<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="RoomTimerConfig">Räume&nbsp;<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="GarageTimerConfig">Garage&nbsp;<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="SusiTimerConfig">Susi</div>').appendTo('div#KHOptions')
+  jQuery('<div id="KHTimerOptions">Welche Timer:<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="KHTimerConfig">&nbsp;KH<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="FloorTimerConfig">&nbsp;Etage<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="RoomTimerConfig">Räume&nbsp;<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="GarageTimerConfig">Garage&nbsp;<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="SusiTimerConfig">Susi&nbsp;<input type="checkbox" onchange="saveKHTimerConfig()" value="true" id="FinishedTimerConfig">Fertige</div>').appendTo('div#KHOptions')
   if(KHTimerConfig) {
     jQuery('#KHTimerConfig:checkbox').val(["true"])
   }
@@ -189,6 +201,9 @@ function progressKHTimerAccountOptionsWindow() {
   }
   if(SusiTimerConfig) {
     jQuery('#SusiTimerConfig:checkbox').val(["true"])
+  }
+  if(FinishedTimerConfig) {
+    jQuery('#FinishedTimerConfig:checkbox').val(["true"])
   }
 }
 function saveKHTimerConfig() {
@@ -231,6 +246,14 @@ function saveKHTimerConfig() {
   }
   var cookieName = "SusiTimerConfig" + jQuery('#username').text()
   setCookie(cookieName, SusiTimerConfig, 100, "/", window.location.hostname)
+
+  if (!!jQuery('#FinishedTimerConfig:checked').val()) {
+    FinishedTimerConfig = true
+  } else {
+    FinishedTimerConfig = false
+  }
+  var cookieName = "FinishedTimerConfig" + jQuery('#username').text()
+  setCookie(cookieName, FinishedTimerConfig, 100, "/", window.location.hostname)
 }
 function progressGarageTimerWindow() {
   var now = Math.floor((new Date()).getTime()/1000)
@@ -581,10 +604,10 @@ function progressTimer() {
   }
   
   //finishedPatientsCounter
-  if (!jQuery('span#counter_kh').length && (roomTimers[0][0] != -1 || finishedPatientsTotal > 0)) {
+  if (!jQuery('span#counter_kh').length && (roomTimers[0][0] != -1 || finishedPatientsTotal > 0) && FinishedTimerConfig) {
     jQuery('<span id="counter_kh" class="medamount" title="S = Susi | 1-5 = Etage | G = Garage" onclick="resetCounter()" style="position:absolute;font-size:9px;top:6px;left:427px;background-color:white;width:260px;">&nbsp;</span>').appendTo('div#hospital_content')
   } else {
-    if ((roomTimers[0][0] == -1 && finishedPatientsTotal === 0) && jQuery('span#counter_kh').length > 0) {
+    if (((roomTimers[0][0] == -1 && finishedPatientsTotal === 0) || !FinishedTimerConfig) && jQuery('span#counter_kh').length > 0) {
       jQuery('span#counter_kh').remove()
     }
   }
