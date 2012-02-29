@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedMedRack
-// @version       1.0
+// @version       1.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -45,17 +45,19 @@ function readyAccounting() {
 }
 //Begin Injection
 var variablen = new Array()
-variablen[0]  = "allMeds"
-variablen[1]  = "oldRackLength"
-variablen[2]  = "oldCountedAvailabledMeds = 0"
-variablen[3]  = "oldMedSum"
-variablen[4]  = "currentPage = 0"
-variablen[5]  = "allMedsPages"
-variablen[6]  = "numberOfRackItems"
-variablen[7]  = "medStackSize"
-variablen[8]  = "epidemicStackSize"
-variablen[9]  = "amountAlreadyEntered"
-variablen[10] = "lastEnteredMed"
+variablen.push("allMeds")
+variablen.push("oldRackLength")
+variablen.push("oldCountedAvailabledMeds = 0")
+variablen.push("oldMedSum")
+variablen.push("oldShoppingSum")
+variablen.push("currentPage = 0")
+variablen.push("allMedsPages")
+variablen.push("numberOfRackItems")
+variablen.push("medStackSize")
+variablen.push("epidemicStackSize")
+variablen.push("amountAlreadyEntered")
+variablen.push("lastEnteredMed")
+
 function addFunctions() {
   var functionsToAdd = new Array(initAdvancedMedRack, initMeds, recogniseAdvancedMedRackWindows, progressAccountOptionsWindow, getRackObject, setMedPrices, countAvailableMeds, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, saveConfig, setCookie, getCookie, openMedShop, progressShoppingAmountWindow)
   var script = document.createElement("script");
@@ -121,7 +123,10 @@ function recogniseAdvancedMedRackWindows() {
   }
 }
 function progressAccountOptionsWindow() {
-  jQuery('<div id="KHAdvancedMedRackConfig" style="margin-top: 60px;">Normale Meds pro Stapel: <input id="medicStackSize" type="number" onChange="saveConfig()" value="' + medStackSize + '"><br />Seuchen Meds pro Stapel: <input id="epidemicStackSize" type="number" onChange="saveConfig()" value="' + epidemicStackSize + '"></div>').insertAfter('div#b')
+  if (!jQuery('div#KHOptions').length) {
+    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
+  }
+  jQuery('<div id ="KHAdvancedMedRackConfig">Normale Meds pro Stapel: <input id="medicStackSize" type="number" size="4" onChange="saveConfig()" value="' + medStackSize + '">&nbsp;&nbsp;Seuchen Meds pro Stapel: <input id="epidemicStackSize" type="number" size="4" onChange="saveConfig()" value="' + epidemicStackSize + '"></div>').appendTo('div#KHOptions')
 }
 function getRackObject(id) {
   for (var i = 0; i < Rack.elements.length; i++) {
@@ -131,9 +136,9 @@ function getRackObject(id) {
   }
   return null
 }
-function setMedPrices() {
+function setMedPrices(medSum, medShopSum) {
   if (jQuery('div#medPrices').length) {
-    jQuery('div#medPrices').html("Medikamentenwert: " + sumMedPrices() + "<br />Neuauffüllung: " + sumMedShopPrices())
+    jQuery('div#medPrices').html("Medikamentenwert: " + medSum + "<br />Neuauffüllung: " + medShopSum)
   } else {
     jQuery('<div id="medPrices" class="medamount" style="height: 28px; position: absolute; left: 4px; width: 210px; top: 485px; z-index: 100">Medikamentenwert: ' + sumMedPrices() + '<br />Neuauffüllung: ' + sumMedShopPrices() + '</div>').appendTo('div#toprack')
   }
@@ -159,9 +164,12 @@ function checkMedRack() {
     generateMedRack(currentPage)
   }
 
-  if (oldMedSum != sumMedPrices()) {
-    oldMedSum = sumMedPrices()
-    setMedPrices()
+  newMedSum = sumMedPrices()
+  newShoppingSum = sumMedShopPrices()
+  if (oldMedSum != newMedSum || oldShoppingSum != newShoppingSum) {
+    oldMedSum = newMedSum
+    oldShoppingSum = newShoppingSum
+    setMedPrices(newMedSum, newShoppingSum)
   }
 }
 function getMedsAvailibleForRoom(room) {

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedPatientView
-// @version       1.1
+// @version       1.2
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -170,7 +170,7 @@ function initAdvancedPatientView() {
   }
 }
 function recogniseAdvancedPatientViewWindows() {
-  if (jQuery('div#b').length && !jQuery('div#WWConfig').length) {
+  if (jQuery('div#b').length && !jQuery('div#KHWWConfig').length) {
     progressWWAccountOptionsWindow()
   } else if (jQuery('div#msgwindow').is(':visible')) {
     if (jQuery('div#msgwindow').css('background-image') == "url(http://pics.kapihospital.de/medicalrecord_1.png)" ||
@@ -351,11 +351,10 @@ function progressPatientViewWindow() {
   }
 }
 function progressWWAccountOptionsWindow() {
-  if (!jQuery('div#KHAdvancedMedRackConfig').length) {
-    jQuery('<div id="WWConfig" style="margin-top: 60px;">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').insertAfter('div#b')
-  } else {
-    jQuery('<div id="WWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').insertAfter('div#KHAdvancedMedRackConfig')
+  if (!jQuery('div#KHOptions').length) {
+    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
   }
+  jQuery('<div id="KHWWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').appendTo('div#KHOptions')
 }
 //End AdvancedPatientView
 //Begin General

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHPatientCounter
-// @version       1.1
+// @version       1.2
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -36,7 +36,7 @@ variablen.push("cuntedLevelupPatients")
 variablen.push("wwLevel = 0")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initPatientCounter, setAPOverlay, checkPatientCounterWindows, progressOlgaWindow, getPatientsPerLevel, saveWWConfig, setCookie, getCookie)
+  var functionsToAdd = new Array(initPatientCounter, setAPOverlay, checkPatientCounterWindows, progressOlgaWindow, progressWWAccountOptionsWindow, getPatientsPerLevel, saveWWConfig, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -98,7 +98,7 @@ function saveWWConfig() {
   initPatientCounter()
 }
 function checkPatientCounterWindows() {
-  if (jQuery('div#b').length && !jQuery('div#WWConfig').length) {
+  if (jQuery('div#b').length && !jQuery('div#KHWWConfig').length) {
     progressWWAccountOptionsWindow()
     olgaValuesSet = false
   } else if (jQuery('div#nurse_messages').is(':visible')) {
@@ -166,11 +166,10 @@ function progressOlgaWindow() {
   }
 }
 function progressWWAccountOptionsWindow() {
-  if (!jQuery('div#KHAdvancedMedRackConfig').length) {
-    jQuery('<div id="WWConfig" style="margin-top: 60px;">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').insertAfter('div#b')
-  } else {
-    jQuery('<div id="WWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').insertAfter('div#KHAdvancedMedRackConfig')
+  if (!jQuery('div#KHOptions').length) {
+    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
   }
+  jQuery('<div id="KHWWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').appendTo('div#KHOptions')
 }
 //EndOpticalFixes
 //Begin General
