@@ -673,9 +673,9 @@ describe PagesController do
       end
     end
 
-    describe "GET 'khadvancement'" do
+    describe "GET 'khadvancedreferral'" do
       before(:each) do
-        get 'khadvancement'
+        get 'khadvancedreferral'
       end
   
       it "returns http success" do
@@ -683,7 +683,7 @@ describe PagesController do
       end
       
       it "should have the right title" do
-        title = @page_title + I18n.t(:title_khadvancement)
+        title = @page_title + I18n.t(:title_khadvancedreferral)
         response.should have_selector('title', :content => title)
       end
       

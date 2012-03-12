@@ -43,8 +43,8 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
-  def khadvancement
-    @title = t(:title_khadvancement)
+  def khadvancedreferral
+    @title = t(:title_khadvancedreferral)
     find_needed_values
   end
 
