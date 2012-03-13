@@ -329,7 +329,7 @@ function removeSendFilter() {
 }
 function progressKHManagerWindow() {
   //Wenn nothing to recieve hide
-  if (jQuery('div#referral_reci').is(':visible') && !jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_reci')).length) {
+  if (jQuery('div#referral_reci').is(':visible') && !jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_reci')).length) {
     jQuery('div#referral_reci').hide()
     jQuery('br', jQuery('div#referrals')).hide()
   }
