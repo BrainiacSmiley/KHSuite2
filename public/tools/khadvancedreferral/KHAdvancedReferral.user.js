@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       0.5b
+// @version       1.0b
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -17,9 +17,10 @@ function addJQuery(callback) {
 function readyJQuery() {
   jQuery.noConflict();
 
-  initKHManager()
+  initKHAdvancedReferral()
   //Interval Function
-  window.setInterval("recogniseKHManagerWindow()", 100)
+  window.setInterval("recogniseKHAdvancedReferralWindow()", 100)
+  window.setInterval("recogniseKHAdvancedReferralOptionsWindow()", 100)
 }
 
 function addAccounting(callback) {
@@ -36,7 +37,8 @@ function readyAccounting() {
 }
 //Begin Injection
 var variablen = new Array()
-variablen.push("send_head = \"Von dir überwiesene Patienten\"")
+variablen.push("send_head_old = \"Von dir überwiesene Patienten\"")
+variablen.push("send_head = \"Ausgewählte Patienten\"")
 variablen.push("numberOfSendPats = 0")
 variablen.push("numberOfHiddenSendPats = 0")
 variablen.push("totalSendPrice = 0")
@@ -51,17 +53,21 @@ variablen.push("totalDiseasesDuration = 0")
 variablen.push("sendDiseases")
 variablen.push("sendReciever")
 variablen.push("sendRooms")
+variablen.push("sendDiseasesNames")
 variablen.push("actualSendPatientsIndex = 0")
 variablen.push("actualSendNumberOfDiseases = \"# Krankheiten\"")
 variablen.push("actualSendRecieverName = \"alle Empfänger\"")
 variablen.push("actualSendRoomsName = \"alle Räume\"")
+variablen.push("actualSendDiseaseName = \"alle Krankheiten\"")
 variablen.push("startTime = 0")
 variablen.push("endTime = 0")
-variablen.push("debug = true")
+variablen.push("debug = false")
 variablen.push("tiny = false")
+variablen.push("tinyCountedRooms = new Array()")
+variablen.push("tinyCountedDiseases = new Array()")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHManager, recogniseKHManagerWindow, progressKHManagerWindow, addTinyOptions, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, analyseSendPatients)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, removeTinyFilter, getTinyFilterString, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -77,7 +83,7 @@ function addFunctions() {
 }
 //End Injection
 //Begin Manager
-function initKHManager() {
+function initKHAdvancedReferral() {
   diseaseDurations = new Array()
   diseaseDurations[1] = 4800
   diseaseDurations[2] = 9600
@@ -192,64 +198,138 @@ function initKHManager() {
   diseaseDurations[112] = 7200
   diseaseDurations[113] = 10800
   diseaseDurations[114] = 28800
-}
-function recogniseKHManagerWindow() {
-  if (jQuery('div#referrals').is(':visible')) {
-    progressKHManagerWindow()
+
+  //restoreSelection Options from Cookie
+  storedTinyOptions = getCookie("KHTinyOptions" + jQuery('#username').text())
+  if (storedTinyOptions != null) {
+    if (storedTinyOptions == "true") {
+      tiny = true
+    } else if (storedTinyOptions == "false") {
+      tiny = false
+    }
+  } else {
+    tiny = true
+  }
+
+  //check if Dev Mode
+  if (window.location.search == "?dev") {
+    debug = true
+  } else {
+    debug = false
   }
 }
-function getLongTimeString(time) {
+function recogniseKHAdvancedReferralWindow() {
+  if (jQuery('div#referrals').is(':visible')) {
+    progressKHAdvancedReferralWindow()
+  }
+}
+function recogniseKHAdvancedReferralOptionsWindow() {
+  if (jQuery('div#b').length && !jQuery('div#KHAdvancedReferralOptions').length) {
+    progressKHAdvancedReferralAccountOptionsWindow()
+  }
+}
+function progressKHAdvancedReferralAccountOptionsWindow() {
+  if (!jQuery('div#KHOptions').length) {
+    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
+  }
+  jQuery('<div id="KHAdvancedReferralOptions">Filter: <select id="khadvancedreferralconfig" onChange="saveKHAdvancedReferralConfig()"><option>Classic</option><option>Tiny</option></select></div>').appendTo('div#KHOptions')
+  if (tiny) {
+    jQuery('select#khadvancedreferralconfig').val('Tiny')
+  } else {
+    jQuery('select#khadvancedreferralconfig').val('Classic')
+  }
+}
+function saveKHAdvancedReferralConfig() {
+  if (jQuery('select#khadvancedreferralconfig').val() == "Tiny") {
+    tiny = true
+  } else {
+    tiny = false
+  }
+  var cookieName = "KHTinyOptions" + jQuery('#username').text()
+  setCookie(cookieName, tiny, 100, "/", window.location.hostname)
+}
+function getLongTimeString(time, shortStrings) {
   years = Math.floor(time / 31622400)
-  rest = time%31622400
+  rest = time-(years*31622400)
   months = Math.floor(rest / 2635300)
-  rest = rest%2635200
+  rest = rest-(months*2635300)
   days = Math.floor(rest / 86400)
-  rest = rest%86400
+  rest = rest-(days*86400)
   hour = Math.floor(rest / 3600)
-  rest = rest%3600
+  rest = rest-(hour*3600)
   min = Math.floor(rest/ 60)
-  sek = rest%60
+  sek = rest-(min*60)
   timeString = ""
   if (years > 0) {
-    if (years > 1) {
-      timeString += years + " Jahre "
+    timeString += years
+    if (shortStrings) {
+      timeString += " J "
     } else {
-      timeString += "1 Jahr "
+      if (years > 1) {
+        timeString += " Jahre "
+      } else {
+        timeString += " Jahr "
+      }
     }
   }
   if (months > 0) {
-    if (months > 1) {
-      timeString += months + " Monate "
+    timeString += months
+    if (shortStrings) {
+      timeString += " M "
     } else {
-      timeString += "1 Monat "
+      if (months > 1) {
+        timeString += " Monate "
+      } else {
+        timeString += " Monat "
+      }
     }
   }
   if (days > 0) {
-    if (days > 1) {
-      timeString += days + " Tage "
+    timeString += days
+    if (shortStrings) {
+      timeString += " T "
     } else {
-      timeString += "1 Tag "
+      if (days > 1) {
+        timeString += " Tage "
+      } else {
+        timeString += " Tag "
+      }
     }
   }
   if (hour > 0) {
-    if (hour > 1) {
-      timeString += hour + " Stunden "
+    timeString += hour
+    if (shortStrings) {
+      timeString += " Std "
     } else {
-      timeString += "1 Stunde"
+      if (hour > 1) {
+        timeString += " Stunden "
+      } else {
+        timeString += " Stunde "
+      }
     }
   }
   if (min > 0) {
-    if (min > 1) {
-      timeString += min + " Minuten "
+    timeString += min
+    if (shortStrings) {
+      timeString += " min "
     } else {
-      timeString += "1 Minute"
+      if (min > 1) {
+        timeString += " Minuten "
+      } else {
+        timeString += " Minute "
+      }
     }
   }
   if (sek > 0) {
-    if (sek > 1) {
-      timeString += sek + " Sekunden "
+    timeString += sek
+    if (shortStrings) {
+      timeString += " sek"
     } else {
-      timeString += "1 Sekunde"
+      if (sek > 1) {
+        timeString += " Sekunden"
+      } else {
+        timeString += " Sekunde"
+      }
     }
   }
   return timeString.trim()
@@ -325,62 +405,164 @@ function removeSendFilter() {
   actualSendRecieverName = "alle Empfänger"
   document.getElementById('toggle_rooms').selectedIndex = 0
   actualSendRoomsName = "alle Räume"
+  actualSendDiseaseName = "alle Krankheiten"
   checkAllSendPatients()
 }
-function progressKHManagerWindow() {
+function progressKHAdvancedReferralWindow() {
   //Wenn nothing to recieve hide
   if (jQuery('div#referral_reci').is(':visible') && !jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_reci')).length) {
     jQuery('div#referral_reci').hide()
     jQuery('br', jQuery('div#referrals')).hide()
   }
 
-  if (jQuery('div#send_options').length === 0) {
-    analyseSendPatients()
-
-    //addNumberOfSendPatients
-    updateNumberOfSendPats()
+  if (jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).length > 0) {
+    if (jQuery('div#send_options').length === 0) {
+      analyseSendPatients()
+  
+      //addNumberOfSendPatients
+      updateNumberOfSendPats()
+        
+      //addNumberOfDiseases
+      updateNumberOfSendDiseases()
       
-    //addNumberOfDiseases
-    updateNumberOfSendDiseases()
-    
-    //addTotalPrice
-    updateTotalPrice()
-    
-    //add Sorting
-    if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length === 5) {
-      jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'changeSorting(0)')
-      jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'changeSorting(1)')
-      jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'changeSorting(2)')
-      jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'changeSorting(3)')
-    }
-    //restoreOld Sorting Options
-    if (columnToSort != -1 && sortingDirection != 0) {
-      setSortingIcons()
-      sortPatients()
-    }
-
-    if (tiny) {
-      addTinyOptions()
-    } else {
-      addClassicOptions()
-    }    
-    
-    //debug analyseTime
-    if (debug) {
-      updateAnalyseTime()
+      //addTotalPrice
+      updateTotalPrice()
+      
+      //add Sorting
+      if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length === 5) {
+        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'changeSorting(0)')
+        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'changeSorting(1)')
+        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'changeSorting(2)')
+        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'changeSorting(3)')
+      }
+      //restoreOld Sorting Options
+      if (columnToSort != -1 && sortingDirection != 0) {
+        setSortingIcons()
+        sortPatients()
+      }
+  
+      if (tiny) {
+        addTinyOptions()
+      } else {
+        addClassicOptions()
+      }    
+      
+      //debug analyseTime
+      if (debug) {
+        updateAnalyseTime()
+      }
     }
   }
 }
 function addTinyOptions() {
   if (jQuery('div#send_options').length === 0) {
-    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"></div>').insertAfter('div#referral_send_head')
+    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><center>Allg. Filter: <select id=\"toggle_patients\" onChange=\"changeSendPatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(sendDiseases) + '</select><select id=\"toggle_recievers\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getOptionsString(sendReciever) + '</select><select id=\"toggle_rooms\" onChange=\"changeSendPatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(sendRooms) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeSendFilter()\">&nbsp;</div></center><table style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changeSendPatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(sendDiseasesNames) + '</select></div>').insertBefore('div#referral_send_head')
+  }
+  restoreFilterSelection()
+}
+function getTinyFilterString() {
+  tinyFilterString = "Tiny Filter: "
+  if (actualSendRoomsName != "alle Räume") {
+    tinyFilterString += "Raum = " + actualSendRoomsName
+  }
+  if (actualSendDiseaseName != "alle Krankheiten") {
+    tinyFilterString += "Krankheit = " + actualSendDiseaseName
+  }
+  if (tinyFilterString == "Tiny Filter: ") {
+    tinyFilterString += "kein Filter"
+  }
+  return tinyFilterString
+}
+function removeTinyFilter() {
+  actualSendRoomsName = "alle Räume"
+  actualSendDiseaseName = "alle Krankheiten"
+  jQuery('div#tiny_filter').text(getTinyFilterString())
+  checkAllSendPatients()
+}
+function getRow(id) {
+  roomName = Global.availableRooms[id].name
+  numberForRoom = tinyCountedRooms[id]
+  switch(id) {
+    case 2:
+      color = "#E2BD9B"
+      rooms = getColumn(4) + getColumn(3) + getColumn(6) + getColumn(5) + getColumn(12) + getColumn(11) + getColumn(10) + "<td colspan=\"6\"></td>"
+      break
+    case 3:
+      color = "#A3A6DE"
+      rooms = getColumn(1) + getColumn(2) + getColumn(18) + getColumn(58) + getColumn(73) + "<td colspan=\"10\"></td>"
+      break
+    case 9:
+      color = "#B48DC4"
+      rooms = getColumn(26) + getColumn(44) + getColumn(30) + getColumn(113) + getColumn(94) + getColumn(99) + getColumn(52) + getColumn(75) + "<td colspan=\"4\"></td>"
+      break
+    case 12:
+      color = "#E0E19A"
+      rooms = getColumn(48) + getColumn(66) + getColumn(49) + getColumn(80) + getColumn(103) + getColumn(110) + getColumn(55) + getColumn(60) + "<td colspan=\"4\"></td>"
+      break
+    case 13:
+      color = "#74B077"
+      rooms = getColumn(8) + getColumn(9) + getColumn(34) + getColumn(88) + getColumn(96) + getColumn(27) + getColumn(108) + getColumn(50) + getColumn(33) + "<td colspan=\"2\"></td>"
+      break
+    case 5:
+      color = "#BCE3B3"
+      rooms = getColumn(71) + getColumn(67) + getColumn(79) + getColumn(37) + getColumn(83) + getColumn(100) + getColumn(41) + getColumn(46) + "<td colspan=\"4\"></td>"
+      break
+    case 1:
+      color = "#D9D9D9"
+      rooms = getColumn(19) + getColumn(39) + getColumn(77) + getColumn(107) + getColumn(40) + getColumn(101) + getColumn(53) + getColumn(65) + "<td colspan=\"4\"></td>"
+      break
+    case 4:
+      color = "white"
+      rooms = getColumn(61) + getColumn(21) + getColumn(86) + getColumn(22) + getColumn(98) + getColumn(38) + getColumn(105) + getColumn(43) + getColumn(74) + "<td colspan=\"2\"></td>"
+      break
+    case 8:
+      color = "#666468"
+      rooms = getColumn(36) + getColumn(45) + getColumn(78) + getColumn(84) + getColumn(56) + getColumn(90) + getColumn(111) + getColumn(20) + getColumn(32) + getColumn(76)
+      break
+    case 10:
+      color = "#556C7C"
+      rooms = getColumn(35) + getColumn(31) + getColumn(82) + getColumn(93) + getColumn(95) + getColumn(57) + getColumn(24) + getColumn(64) + "<td colspan=\"4\"></td>"
+      break
+    case 7:
+      color = "#DCC6A1"
+      rooms = getColumn(29) + getColumn(16) + getColumn(91) + getColumn(13) + getColumn(97) + getColumn(106) + getColumn(63) + getColumn(72) + "<td colspan=\"4\"></td>"
+      break
+    case 15:
+      color = "#707B58"
+      rooms = getColumn(51) + getColumn(15) + getColumn(87) + getColumn(7) + getColumn(104) + getColumn(14) + getColumn(114) + getColumn(47) + getColumn(17) + "<td colspan=\"2\"></td>"
+      break
+    case 16:
+      color = "#A296A3"
+      rooms = getColumn(69) + getColumn(54) + getColumn(23) + getColumn(81) + getColumn(112) + getColumn(92) + getColumn(42) + getColumn(109) + getColumn(59) + "<td colspan=\"2\"></td>"
+      break
+    case 17:
+      color = "#A5DBDF"
+      rooms = getColumn(68) + getColumn(28) + getColumn(85) + getColumn(102) + getColumn(89) + getColumn(62) + getColumn(70) + "<td colspan=\"6\"></td>"
+      break
+  }
+  if (numberForRoom > 0) {
+    return "<tr style=\"background-color: " + color + ";height:17px;\"><td width=\"30px;\">" + numberForRoom + "</td><td width=\"110\"><a onclick=\"changeTinyFilter('alle Krankheiten','" + roomName + "')\" href=\"#\" style=\"text-decoration: none;\">" + roomName + "</a></td>" + rooms + "</tr>"
+  } else {
+    return ""
+  }
+}
+function getColumn(id) {
+  name = Global.availableDiseases[id].name
+  amount = tinyCountedDiseases[id]
+  if (amount > 0) {
+    return "<td><div class=\"d_a_15 d_" + id + "_15\" title=\"" + name + "\" onclick=\"changeTinyFilter('" + name + "','alle Räume')\" style=\"cursor:pointer;\"></div></td><td style=\"width:25px;\">" + amount + "</td>"
+  } else {
+    return "<td colspan=\"2\" style=\"width:40px;\">&nbsp;</td>"
   }
 }
 function addClassicOptions() {
   //add Options
   if (jQuery('div#send_options').length === 0) {
-    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changeSendPatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(sendDiseases) + '</select><select id=\"toggle_recievers\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getOptionsString(sendReciever) + '</select><select id=\"toggle_rooms\" onChange=\"changeSendPatientView()\"><option>alle Räume</option>' + getOptionsString(sendRooms) + '</select><div style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeSendFilter()\">&nbsp;</div></div>').insertAfter('div#referral_send_head')
+    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changeSendPatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(sendDiseases) + '</select><select id=\"toggle_recievers\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getOptionsString(sendReciever) + '</select><select id=\"toggle_rooms\" onChange=\"changeSendPatientView()\"><option>alle Räume</option>' + getOptionsString(sendRooms) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:14px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeSendFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changeSendPatientView()\" style=\"margin-left: 210px;\"><option>alle Krankheiten</option>' + getOptionsString(sendDiseasesNames) + '</select></div>').insertAfter('div#referral_send_head')
   }
+  restoreFilterSelection()
+}
+function restoreFilterSelection() {
   //restoreOptionsSelection
   document.getElementById("toggle_patients").selectedIndex = actualSendPatientsIndex
   index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualSendNumberOfDiseases)
@@ -420,9 +602,9 @@ function updateNumberOfSendDiseases() {
     diseaseCountString = "Krankheit"
   }
   if (jQuery('div#total_diseasecount').length === 0) {
-    jQuery('<div id=\"total_diseasecount\" style="position: absolute; top: 430px; left: 188px;">' + totalDiseasesCount + ' : ' + diseaseCountString + '<br />Behandlungszeit: ' + getLongTimeString(totalDiseasesDuration) + '</div>').insertAfter('div#referrals')
+    jQuery('<div id=\"total_diseasecount\" style="position: absolute; top: 430px; left: 188px;">' + totalDiseasesCount + ' : ' + diseaseCountString + '<br />Behandlungszeit mit Medis: ' + getLongTimeString(totalDiseasesDuration/2, true) + '</div>').insertAfter('div#referrals')
   } else {
-    jQuery('div#total_diseasecount').html(totalDiseasesCount + " : " + diseaseCountString + "<br />Behandlungszeit: " + getLongTimeString(totalDiseasesDuration))
+    jQuery('div#total_diseasecount').html(totalDiseasesCount + " : " + diseaseCountString + "<br />Behandlungszeit mit Medis: " + getLongTimeString(totalDiseasesDuration/2, true))
   }
 }
 function updateNumberOfSendPats() {
@@ -447,6 +629,16 @@ function updateTotalPrice() {
     jQuery('div#total_price').text("Summe: " + accounting.formatMoney(totalPrice, options) + " (" + accounting.formatMoney(newMoney, options) + ")")
   }
 }
+function changeTinyFilter(diseaseName, roomName) {
+  actualSendDiseaseName = diseaseName
+  actualSendRoomsName = roomName
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualSendRoomsName)
+  if (index != -1) {
+    document.getElementById("toggle_rooms").selectedIndex = index
+  }
+  jQuery('div#tiny_filter').text(getTinyFilterString())
+  checkAllSendPatients()
+}
 function changeSendPatientView() {
   var actualIndex = 0
   actualSendPatientsIndex = document.getElementById("toggle_patients").selectedIndex
@@ -456,6 +648,8 @@ function changeSendPatientView() {
   actualSendRecieverName = document.getElementById("toggle_recievers")[actualIndex].value
   actualIndex = document.getElementById("toggle_rooms").selectedIndex
   actualSendRoomsName = document.getElementById("toggle_rooms")[actualIndex].value
+  actualIndex = document.getElementById("toggle_diseasesNames").selectedIndex
+  actualSendDiseaseName = document.getElementById("toggle_diseasesNames")[actualIndex].value
   checkAllSendPatients()
 }
 function getOptionsString(array) {
@@ -508,6 +702,17 @@ function countDiseases(object) {
 }
 function getDiseases(object) {
   return jQuery('div[class^=d_a_15]', object)
+}
+function getDiseaseNames(object) {
+  diseaseNames = new Array()
+  allDiseases = jQuery('div[class^=d_a_15]', object)
+  allDiseases.each(function() {
+    actualDisease = jQuery(this).attr('title')
+    if (!isInArray(diseaseNames, actualDisease)) {
+      diseaseNames.push(actualDisease)
+    }
+  })
+  return diseaseNames
 }
 function getDiseaseID(object) {
   return jQuery(object).attr('class').split(" ")[1].split("_")[1]*1
@@ -725,6 +930,14 @@ function hidePatsNotForRoom(Patient, room) {
   }
   return false
 }
+function hidePatsNotWithDiseases(Patient, disease) {
+  if (!isInArray(getDiseaseNames(Patient), disease)) {
+    jQuery(Patient).hide()
+    numberOfHiddenSendPats++
+    return true
+  }
+  return false
+}
 function hidePatsNotMulti(Patient, room) {
   if (room == "alle Räume") {
     if (!getMultiRooms(Patient).length) {
@@ -788,7 +1001,68 @@ function checkIfPatNeedsToBeHidden(patient) {
       return false
     }
   }
+  //Disease Filter
+  if (actualSendDiseaseName != "alle Krankheiten") {
+    if (hidePatsNotWithDiseases(patient, actualSendDiseaseName)) {
+      return false
+    }
+  }
   return true
+}
+function checkIfPatNeedsToBeHiddenByTinyGeneral(patient) {
+  //to ensure that all are visible
+  jQuery(patient).show()
+  //Patients Filter
+  if (actualSendPatientsIndex == 1) {
+    if (hidePats(patient, 1)) {
+      return false
+    }
+  } else if (actualSendPatientsIndex == 2) {
+    if (hidePatsGreater(patient, 1)) {
+      return false
+    }
+  } else if (actualSendPatientsIndex == 3) {
+    if (hidePatsMulti(patient)) {
+      return false
+    }
+  } else if (actualSendPatientsIndex == 4) {
+    if (hidePatsNotMulti(patient, actualSendRoomsName)) {
+      return false
+    }
+  }
+  //Dieseases Filter
+  if (actualSendNumberOfDiseases != "# Krankheiten") {
+    if (hidePatsExcept(patient, actualSendNumberOfDiseases)) {
+      return false
+    }
+  }
+  //Recievers Filter
+  if (actualSendRecieverName != "alle Empfänger") {
+    if (hidePatsNotTo(patient, actualSendRecieverName)) {
+      return false
+    }
+  }
+  return true
+}
+function checkIfPatNeedsToBeHiddenByTinySpecial(patient) {
+  //to ensure that all are visible
+  if (jQuery(patient).is(':visible')) {
+    //Rooms Filter
+    if (actualSendRoomsName != "alle Räume") {
+      if (hidePatsNotForRoom(patient, actualSendRoomsName)) {
+        return false
+      }
+    }
+    //Disease Filter
+    if (actualSendDiseaseName != "alle Krankheiten") {
+      if (hidePatsNotWithDiseases(patient, actualSendDiseaseName)) {
+        return false
+      }
+    }
+    return true
+  } else {
+    return false
+  }
 }
 function checkAllSendPatients() {
   analyseSendPatients()
@@ -797,6 +1071,10 @@ function checkAllSendPatients() {
   updateNumberOfSendDiseases()
   if (debug) {
     updateAnalyseTime()
+  }
+  if (tiny) {
+    jQuery(jQuery('div#send_options')).remove()
+    addTinyOptions()
   }
 }
 function analyseSendPatients() {
@@ -809,6 +1087,9 @@ function analyseSendPatients() {
   sendDiseases = new Array()
   sendReciever = new Array()
   sendRooms = new Array()
+  sendDiseasesNames = new Array()
+  tinyCountedDiseases = new Array()
+  tinyCountedRooms = new Array()
   jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).each(function() {
     //counting
     numberOfSendPats++
@@ -828,9 +1109,56 @@ function analyseSendPatients() {
         sendRooms.push(rooms[i])
       }
     }
+    diseasesNames = getDiseaseNames(this)
+    for (var i = 0; i < diseasesNames.length; i++) {
+      if (!isInArray(sendDiseasesNames, diseasesNames[i])) {
+        sendDiseasesNames.push(diseasesNames[i])
+      }
+    }
+    
+    if (tiny) {
+      if (checkIfPatNeedsToBeHiddenByTinyGeneral(this)) {
+        //totalDiseasesCounting
+        countedDiseasesPatient = new Array()
+        countedRoomsPatient = new Array()
+        for (var i = 0; i < countDiseases(this); i++) {
+          if (!countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(this)[i])].room[0]]) {
+            countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(this)[i])].room[0]] = 1
+          }
+          
+          if (!countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])]) {
+            countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])] = 1
+          } else {
+            countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])]++
+          }
+        }
+    
+        for (var i = 0; i < countedDiseasesPatient.length; i++) {
+          if (countedDiseasesPatient[i] > 0) {
+            if (!tinyCountedDiseases[i]) {
+              tinyCountedDiseases[i] = 0
+            }
+            tinyCountedDiseases[i] += countedDiseasesPatient[i]
+          }
+        }
+        for (var i = 0; i < countedRoomsPatient.length; i++) {
+          if (countedRoomsPatient[i] > 0) {
+            if (!tinyCountedRooms[i]) {
+            tinyCountedRooms[i] = 0
+            }
+            tinyCountedRooms[i] += countedRoomsPatient[i]
+          }
+        }
+      }
+    }
 
     //restoreFilter
-    if (checkIfPatNeedsToBeHidden(this)) {
+    if (tiny) {
+      isPatientNotHidden = checkIfPatNeedsToBeHiddenByTinySpecial(this)
+    } else {
+      isPatientNotHidden = checkIfPatNeedsToBeHidden(this)
+    }
+    if (isPatientNotHidden) {
       //price
       totalSendPrice += getPrice(this)*1
       //diseases
@@ -847,6 +1175,7 @@ function analyseSendPatients() {
   sendDiseases.sort(function(a,b){return a - b})
   sendReciever.sort()
   sendRooms.sort()
+  sendDiseasesNames.sort()
 
   totalDiseasesCount = 0
   totalDiseasesDuration = 0
@@ -861,6 +1190,54 @@ function analyseSendPatients() {
   endTime = new Date().getTime()
 }
 //End Manager
+//Begin General
+function setCookie(name, value, expires, path, domain) {
+  // set time, it's in milliseconds
+  var today = new Date();
+  today.setTime(today.getTime());
+  if (expires) {
+    expires = expires * 1000 * 60 * 60 * 24;
+  }
+  var expires_date = new Date(today.getTime() + (expires));
+  
+  document.cookie = name + "=" + escape(value) +
+  ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
+  ( ( path ) ? ";path=" + path : "" ) +
+  ( ( domain ) ? ";domain=" + domain : "" );
+}
+function getCookie(check_name) {
+  var a_all_cookies = document.cookie.split( ';' );
+  var a_temp_cookie = '';
+  var cookie_name = '';
+  var cookie_value = '';
+  var b_cookie_found = false; // set boolean t/f default f
+
+  for (i = 0; i < a_all_cookies.length; i++) {
+    // now we'll split apart each name=value pair
+    a_temp_cookie = a_all_cookies[i].split( '=' );
+
+    // and trim left/right whitespace while we're at it
+    cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
+
+    // if the extracted name matches passed check_name
+    if (cookie_name == check_name) {
+      b_cookie_found = true;
+      // we need to handle case where cookie has no value but exists (no = sign, that is):
+      if ( a_temp_cookie.length > 1 ) {
+      	cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
+      }
+      // note that in cases where cookie is initialized but no value, null is returned
+      return cookie_value;
+      break;
+    }
+    a_temp_cookie = null;
+    cookie_name = '';
+  }
+  if (!b_cookie_found) {
+    return null;
+  }
+}
+//End General
 //Begin Script
 addFunctions()
 addJQuery(readyJQuery)
