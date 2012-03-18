@@ -48,6 +48,11 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
+  def khmedhelper
+    @title = t(:title_khmedhelper)
+    find_needed_values
+  end
+
   def khopticalimprovements
     @title = t(:title_khopticalimprovements)
     find_needed_values
