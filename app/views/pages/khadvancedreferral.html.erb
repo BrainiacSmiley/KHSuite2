@@ -4,7 +4,7 @@ KHAdvancedReferral ist die Überweisungsmappe so wie ich sie mir vorstelle.
 </p>
 <p>
 <strong>Welche Version hat KHAdvancement?</strong><br />
-Stand 16.03.12 ist Version 1.0 Beta.<br />
+Stand 24.03.12 ist Version 2.0 Beta.<br />
 </p>
 <p>
 <strong>Wie ist KHAdvancemedReferral entstanden?</strong><br />
@@ -13,32 +13,61 @@ Ich habe die Überweisungsmappe mit den Funktionen versehen, die mir fehlten:
 <ul>
 <li>Die Mappe zählt mir wieviel Patienten gerade ausgewählt sind.</li>
 <li>Die Mappe gibt mir den Gesamterlös der ausgewählten Patienten an.</li>
-<li>Vier Filterblöcke in der Überweisungsmappe:</li>
+<li>Die Mappe zählt mir die Anzahl Krankheiten der ausgewählten Patienten und ihre Beandlungsdauer.</li>
+<li>Zwei Filtersets:<</li>
 <ul>
-  <li>Menü 1:</li>
+  <li>Klassik View mit 5 Filterblöcken in der Überweisungsmappe:</li>
   <ul>
-    <li>keine Pats mit einer Restkrankheit anzeigen</li>
-    <li>nur Pats mit einer Restkrankheit anzeigen</li>
-    <li>keine Pats mit multi Behandlungen für einen Raum anzeigen</li>
-    <li>nur Pats mit multi Behandlungen für einen Raum anzeigen</li>
-  </ul>
-
-  <li>Menü 2:</li>
-  <ul><li>Nach Anzahl Krankheiten filtern</li></ul>
-
-  <li>Menü 3:</li>
-  <ul><li>Nach Empfänger filtern</li></ul>
-
-  <li>Menü 4:</li>
-  <ul><li>Nach Raum filtern</li></ul>
-
-  <li>Menü 5:</li>
-  <ul><li>Nach Krankheiten filtern</li></ul>
+    <li>Menü 1:</li>
+    <ul>
+      <li>keine Pats mit einer Restkrankheit anzeigen</li>
+      <li>nur Pats mit einer Restkrankheit anzeigen</li>
+      <li>keine Pats mit multi Behandlungen für einen Raum anzeigen</li>
+      <li>nur Pats mit multi Behandlungen für einen Raum anzeigen</li>
+    </ul>
   
-  <li>Das rote X</li>
-  <ul><li>entfernt alle Filter</li></ul>
+    <li>Menü 2:</li>
+    <ul><li>Nach Anzahl Krankheiten filtern</li></ul>
+  
+    <li>Menü 3:</li>
+    <ul><li>Nach Empfänger filtern</li></ul>
+  
+    <li>Menü 4:</li>
+    <ul><li>Nach Raum filtern</li></ul>
+  
+    <li>Menü 5:</li>
+    <ul><li>Nach Krankheiten filtern</li></ul>
+    
+    <li>Das rote X</li>
+    <ul><li>entfernt alle Filter</li></ul>
+  </ul>
+  <li>Tiny View mit 3 Filterblöcken und Übersicht aller Krankheiten für die einzelnen Räume:</li>
+  <ul>
+    <li>Menü 1:</li>
+    <ul>
+      <li>keine Pats mit einer Restkrankheit anzeigen</li>
+      <li>nur Pats mit einer Restkrankheit anzeigen</li>
+      <li>keine Pats mit multi Behandlungen für einen Raum anzeigen</li>
+      <li>nur Pats mit multi Behandlungen für einen Raum anzeigen</li>
+    </ul>
+  
+    <li>Menü 2:</li>
+    <ul><li>Nach Anzahl Krankheiten filtern</li></ul>
+  
+    <li>Menü 3:</li>
+    <ul><li>Nach Empfänger filtern</li></ul>
+
+    <li>Das rote X oben</li>
+    <ul><li>entfernt alle Filter</li></ul>
+  
+    <li>Tinys Balken</li>
+    <ul><li>Nach Raum und Krankheiten filtern</li></ul>
+    
+    <li>Das rote X unter Tinys Balken</li>
+    <ul><li>entfernt den Raum/Krankheiten Filter</li></ul>
+  </ul>
 </ul>
-<li>Die Spalten Name, Krankheiten, Empfänger und Kosten lassen sich auf- oder absteigend sortieren</li>
+<li>Die Spalten Name, Krankheiten, Punkte, Kosten, ht/Min, und Punkte/Min lassen sich auf- oder absteigend sortieren</li>
 </ul>
 </p>
 <p>
@@ -50,9 +79,13 @@ Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, be
 Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
 </p>
 <p>
+<strong>Wieso steht in der Punktespalte ne -1?</strong><br />
+Dann ist nicht bekannt welche Krankheiten der Patient alle hat. Wird ein Pat nach installation des Skriptes überwiesen, sind die Krakheiten bekannt. Aber bei Pats in der Mappe die schon vor dem Skript drin waren, muß einmal die Überweisungsübersicht aufgerufen werden. Danach kann man mit den kleinen links rechts Pfeilen durch alle Überweisungen blättenr und schon können die Punkte überall berechnet werden.
+</p>
+<p>
 <strong>Wo bekomme ich KHAdvancedReferral her?</strong><br />
 Das gibt es hier:<br />
-<a href="../tools/khadvancedreferral/KHAdvancedReferral.user.js">KHAdvancedReferral 1.0 Beta</a>
+<a href="../tools/khadvancedreferral/KHAdvancedReferral.user.js">KHAdvancedReferral 2.0 Beta</a>
 </p>
 <p>
 <strong>Wie installiere ich KHAdvancedReferral?</strong><br />

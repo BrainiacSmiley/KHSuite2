@@ -21,6 +21,7 @@ function readyJQuery() {
   //Interval Function
   window.setInterval("recogniseKHAdvancedReferralWindow()", 100)
   window.setInterval("recogniseKHAdvancedReferralOptionsWindow()", 100)
+  //window.setInterval("savePatientDiseasesStorage(), 5000")
 }
 
 function addAccounting(callback) {
@@ -43,12 +44,11 @@ variablen.push("numberOfSendPats = 0")
 variablen.push("numberOfHiddenSendPats = 0")
 variablen.push("totalSendPrice = 0")
 variablen.push("totalRecievePrice = 0")
-variablen.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empfänger\", \"Kosten\")")
+variablen.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empfänger\", \"Punkte\", \"Kosten\", \"hT/Min\", \"Pkt/Min\")")
 variablen.push("columnToSort = -1")
 variablen.push("sortingDirection = 0")
 variablen.push("countedDiseases = new Array()")
 variablen.push("totalDiseasesCount = 0")
-variablen.push("diseaseDurations = new Array()")
 variablen.push("totalDiseasesDuration = 0")
 variablen.push("sendDiseases")
 variablen.push("sendReciever")
@@ -63,11 +63,16 @@ variablen.push("startTime = 0")
 variablen.push("endTime = 0")
 variablen.push("debug = false")
 variablen.push("tiny = false")
+variablen.push("points = false")
 variablen.push("tinyCountedRooms = new Array()")
 variablen.push("tinyCountedDiseases = new Array()")
+variablen.push("levelBonus = 0.025")
+variablen.push("patientDiseasesStorage = new Object()")
+variablen.push("wwLevel = 0")
+variablen.push("patientIDsInReferral = new Array()")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, formatPrices, recogniseKHAdvancedReferralOptionsWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, removeTinyFilter, getTinyFilterString, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getTinyFilterString, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -84,123 +89,8 @@ function addFunctions() {
 //End Injection
 //Begin Manager
 function initKHAdvancedReferral() {
-  diseaseDurations = new Array()
-  diseaseDurations[1] = 4800
-  diseaseDurations[2] = 9600
-  diseaseDurations[3] = 600
-  diseaseDurations[4] = 600
-  diseaseDurations[5] = 9600
-  diseaseDurations[6] = 1800
-  diseaseDurations[7] = 14400
-  diseaseDurations[8] = 9600
-  diseaseDurations[9] = 8400
-  diseaseDurations[10] = 5400
-  diseaseDurations[11] = 7200
-  diseaseDurations[12] = 9600
-  diseaseDurations[13] = 18000
-  diseaseDurations[14] = 21600
-  diseaseDurations[15] = 57600
-  diseaseDurations[16] = 18600
-  diseaseDurations[17] = 15600
-  diseaseDurations[18] = 5400
-  diseaseDurations[19] = 14400
-  diseaseDurations[20] = 25200
-  diseaseDurations[21] = 12000
-  diseaseDurations[22] = 18000
-  diseaseDurations[23] = 5400
-  diseaseDurations[24] = 36000
-  diseaseDurations[26] = 7200
-  diseaseDurations[27] = 28800
-  diseaseDurations[28] = 13200
-  diseaseDurations[29] = 18000
-  diseaseDurations[30] = 8400
-  diseaseDurations[31] = 7500
-  diseaseDurations[32] = 43200
-  diseaseDurations[33] = 5400
-  diseaseDurations[34] = 10800
-  diseaseDurations[35] = 1800
-  diseaseDurations[36] = 6000
-  diseaseDurations[37] = 3600
-  diseaseDurations[38] = 50400
-  diseaseDurations[39] = 10800
-  diseaseDurations[40] = 16200
-  diseaseDurations[41] = 57600
-  diseaseDurations[42] = 12600
-  diseaseDurations[43] = 25200
-  diseaseDurations[44] = 6300
-  diseaseDurations[45] = 6000
-  diseaseDurations[46] = 5400
-  diseaseDurations[47] = 14400
-  diseaseDurations[48] = 9000
-  diseaseDurations[49] = 9000
-  diseaseDurations[50] = 21600
-  diseaseDurations[51] = 13200
-  diseaseDurations[52] = 64800
-  diseaseDurations[53] = 14400
-  diseaseDurations[54] = 43200
-  diseaseDurations[55] = 28800
-  diseaseDurations[56] = 18600
-  diseaseDurations[57] = 14400
-  diseaseDurations[58] = 43200
-  diseaseDurations[59] = 18000
-  diseaseDurations[60] = 43200
-  diseaseDurations[61] = 12600
-  diseaseDurations[62] = 21600
-  diseaseDurations[63] = 14400
-  diseaseDurations[64] = 21600
-  diseaseDurations[65] = 28800
-  diseaseDurations[66] = 9000
-  diseaseDurations[67] = 10800
-  diseaseDurations[68] = 21600
-  diseaseDurations[69] = 86400
-  diseaseDurations[70] = 12600
-  diseaseDurations[71] = 9000
-  diseaseDurations[72] = 23400
-  diseaseDurations[73] = 27000
-  diseaseDurations[74] = 18000
-  diseaseDurations[75] = 28800
-  diseaseDurations[76] = 14400
-  diseaseDurations[77] = 17100
-  diseaseDurations[78] = 10800
-  diseaseDurations[79] = 8400
-  diseaseDurations[80] = 14400
-  diseaseDurations[81] = 17100
-  diseaseDurations[82] = 14400
-  diseaseDurations[83] = 13500
-  diseaseDurations[84] = 7200
-  diseaseDurations[85] = 10800
-  diseaseDurations[86] = 12600
-  diseaseDurations[87] = 7200
-  diseaseDurations[88] = 14400
-  diseaseDurations[89] = 13500
-  diseaseDurations[90] = 28800
-  diseaseDurations[91] = 21600
-  diseaseDurations[92] = 26400
-  diseaseDurations[93] = 18000
-  diseaseDurations[94] = 17100
-  diseaseDurations[95] = 43200
-  diseaseDurations[96] = 7200
-  diseaseDurations[97] = 14400
-  diseaseDurations[98] = 12900
-  diseaseDurations[99] = 12000
-  diseaseDurations[100] = 12000
-  diseaseDurations[101] = 43200
-  diseaseDurations[102] = 14400
-  diseaseDurations[103] = 14400
-  diseaseDurations[104] = 14400
-  diseaseDurations[105] = 28800
-  diseaseDurations[106] = 18000
-  diseaseDurations[107] = 10200
-  diseaseDurations[108] = 7200
-  diseaseDurations[109] = 28800
-  diseaseDurations[110] = 18000
-  diseaseDurations[111] = 15720
-  diseaseDurations[112] = 7200
-  diseaseDurations[113] = 10800
-  diseaseDurations[114] = 28800
-
   //restoreSelection Options from Cookie
-  storedTinyOptions = getCookie("KHTinyOptions" + jQuery('#username').text())
+  storedTinyOptions = getCookie("KHAdvancedReferralTinyOptions" + jQuery('#username').text())
   if (storedTinyOptions != null) {
     if (storedTinyOptions == "true") {
       tiny = true
@@ -211,17 +101,90 @@ function initKHAdvancedReferral() {
     tiny = true
   }
 
+  //restoreDisplay witch column
+  storedPointsOptions = getCookie("KHAdvancedReferralPointsOptions" + jQuery('#username').text())
+  if (storedPointsOptions != null) {
+    if (storedPointsOptions == "true") {
+      points = true
+    } else if (storedPointsOptions == "false") {
+      points = false
+    }
+  } else {
+    points = false
+  }
+
+  //restore WWCookie
+  storedWWLevel = getCookie("KHWWLevel" + jQuery('#username').text())
+  if (storedWWLevel != null) {
+    wwLevel = storedWWLevel
+  } else {
+    wwLevel = 0
+  }
+
   //check if Dev Mode
   if (window.location.search == "?dev") {
     debug = true
   } else {
     debug = false
   }
+  
+  //restore patientDiseaseStorage
+  patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
+}
+function saveWWConfig() {
+  wwLevel = jQuery('#wwLevel').val()
+  var cookieName = "KHWWLevel" + jQuery('#username').text()
+  setCookie(cookieName, wwLevel, 100, "/", window.location.hostname)
 }
 function recogniseKHAdvancedReferralWindow() {
   if (jQuery('div#referrals').is(':visible')) {
-    progressKHAdvancedReferralWindow()
+    if (jQuery('div#ref_divdetailsbig').is(':visible') &&
+       (jQuery('div#ref_divdetailsbig').css('background-image') == "url(http://pics.kapihospital.de/bg_referral_02.jpg)" ||
+        jQuery('div#ref_divdetailsbig').css('background-image') == "url(\"http://pics.kapihospital.de/bg_referral_02.jpg\")")) {
+      progressAdvancedReferralReferralDetailWindow()
+    } else {
+      progressKHAdvancedReferralWindow()
+    }
+  } else if (jQuery('div#msgwindow').is(':visible')) {
+    if (jQuery('div#msgwindow').css('background-image') == "url(http://pics.kapihospital.de/medicalrecord_1.png)" ||
+        jQuery('div#msgwindow').css('background-image') == "url(\"http://pics.kapihospital.de/medicalrecord_1.png\")") {
+      progressAdvancedReferralPatientViewWindow()
+    }
   }
+}
+function progressAdvancedReferralPatientViewWindow() {
+  patientID = jQuery(jQuery('div#med_price').children()[0]).text().split(" ")[1]*1
+  patientDiseasesStorage["p"+patientID] = Global.refPatients.get("p" + patientID).diseases
+}
+function progressAdvancedReferralReferralDetailWindow() {
+  patientID = jQuery('div#ref_detnoicon').attr('onclick').split("(")[1].split(",")[0]*1
+  diseases = new Array(jQuery('div[class^=d_a_50]', jQuery('div#ref_detdis')).length)
+  diseasesFromWindow = jQuery('div[class^=d_a_50]', jQuery('div#ref_detdis'))
+  for (var i = 0; i < diseasesFromWindow.length; i++) {
+    diseases[i] = jQuery(diseasesFromWindow[i]).attr('class').split(" ")[1].split("_")[1]*1
+  }
+  patientDiseasesStorage["p"+patientID] = diseases
+  
+  //only for debuging and bonus calculation
+  basePointsFromUpjers = jQuery(jQuery('div#ref_detcost').children()[0]).text().split(" ")[2]*1
+  basePointsCalculated = getBasePointsForPatient(patientID, true)
+  differenze = basePointsFromUpjers - basePointsCalculated
+  if (!jQuery('div#mypionts').length) {
+    jQuery('<div id="mypionts">Berechnete Punkte: ' + basePointsCalculated + ' | Differenz: ' + differenze + '</div>').appendTo('div#ref_detcost')
+  }
+  //end debugging bonus calculation
+}
+function savePatientDiseasesStorage() {
+  //cleaning of patientDiseasesStorage
+  for (var p in patientDiseasesStorage) {
+    if (!isInArray(patientIDsInReferral, p)) {
+      delete patientDiseasesStorage[p]
+    }
+  }
+  //remove old version from localStorage
+  localStorage.removeItem('patientDiseasesStorage');
+  //write actual version to localStorage
+  localStorage.setItem('patientDiseasesStorage', JSON.stringify(patientDiseasesStorage));
 }
 function recogniseKHAdvancedReferralOptionsWindow() {
   if (jQuery('div#b').length && !jQuery('div#KHAdvancedReferralOptions').length) {
@@ -232,21 +195,38 @@ function progressKHAdvancedReferralAccountOptionsWindow() {
   if (!jQuery('div#KHOptions').length) {
     jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
   }
-  jQuery('<div id="KHAdvancedReferralOptions">Filter: <select id="khadvancedreferralconfig" onChange="saveKHAdvancedReferralConfig()"><option>Classic</option><option>Tiny</option></select></div>').appendTo('div#KHOptions')
+  jQuery('<div id="KHAdvancedReferralOptions">Filter Ansicht: <select id="khadvancedreferralconfigfilter" onChange="saveKHAdvancedReferralConfig()"><option>Classic</option><option>Tiny</option></select>&nbsp;Pro Zeit Spalte: <select id="khadvancedreferralconfigcolumn" onChange="saveKHAdvancedReferralConfig()"><option>hT</option><option>Punkte</option></div>').appendTo('div#KHOptions')
   if (tiny) {
-    jQuery('select#khadvancedreferralconfig').val('Tiny')
+    jQuery('select#khadvancedreferralconfigfilter').val('Tiny')
   } else {
-    jQuery('select#khadvancedreferralconfig').val('Classic')
+    jQuery('select#khadvancedreferralconfigfilter').val('Classic')
   }
+  if (points) {
+    jQuery('select#khadvancedreferralconfigcolumn').val('Punkte')
+  } else {
+    jQuery('select#khadvancedreferralconfigcolumn').val('hT')
+  }
+  if (!jQuery('div#KHWWConfig').length) {
+    jQuery('<div id="KHWWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').appendTo('div#KHOptions')
+  }
+
 }
 function saveKHAdvancedReferralConfig() {
-  if (jQuery('select#khadvancedreferralconfig').val() == "Tiny") {
+  if (jQuery('select#khadvancedreferralconfigfilter').val() == "Tiny") {
     tiny = true
   } else {
     tiny = false
   }
-  var cookieName = "KHTinyOptions" + jQuery('#username').text()
+  var cookieName = "KHAdvancedReferralTinyOptions" + jQuery('#username').text()
   setCookie(cookieName, tiny, 100, "/", window.location.hostname)
+
+  if (jQuery('select#khadvancedreferralconfigcolumn').val() == "Punkte") {
+    points = true
+  } else {
+    points = false
+  }
+  var cookieName = "KHAdvancedReferralPointsOptions" + jQuery('#username').text()
+  setCookie(cookieName, points, 100, "/", window.location.hostname)
 }
 function getLongTimeString(time, shortStrings) {
   years = Math.floor(time / 31622400)
@@ -429,12 +409,25 @@ function progressKHAdvancedReferralWindow() {
       updateTotalPrice()
       
       //add Sorting
-      if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length === 5) {
+      if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length > 0) {
         jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'changeSorting(0)')
         jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'changeSorting(1)')
+        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1]).attr('style', 'width:96px;')
         jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'changeSorting(2)')
-        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[3].setAttribute('onclick', 'changeSorting(3)')
+        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2]).hide()
+        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:62px;" title="Punkte mit Medis" onclick="changeSorting(3)">' + headers[3] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2])
+        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4].setAttribute('onclick', 'changeSorting(4)')
+        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4]).attr('style', 'width:79px;')
+        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="Punkte pro Minute Behandlungszeit mit Medis" onclick="changeSorting(5)">' + headers[5] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4])
+        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="hT\'s pro Minute Behandlungszeit mit Medis" onclick="changeSorting(6)">' + headers[6] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[5])
       }
+      //depending on Config hide ht/Min or p/min
+      if (points) {
+        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[5]).hide()
+      } else {
+        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[6]).hide()
+      }
+
       //restoreOld Sorting Options
       if (columnToSort != -1 && sortingDirection != 0) {
         setSortingIcons()
@@ -673,7 +666,7 @@ function changeSorting(column) {
   sortPatients()
 }
 function setSortingIcons() {
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < headers.length; i++) {
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).text(headers[i])
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).css('padding-bottom', '0px')
     jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).css('margin-top', '0px')
@@ -848,6 +841,18 @@ function sortPatients() {
     })
   } else if (columnToSort === 3) {
     $sortedPats = patsToSort.mergeSort(function (left, right) {
+      left = getPoints(left)*1
+      right = getPoints(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  } else if (columnToSort === 4) {
+    $sortedPats = patsToSort.mergeSort(function (left, right) {
       left = getPrice(left)*1
       right = getPrice(right)*1
       if (left < right) {
@@ -858,18 +863,53 @@ function sortPatients() {
         return 1 * sortingDirection;
       }
     })
+  } else if (columnToSort === 5) {
+    $sortedPats = patsToSort.mergeSort(function (left, right) {
+      left = gethTPerTime(left)*1
+      right = gethTPerTime(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
+  } else if (columnToSort === 6) {
+    $sortedPats = patsToSort.mergeSort(function (left, right) {
+      left = getPointsPerTime(left)*1
+      right = getPointsPerTime(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    })
   }
-  $sortedPats.insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4])
+  $sortedPats.insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length-1])
 }
 function getPrice(object) {
-  var priceToParse = jQuery(jQuery('.ref_spatline', object)[3]).text()
+  if (jQuery('.ref_spatline', object).length == 5) {
+    var priceToParse = jQuery(jQuery('.ref_spatline', object)[3]).text()
+  } else {
+    var priceToParse = jQuery(jQuery('.ref_spatline', object)[4]).text()
+  }
   return formatPrices(priceToParse.substr(0, priceToParse.indexOf(' '))).replace(",",".")
+}
+function getPoints(object) {
+  if (jQuery('.ref_spatline', object).length > 5) {
+    return jQuery(jQuery('.ref_spatline', object)[3]).text()
+  } else {
+    return -1
+  }
 }
 function formatPrices(priceToFormat) {
   return priceToFormat.replace(".", "")
 }
 function getDiseasesDuration(id) {
-  return diseaseDurations[id]
+  return Global.availableDiseases[id].basetime
 }
 function getMultiRooms(object) {
  rooms = new Array()
@@ -1080,6 +1120,85 @@ function checkAllSendPatients() {
     addTinyOptions()
   }
 }
+function getDiseaseBasePoints(diseaseId) {
+  healTime = Global.availableDiseases["" + diseaseId].basetime
+  healTimeMin = healTime / 60
+  healTimeWithMedi = healTimeMin / 2
+  levelNeeded = Global.availableDiseases["" + diseaseId].level
+  return Math.pow(Math.ceil(healTimeWithMedi / 10), 1.5) + 1 + levelNeeded
+}
+function getPointsForDisease(diseaseId, level, medsUsed) {
+  if (medsUsed) {
+    return getDiseaseBasePoints(diseaseId) * (levelBonus*(level-1)+1)
+  } else {
+    return (getDiseaseBasePoints(diseaseId)-1) * (levelBonus*(level-1)+1)
+  }
+}
+function getBasePointsForPatient(patientId, medsUsed) {
+  allDiseasesBasePoints = 0
+  if (patientDiseasesStorage["p"+patientId]) {
+    allDiseases = patientDiseasesStorage["p"+patientId]
+    for (var i = 0; i < allDiseases.length; i++) {
+      if (medsUsed) {
+        allDiseasesBasePoints += getDiseaseBasePoints(allDiseases[i])
+      } else {
+        allDiseasesBasePoints += getDiseaseBasePoints(allDiseases[i])-1
+      }
+    }
+    return allDiseasesBasePoints
+  } else {
+    return -1
+  }
+}
+function getPointsForPatient(patientId, level, medsUsed) {
+  pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(allDiseases.length))*((level-1)*levelBonus+1))
+  if (wwLevel == 10) {
+    pointsWithWWBonus = pointsForPiper * 1.05 * 1.05 * 1.1
+  } else if (wwLevel >= 6) {
+    pointsWithWWBonus = pointsForPiper * 1.05 * 1.05
+  } else if (wwLevel >= 1) {
+    pointsWithWWBonus = pointsForPiper * 1.05
+  }
+  officePoints = Math.floor(pointsWithWWBonus)
+  return officePoints
+}
+function BonusForMultiDiseases(numberOfDiseases) {
+  switch (numberOfDiseases) {
+    case 1:
+      return 0
+    case 2:
+      return (0.37722 + 0.38499) / 2
+    case 3:
+      return (0.94791 + 0.96850) / 2
+    case 4:
+      return (1.65636 + 1.65701) / 2
+    case 5:
+      return (2.46768 + 2.56625) / 2
+    case 6:
+      return (3.38966 + 3.39235) / 2
+  }
+}
+function getPatientId(patient) {
+  return jQuery(patient).attr('onclick').split("(")[1].split(",")[0]*1
+}
+function getRestTreatmentTimeMin(object) {
+  allDiseases = getDiseases(object)
+  totalTreatmentTime = 0
+  for (var i = 0; i < allDiseases.length; i++) {
+    totalTreatmentTime += getDiseasesDuration(getDiseaseID(allDiseases[i]))
+  }
+  return totalTreatmentTime = totalTreatmentTime / 2 / 60
+}
+function gethTPerTime(object) {
+  payment = getPrice(object)
+  restTreatmentTimeMin = getRestTreatmentTimeMin(object)
+  return payment / restTreatmentTimeMin
+}
+function getPointsPerTime(object, patientId, level, medsUsed) {
+  restTreatmentTimeMin = getRestTreatmentTimeMin(object)
+  totalPoints = getPointsForPatient(patientId, level, medsUsed)
+  return totalPoints / restTreatmentTimeMin
+}
 function analyseSendPatients() {
   //add number of Send Patients
   startTime = new Date().getTime()
@@ -1093,9 +1212,54 @@ function analyseSendPatients() {
   sendDiseasesNames = new Array()
   tinyCountedDiseases = new Array()
   tinyCountedRooms = new Array()
+  patientIDsInReferral = new Array()
+  levelString = jQuery('#level').text()
+  level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1
   jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).each(function() {
+    patientId = getPatientId(this)
+
     //counting
     numberOfSendPats++
+
+    //adding the ID to Array
+    patientIDsInReferral.push("p"+patientId)
+
+    //add Points
+    if (jQuery('[class=ref_spatline]', this).length == 5) {
+      jQuery(jQuery('[class=ref_spatline]', this)[2]).hide()
+      jQuery('<div class="ref_spatline" style="width:62px;">' + getPointsForPatient(patientId, level, true) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[2])
+    }
+    //add hT/Min
+    var options = {
+      symbol: "hT",
+      decimal : ",",
+      thousand: ".",
+      precision : 2,
+      format: "%v %s"
+    };
+    if (jQuery('[class=ref_spatline]', this).length == 6) {
+      jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(gethTPerTime(this), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[4])
+    }
+    //add points/Min
+    var options = {
+      decimal : ",",
+      thousand: ".",
+      precision : 2,
+      format: "%v"
+    };
+    if (jQuery('[class=ref_spatline]', this).length == 7) {
+      jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(this, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[5])
+    }
+    //depending on Config hide ht/Min or p/min
+    if (points) {
+      jQuery(jQuery('[class=ref_spatline]', this)[5]).hide()
+    } else {
+      jQuery(jQuery('[class=ref_spatline]', this)[6]).hide()
+    }
+    
+    //changeColums Width
+    jQuery(jQuery('[class=ref_spatline]', this)[1]).attr('style', 'width:96px;')
+    jQuery(jQuery('[class=ref_spatline]', this)[4]).attr('style', 'width:79px;')
 
     //Options
     numberOfDiseases = countDiseases(this)
@@ -1191,6 +1355,7 @@ function analyseSendPatients() {
     }
   }
   endTime = new Date().getTime()
+  savePatientDiseasesStorage()
 }
 //End Manager
 //Begin General
