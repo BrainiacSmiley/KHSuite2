@@ -129,9 +129,6 @@ function initKHAdvancedReferral() {
   
   //restore patientDiseaseStorage
   patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
-  if (patientDiseasesStorage == undefined) {
-    patientDiseasesStorage = new Object()
-  }
 }
 function saveWWConfig() {
   wwLevel = jQuery('#wwLevel').val()
@@ -1153,7 +1150,7 @@ function getBasePointsForPatient(patientId, medsUsed) {
   }
 }
 function getPointsForPatient(patientId, level, medsUsed) {
-  pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(patientDiseasesStorage["p"+patientId].length))*((level-1)*levelBonus+1))
+  pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(allDiseases.length))*((level-1)*levelBonus+1))
   pointsWithWWBonus = pointsForPiper
   
   if (wwLevel == 10) {
@@ -1163,6 +1160,7 @@ function getPointsForPatient(patientId, level, medsUsed) {
   } else if (wwLevel >= 1) {
     pointsWithWWBonus = pointsForPiper * 1.05
   }
+  
   officePoints = Math.floor(pointsWithWWBonus)
   return officePoints
 }
