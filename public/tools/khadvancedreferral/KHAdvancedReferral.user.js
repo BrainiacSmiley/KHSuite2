@@ -71,7 +71,7 @@ variablen.push("wwLevel = 0")
 variablen.push("patientIDsInReferral = new Array()")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, pointsWithWWBonus, getBasePointsForPatient, getTinyFilterString, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getTinyFilterString, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -1154,6 +1154,8 @@ function getBasePointsForPatient(patientId, medsUsed) {
 }
 function getPointsForPatient(patientId, level, medsUsed) {
   pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(patientDiseasesStorage["p"+patientId].length))*((level-1)*levelBonus+1))
+  pointsWithWWBonus = pointsForPiper
+  
   if (wwLevel == 10) {
     pointsWithWWBonus = pointsForPiper * 1.05 * 1.05 * 1.1
   } else if (wwLevel >= 6) {
