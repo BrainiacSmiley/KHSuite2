@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       2.0b
+// @version       2.0 b
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -128,7 +128,9 @@ function initKHAdvancedReferral() {
   }
   
   //restore patientDiseaseStorage
-  patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
+  if (localStorage.getItem('patientDiseasesStorage') != undefined) {
+    patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
+  }
 }
 function saveWWConfig() {
   wwLevel = jQuery('#wwLevel').val()
@@ -1150,19 +1152,23 @@ function getBasePointsForPatient(patientId, medsUsed) {
   }
 }
 function getPointsForPatient(patientId, level, medsUsed) {
-  pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(allDiseases.length))*((level-1)*levelBonus+1))
-  pointsWithWWBonus = pointsForPiper
-  
-  if (wwLevel == 10) {
-    pointsWithWWBonus = pointsForPiper * 1.05 * 1.05 * 1.1
-  } else if (wwLevel >= 6) {
-    pointsWithWWBonus = pointsForPiper * 1.05 * 1.05
-  } else if (wwLevel >= 1) {
-    pointsWithWWBonus = pointsForPiper * 1.05
+  if (patientDiseasesStorage["p"+patientId] != undefined) {
+    pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(patientDiseasesStorage["p"+patientId].length))*((level-1)*levelBonus+1))
+    pointsWithWWBonus = pointsForPiper
+    
+    if (wwLevel == 10) {
+      pointsWithWWBonus = pointsForPiper * 1.05 * 1.05 * 1.1
+    } else if (wwLevel >= 6) {
+      pointsWithWWBonus = pointsForPiper * 1.05 * 1.05
+    } else if (wwLevel >= 1) {
+      pointsWithWWBonus = pointsForPiper * 1.05
+    }
+    
+    officePoints = Math.floor(pointsWithWWBonus)
+    return officePoints
+  } else {
+    return -1
   }
-  
-  officePoints = Math.floor(pointsWithWWBonus)
-  return officePoints
 }
 function BonusForMultiDiseases(numberOfDiseases) {
   switch (numberOfDiseases) {
