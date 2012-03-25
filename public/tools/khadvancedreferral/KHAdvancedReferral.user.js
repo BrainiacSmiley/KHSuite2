@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       2.0 b
+// @version       2.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -69,9 +69,10 @@ variablen.push("levelBonus = 0.025")
 variablen.push("patientDiseasesStorage = new Object()")
 variablen.push("wwLevel = 0")
 variablen.push("patientIDsInReferral = new Array()")
+variablen.push("pointsCalculation = true")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getTinyFilterString, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -878,8 +879,8 @@ function sortPatients() {
     })
   } else if (columnToSort === 6) {
     $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getPointsPerTime(left)*1
-      right = getPointsPerTime(right)*1
+      left = getPointsPerTimeSorting(left)*1
+      right = getPointsPerTimeSorting(right)*1
       if (left < right) {
         return -1 * sortingDirection;
       } else if (left === right) {
@@ -1207,6 +1208,9 @@ function getPointsPerTime(object, patientId, level, medsUsed) {
   totalPoints = getPointsForPatient(patientId, level, medsUsed)
   return totalPoints / restTreatmentTimeMin
 }
+function getPointsPerTimeSorting(object) {
+  return jQuery(jQuery(object).children()[6]).text().replace(",",".")
+}
 function analyseSendPatients() {
   //add number of Send Patients
   startTime = new Date().getTime()
@@ -1234,8 +1238,10 @@ function analyseSendPatients() {
 
     //add Points
     if (jQuery('[class=ref_spatline]', this).length == 5) {
-      jQuery(jQuery('[class=ref_spatline]', this)[2]).hide()
-      jQuery('<div class="ref_spatline" style="width:62px;">' + getPointsForPatient(patientId, level, true) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[2])
+      if (pointsCalculation) {
+        jQuery(jQuery('[class=ref_spatline]', this)[2]).hide()
+        jQuery('<div class="ref_spatline" style="width:62px;">' + getPointsForPatient(patientId, level, true) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[2])
+      }
     }
     //add hT/Min
     var options = {
@@ -1248,21 +1254,23 @@ function analyseSendPatients() {
     if (jQuery('[class=ref_spatline]', this).length == 6) {
       jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(gethTPerTime(this), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[4])
     }
-    //add points/Min
-    var options = {
-      decimal : ",",
-      thousand: ".",
-      precision : 2,
-      format: "%v"
-    };
-    if (jQuery('[class=ref_spatline]', this).length == 7) {
-      jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(this, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[5])
-    }
-    //depending on Config hide ht/Min or p/min
-    if (points) {
-      jQuery(jQuery('[class=ref_spatline]', this)[5]).hide()
-    } else {
-      jQuery(jQuery('[class=ref_spatline]', this)[6]).hide()
+    if (pointsCalculation) {
+      //add points/Min
+      var options = {
+        decimal : ",",
+        thousand: ".",
+        precision : 2,
+        format: "%v"
+      };
+      if (jQuery('[class=ref_spatline]', this).length == 7) {
+        jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(this, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[5])
+      }
+      //depending on Config hide ht/Min or p/min
+      if (points) {
+        jQuery(jQuery('[class=ref_spatline]', this)[5]).hide()
+      } else {
+        jQuery(jQuery('[class=ref_spatline]', this)[6]).hide()
+      }
     }
     
     //changeColums Width
