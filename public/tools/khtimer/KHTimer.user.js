@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHTimer
-// @version       4.0
+// @version       4.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -23,6 +23,7 @@ function readyJQuery() {
     window.setInterval("recogniseTimerWindows()", 1000)
     window.setInterval("progressTimer()", 1000)
     window.setInterval("recogniseTimerOptionsWindow()", 200)
+    loginFunction = window.setInterval("recogniseLoginWindows()", 200)
   })
 }
 //Begin Injection
@@ -43,9 +44,10 @@ variablen.push("SusiTimerConfig = false")
 variablen.push("FinishedTimerConfig = false")
 variablen.push("LogoutTimerConfig = false")
 variablen.push("LogoutTime = 0")
+variablen.push("loginFunction = 0")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHTimer, recogniseTimerWindows, recogniseTimerOptionsWindow, progressPortalLoginWindow, progressMainLoginWindow, progressGarageTimerWindow, progressGarageFinished, progressKHTimerAccountOptionsWindow, setLoginCookie, submitPortalLoginForm, submitMainLoginForm, getTimeString, getTimeStringShort, getTodaysDate, resetCounter, progressTimer, setKHTimerCookies, getMinTimerForFloor, getMinTimerForKH, saveKHTimerConfig, summArray, getFinishedPlaces, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHTimer, recogniseTimerWindows, recogniseLoginWindows, recogniseTimerOptionsWindow, progressSyncCounter, progressPortalLoginWindow, progressMainLoginWindow, progressGarageTimerWindow, progressGarageFinished, progressKHTimerAccountOptionsWindow, setLoginCookie, submitPortalLoginForm, submitMainLoginForm, getTimeString, getTimeStringShort, getTodaysDate, resetCounter, progressTimer, setKHTimerCookies, getMinTimerForFloor, getMinTimerForKH, saveKHTimerConfig, summArray, getFinishedPlaces, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -189,21 +191,26 @@ function initKHTimer() {
   }
 }
 function recogniseTimerWindows() {
-  if (jQuery('div#port_login_top').is(':visible')) {
-    progressPortalLoginWindow()
-  } else if (jQuery('form#login_form').is(':visible')) {
-    progressMainLoginWindow()
-  } else if (jQuery('div#msgwindow').is(':visible')) {
+  if (jQuery('div#msgwindow').is(':visible')) {
     if (jQuery('div#ga_time').is(':visible')) {
       progressGarageTimerWindow()
-    } else if(jQuery('div#ga_finished').is(':visible')) {
+    } else if (jQuery('div#ga_finished').is(':visible')) {
       progressGarageFinished()
+    } else if (jQuery('div#ga_done').is(':visible')) {
+      progressSyncCounter()
     }
   }
 }
 function recogniseTimerOptionsWindow() {
   if (jQuery('div#b').length && !jQuery('div#KHTimerOptions').length) {
     progressKHTimerAccountOptionsWindow()
+  }
+}
+function recogniseLoginWindows() {
+  if (jQuery('div#port_login_top').is(':visible')) {
+    progressPortalLoginWindow()
+  } else if (jQuery('form#login_form').is(':visible')) {
+    progressMainLoginWindow()
   }
 }
 function progressPortalLoginWindow() {
@@ -213,10 +220,14 @@ function progressMainLoginWindow() {
   jQuery('form#login_form').attr('onsubmit', 'return submitMainLoginForm()')
   jQuery('input[type="button"]', jQuery('form#login_form')).attr('onclick', 'submitMainLoginForm()')
 }
+function progressSyncCounter() {
+  garageCounter = jQuery('div#ga_done').text().split(" ")[0]*1
+  setKHTimerCookies()
+}
 function setLoginCookie() {
   var cookieName = "KHLogoutTime"
   var now = Math.floor((new Date()).getTime()/1000)
-  var logoutTime = now + 7200
+  var logoutTime = now + 7200 + 4
   setCookie(cookieName, logoutTime, 100, "/", "." + window.location.hostname)
 }
 function submitPortalLoginForm() {
@@ -469,6 +480,7 @@ function getFinishedPlaces() {
   return finishedPlaces
 }
 function progressTimer() {
+  window.clearInterval(loginFunction)
   var now = Math.floor((new Date()).getTime()/1000)
   if (!roomTimers[Global.selectedFloor]) {
     roomTimers[Global.selectedFloor] = new Array()
@@ -644,7 +656,7 @@ function progressTimer() {
   
   //KHTimer in Document Title
   finishedPatientsTotal = summArray(finishedPatients)
-  title = "Kapi Hospital - Deine kostenlose Browserspiel-Simulation im Krankenhaus!"
+  title = "Kapi Hospital"// - Deine kostenlose Browserspiel-Simulation im Krankenhaus!"
   if (roomTimers[0][0] != -1) {
     if (finishedPatientsTotal > 0) {
       document.title = getTimeString(roomTimers[0][0]-now) + " (" + roomTimers[0][1] + ")" + " | " + finishedPatientsTotal + " | " + title
@@ -683,7 +695,11 @@ function progressTimer() {
     }
   }
   //LogoutTimer tick
-  jQuery('span#timer_logout').text("Logout: " + getTimeString(LogoutTime-now))
+  if (LogoutTime-now > 0) {
+    jQuery('span#timer_logout').text("Logout: " + getTimeString(LogoutTime-now))
+  } else {
+    jQuery('span#timer_logout').text("Bitte reloggen!")
+  }
   if ((LogoutTime-now) <= 30) {
     jQuery('span#timer_logout').css('background-color', 'green')
   } else {

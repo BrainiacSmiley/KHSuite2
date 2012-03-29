@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHShortcuts
-// @version       1.1
+// @version       1.2
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -56,6 +56,14 @@ function readyJQuery() {
             openOlga()
             event.preventDefault();
             break;
+          case 83: // S:Statistik
+            if (Global.ISPREMIUM) {
+              openStatistik()
+              event.preventDefault();
+              break;
+            } else {
+              alert("Statistik ist nur mit PA abrufbar!")
+            }
         }
       }
     },false);
@@ -63,7 +71,7 @@ function readyJQuery() {
 }
 //Begin Injection
 function addFunctions() {
-  var functionsToAdd = new Array(openGarage, openExchange, openReferral, openOlga, goToFloor)
+  var functionsToAdd = new Array(openGarage, openExchange, openReferral, openOlga, openStatistik, goToFloor)
   var script = document.createElement("script");
   
   for (var x = 0; x < functionsToAdd.length; x++) {
@@ -84,6 +92,9 @@ function openReferral() {
 }
 function openOlga() {
   show_page('patientnurse')
+}
+function openStatistik() {
+  show_page('premiumstats')
 }
 function goToFloor(level) {
   if (jQuery('#floor_jump_' + level).length) {
