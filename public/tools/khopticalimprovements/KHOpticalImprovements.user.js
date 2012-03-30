@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHOpticalImprovements
-// @version       1.3.2
+// @version       1.3.3
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -67,7 +67,7 @@ function addFunctions() {
 //Begin OpticalFixes
 function addPointsToNextLevel() {
   var pointsPerLevel = [0, 0, 50, 200, 500, 1000, 3000, 12000, 17000, 28000, 40000, 70000, 115000, 165000, 220000, 280000, 350000, 440000, 550000, 800000, 1100000, 1500000, 1950000, 2450000, 3000000, 3600000, 4250000, 5000000, 6000000, 7250000, 8550000, 9900000, 11300000, 12750000, 14250000, 15800000, 17400000, 19050000, 20750000, 22500000, 24300000, 26150000, 28050000, 30000000, 32000000, 34050000, 36150000, 38300000, 40500000, 42750000, 45050000, 47400000, 49800000, 52250000, 54750000, 57300000, 59900000, 62550000, 65250000, 68000000, 70800000, 73650000, 76550000, 79500000, 82500000, 85550000, 88650000, 91800000, 95000000, 98250000, 99999999]
-  var punkte = jQuery('#pkt').text().replace(".","")*1
+  var punkte = jQuery('#pkt').text().split(".").join("")*1
   var levelString = jQuery('#level').text()
   var userLevel = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1
   var options = {
