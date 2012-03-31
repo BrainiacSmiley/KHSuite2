@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHTimer
-// @version       4.1
+// @version       4.1.1
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -24,6 +24,10 @@ function readyJQuery() {
     window.setInterval("progressTimer()", 1000)
     window.setInterval("recogniseTimerOptionsWindow()", 200)
     loginFunction = window.setInterval("recogniseLoginWindows()", 200)
+    
+    if (window.document.location.pathname == "/main.php") {
+      window.clearInterval(loginFunction)
+    }
   })
 }
 //Begin Injection
@@ -45,6 +49,7 @@ variablen.push("FinishedTimerConfig = false")
 variablen.push("LogoutTimerConfig = false")
 variablen.push("LogoutTime = 0")
 variablen.push("loginFunction = 0")
+variablen.push("detectMainWindowFunction = 0")
 
 function addFunctions() {
   var functionsToAdd = new Array(initKHTimer, recogniseTimerWindows, recogniseLoginWindows, recogniseTimerOptionsWindow, progressSyncCounter, progressPortalLoginWindow, progressMainLoginWindow, progressGarageTimerWindow, progressGarageFinished, progressKHTimerAccountOptionsWindow, setLoginCookie, submitPortalLoginForm, submitMainLoginForm, getTimeString, getTimeStringShort, getTodaysDate, resetCounter, progressTimer, setKHTimerCookies, getMinTimerForFloor, getMinTimerForKH, saveKHTimerConfig, summArray, getFinishedPlaces, setCookie, getCookie)
@@ -215,6 +220,8 @@ function recogniseLoginWindows() {
 }
 function progressPortalLoginWindow() {
   jQuery('#port_login_submit').attr('onclick', 'submitPortalLoginForm()')
+  jQuery('#port_login_submit').attr('onkeypressed', 'submitPortalLoginForm()')
+  
 }
 function progressMainLoginWindow() {
   jQuery('form#login_form').attr('onsubmit', 'return submitMainLoginForm()')
@@ -480,7 +487,6 @@ function getFinishedPlaces() {
   return finishedPlaces
 }
 function progressTimer() {
-  window.clearInterval(loginFunction)
   var now = Math.floor((new Date()).getTime()/1000)
   if (!roomTimers[Global.selectedFloor]) {
     roomTimers[Global.selectedFloor] = new Array()
