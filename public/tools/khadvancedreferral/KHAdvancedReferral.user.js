@@ -68,9 +68,10 @@ variablen.push("patientDiseasesStorage = new Object()")
 variablen.push("wwLevel = 0")
 variablen.push("patientIDsInReferral = new Array()")
 variablen.push("pointsCalculation = true")
+variablen.push("tinyMenuVisible = true")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllPatients, updateTotalPrice, updateTotalPoints, updateSelectedNumberOfPats, removeFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changePatientView, restoreFilterSelection, analysePatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, analysePatient, progressRecievePatients, progressSendPatients, addColumnHeaders, addPatientDiv, getSortingFunction, sortPatientList, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllPatients, updateTotalPrice, updateTotalPoints, updateSelectedNumberOfPats, removeFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changePatientView, restoreFilterSelection, analysePatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, analysePatient, progressRecievePatients, progressSendPatients, addColumnHeaders, addPatientDiv, getSortingFunction, sortPatientList, toggleTinyMenu, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -437,7 +438,11 @@ function progressKHAdvancedReferralWindow() {
       addTinyOptions()
     } else {
       addClassicOptions()
-    }    
+    }
+    //restore Visibility
+    if (!tinyMenuVisible) {
+      jQuery('table#tiny_menu').toggle()
+    }
 
     //addNumberOfSendPatients
     updateSelectedNumberOfPats()
@@ -463,9 +468,17 @@ function progressKHAdvancedReferralWindow() {
 }
 function addTinyOptions() {
   if (jQuery('div#referral_patients_menu').length === 0) {
-    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><center><span style="font-size:9px;" onclick="javascript:jQuery(\'table#tiny_menu\').toggle()">Ein-/Ausblenden</span>&nbsp;&nbsp;Allg. Filter: <select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div></center><table id="tiny_menu" style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertBefore('div#referral_patients_count')
+    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><center><span style="font-size:9px;" onclick="toggleTinyMenu()">Ein-/Ausblenden</span>&nbsp;&nbsp;Allg. Filter: <select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div></center><table id="tiny_menu" style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertBefore('div#referral_patients_count')
   }
   restoreFilterSelection()
+}
+function toggleTinyMenu() {
+  if (tinyMenuVisible) {
+    tinyMenuVisible = false
+  } else {
+    tinyMenuVisible = true
+  }
+  jQuery('table#tiny_menu').toggle()
 }
 function getTinyFilterString() {
   tinyFilterString = "Tiny Filter: "
