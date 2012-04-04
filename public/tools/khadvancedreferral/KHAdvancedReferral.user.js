@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       2.1
+// @version       3.0
 // @include       http://*kapihospital.com/*
 // ==/UserScript==
 
@@ -37,26 +37,24 @@ function readyAccounting() {
 }
 //Begin Injection
 var variablen = new Array()
-variablen.push("send_head_old = \"Von dir überwiesene Patienten\"")
-variablen.push("send_head = \"Ausgewählte Patienten\"")
-variablen.push("numberOfSendPats = 0")
-variablen.push("numberOfHiddenSendPats = 0")
+variablen.push("numberOfPats = 0")
+variablen.push("numberOfHiddenPats = 0")
 variablen.push("totalSendPrice = 0")
+variablen.push("totalPoints = 0")
 variablen.push("totalRecievePrice = 0")
-variablen.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Empfänger\", \"Punkte\", \"Kosten\", \"hT/Min\", \"Pkt/Min\")")
-variablen.push("columnToSort = -1")
-variablen.push("sortingDirection = 0")
+variablen.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Ärzte\", \"Punkte\", \"Kosten\", \"hT/Min\", \"Pkt/Min\")")
+variablen.push("columnsToSort = new Array(0, 0, 0, 0, 0, 0, 0)")
 variablen.push("countedDiseases = new Array()")
 variablen.push("totalDiseasesCount = 0")
 variablen.push("totalDiseasesDuration = 0")
-variablen.push("sendDiseases")
-variablen.push("sendReciever")
-variablen.push("sendRooms")
-variablen.push("sendDiseasesNames")
+variablen.push("diseasesMenuArray")
+variablen.push("doctorsMenuArray")
+variablen.push("roomsMenuArray")
+variablen.push("diseasesNamesMenuArray")
 variablen.push("actualSendPatientsIndex = 0")
 variablen.push("actualSendNumberOfDiseases = \"# Krankheiten\"")
-variablen.push("actualSendRecieverName = \"alle Empfänger\"")
-variablen.push("actualSendRoomsName = \"alle Räume\"")
+variablen.push("actualdoctorsMenuArrayName = \"alle Ärzte\"")
+variablen.push("actualroomsMenuArrayName = \"alle Räume\"")
 variablen.push("actualSendDiseaseName = \"alle Krankheiten\"")
 variablen.push("startTime = 0")
 variablen.push("endTime = 0")
@@ -72,7 +70,7 @@ variablen.push("patientIDsInReferral = new Array()")
 variablen.push("pointsCalculation = true")
 
 function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfSendDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllSendPatients, updateTotalPrice, updateNumberOfSendPats, removeSendFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changeSendPatientView, restoreFilterSelection, analyseSendPatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, setCookie, getCookie)
+  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllPatients, updateTotalPrice, updateTotalPoints, updateSelectedNumberOfPats, removeFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changePatientView, restoreFilterSelection, analysePatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, analysePatient, progressRecievePatients, progressSendPatients, addColumnHeaders, addPatientDiv, getSortingFunction, sortPatientList, setCookie, getCookie)
   var script = document.createElement("script");
   
   for (var x = 0; x < variablen.length; x++) {
@@ -247,11 +245,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " J "
     } else {
-      if (years > 1) {
-        timeString += " Jahre "
-      } else {
-        timeString += " Jahr "
-      }
+      timeString += years > 1 ? " Jahre " : " Jahr "
     }
   }
   if (months > 0) {
@@ -259,11 +253,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " M "
     } else {
-      if (months > 1) {
-        timeString += " Monate "
-      } else {
-        timeString += " Monat "
-      }
+      timeString += months > 1 ? " Monate " : " Monat "
     }
   }
   if (days > 0) {
@@ -271,11 +261,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " T "
     } else {
-      if (days > 1) {
-        timeString += " Tage "
-      } else {
-        timeString += " Tag "
-      }
+      timeString += days > 1 ? " Tage " : " Tag "
     }
   }
   if (hour > 0) {
@@ -283,11 +269,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " Std "
     } else {
-      if (hour > 1) {
-        timeString += " Stunden "
-      } else {
-        timeString += " Stunde "
-      }
+      timeString += hour > 1 ? " Stunden " : " Stunde "
     }
   }
   if (min > 0) {
@@ -295,11 +277,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " min "
     } else {
-      if (min > 1) {
-        timeString += " Minuten "
-      } else {
-        timeString += " Minute "
-      }
+      timeString += min > 1 ? " Minuten " : " Minute "
     }
   }
   if (sek > 0) {
@@ -307,11 +285,7 @@ function getLongTimeString(time, shortStrings) {
     if (shortStrings) {
       timeString += " sek"
     } else {
-      if (sek > 1) {
-        timeString += " Sekunden"
-      } else {
-        timeString += " Sekunde"
-      }
+      timeString += sek > 1 ? " Sekunden " : " Sekunde "
     }
   }
   return timeString.trim()
@@ -378,87 +352,125 @@ function findInArray(array, value) {
   }
   return -1
 }
-function removeSendFilter() {
+function removeFilter() {
   document.getElementById("toggle_patients").selectedIndex = 0
   actualSendPatientsIndex = 0
   document.getElementById("toggle_diseases").selectedIndex = 0
   actualSendNumberOfDiseases = "# Krankheiten"
   document.getElementById("toggle_recievers").selectedIndex = 0
-  actualSendRecieverName = "alle Empfänger"
+  actualdoctorsMenuArrayName = "alle Ärzte"
   document.getElementById('toggle_rooms').selectedIndex = 0
-  actualSendRoomsName = "alle Räume"
+  actualroomsMenuArrayName = "alle Räume"
   actualSendDiseaseName = "alle Krankheiten"
-  checkAllSendPatients()
+  checkAllPatients()
+}
+function addColumnHeaders() {
+  jQuery('<div id="referral_patients_headers">' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:149px;" onclick="changeSorting(0)">Patientenname</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:96px;" onclick="changeSorting(1)">Krankheiten</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:107px;display:none" onclick="changeSorting(2)">Absender</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:62px;" title="Punkte mit Medis" onclick="changeSorting(3)">Punkte</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:79px;" onclick="changeSorting(4)">Kosten</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="Punkte pro Minute Behandlungszeit mit Medis" onclick="changeSorting(5)">hT/Min</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="hT\'s pro Minute Behandlungszeit mit Medis" onclick="changeSorting(6)">Pkt/Min</div>' +
+         '<div class="ref_spatline ref_spatlineheader" style="border-right:none;float:none;width: 45px;">Aktion</div>' +
+         '</div>').insertBefore('div#referral_patients')
+
+  //depending on Config hide ht/Min or p/min
+  if (points) {
+    jQuery(jQuery('div#referral_patients_headers').children()[5]).hide()
+  } else {
+    jQuery(jQuery('div+referral_patients_headers').children()[6]).hide()
+  }
+}
+function addPatientDiv() {
+  if (!jQuery('div#referral_patients').length) {
+    jQuery('<div id="referral_patients_count" style="font-weight:bold;text-align: center; width: 535px; height: 20px; ">Ausgewählte Patienten: </div>').appendTo('div#referrals')
+    jQuery('<div id="referral_patients" style="color:black;width:535px;min-height:50px;overflow-x:hidden;"></div>').appendTo('div#referrals')
+  }
+}
+function progressRecievePatients() {
+  if (jQuery('div#referral_reci_head').length > 0) {
+    jQuery('div#referral_reci_head').css('font-weight', '')
+    jQuery('div#referral_reci_head').text("Überwiesene Patienten")
+    jQuery('div[class^="ref_spatline ref_spatlineheader"]', jQuery('div#referral_reci')).remove()
+    addPatientDiv()
+    jQuery('div#referral_reci').children().remove().appendTo('div#referral_patients')
+    jQuery('div#referral_reci').remove()
+  } else {
+    jQuery('div#referral_reci').hide()
+  }
+}
+function progressSendPatients() {
+  if (jQuery('div#referral_send_head').length > 0) {
+    jQuery('div#referral_send_head').css('font-weight', '')
+    jQuery('div#referral_send_head').text("Ausgelagerte Patienten")
+    jQuery('div[class^="ref_spatline ref_spatlineheader"]', jQuery('div#referral_send')).remove()
+    addPatientDiv()
+    jQuery('div#referral_send').children().remove().appendTo('div#referral_patients')
+    jQuery('div#referral_send').remove()
+  } else {
+    jQuery('div#referral_send').hide()
+  }
 }
 function progressKHAdvancedReferralWindow() {
-  //Wenn nothing to recieve hide
-  if (jQuery('div#referral_reci').is(':visible') && !jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_reci')).length) {
-    jQuery('div#referral_reci').hide()
-    jQuery('br', jQuery('div#referrals')).hide()
+  //recieve
+  progressRecievePatients()
+
+  //always remove spaces between old PatientLists
+  jQuery('br', jQuery('div#referrals')).remove()
+
+  //send
+  progressSendPatients()
+
+  //add Column Headers
+  if (!jQuery('div#referral_patients_headers').length) {
+    addColumnHeaders()
   }
-
-  if (jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).length > 0) {
-    if (jQuery('div#send_options').length === 0) {
-      analyseSendPatients()
   
-      //addNumberOfSendPatients
-      updateNumberOfSendPats()
-        
-      //addNumberOfDiseases
-      updateNumberOfSendDiseases()
-      
-      //addTotalPrice
-      updateTotalPrice()
-      
-      //add Sorting
-      if (jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length > 0) {
-        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[0].setAttribute('onclick', 'changeSorting(0)')
-        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1].setAttribute('onclick', 'changeSorting(1)')
-        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[1]).attr('style', 'width:96px;')
-        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2].setAttribute('onclick', 'changeSorting(2)')
-        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2]).hide()
-        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:62px;" title="Punkte mit Medis" onclick="changeSorting(3)">' + headers[3] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[2])
-        jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4].setAttribute('onclick', 'changeSorting(4)')
-        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4]).attr('style', 'width:79px;')
-        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="Punkte pro Minute Behandlungszeit mit Medis" onclick="changeSorting(5)">' + headers[5] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[4])
-        jQuery('<div class="ref_spatline ref_spatlineheader" style="width:69px;" title="hT\'s pro Minute Behandlungszeit mit Medis" onclick="changeSorting(6)">' + headers[6] + '</div>').insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[5])
-      }
-      //depending on Config hide ht/Min or p/min
-      if (points) {
-        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[5]).hide()
-      } else {
-        jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[6]).hide()
-      }
+  //analyse Patients and Konstrukt Menu
+  if (!jQuery('div#referral_patients_menu').length) {
+    analysePatients()
+    
+    //addMenu
+    if (tiny) {
+      addTinyOptions()
+    } else {
+      addClassicOptions()
+    }    
 
-      //restoreOld Sorting Options
-      if (columnToSort != -1 && sortingDirection != 0) {
-        setSortingIcons()
-        sortPatients()
-      }
-  
-      if (tiny) {
-        addTinyOptions()
-      } else {
-        addClassicOptions()
-      }    
+    //addNumberOfSendPatients
+    updateSelectedNumberOfPats()
+
+    //addTotalPrice
+    updateTotalPrice()
       
-      //debug analyseTime
-      if (debug) {
-        updateAnalyseTime()
-      }
+    //addTotalPoints
+    updateTotalPoints()
+
+    //addNumberOfDiseases
+    updateNumberOfDiseases()
+
+    //restoreOld Sorting Options
+    setSortingIcons()
+    sortPatients()
+
+    //debug analyseTime
+    if (debug) {
+      updateAnalyseTime()
     }
   }
 }
 function addTinyOptions() {
-  if (jQuery('div#send_options').length === 0) {
-    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><center>Allg. Filter: <select id=\"toggle_patients\" onChange=\"changeSendPatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(sendDiseases) + '</select><select id=\"toggle_recievers\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getOptionsString(sendReciever) + '</select><select id=\"toggle_rooms\" onChange=\"changeSendPatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(sendRooms) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeSendFilter()\">&nbsp;</div></center><table style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changeSendPatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(sendDiseasesNames) + '</select></div>').insertBefore('div#referral_send_head')
+  if (jQuery('div#referral_patients_menu').length === 0) {
+    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><center><span style="font-size:9px;" onclick="javascript:jQuery(\'table#tiny_menu\').toggle()">Ein-/Ausblenden</span>&nbsp;&nbsp;Allg. Filter: <select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div></center><table id="tiny_menu" style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertBefore('div#referral_patients_count')
   }
   restoreFilterSelection()
 }
 function getTinyFilterString() {
   tinyFilterString = "Tiny Filter: "
-  if (actualSendRoomsName != "alle Räume") {
-    tinyFilterString += "Raum = " + actualSendRoomsName
+  if (actualroomsMenuArrayName != "alle Räume") {
+    tinyFilterString += "Raum = " + actualroomsMenuArrayName
   }
   if (actualSendDiseaseName != "alle Krankheiten") {
     tinyFilterString += "Krankheit = " + actualSendDiseaseName
@@ -469,10 +481,10 @@ function getTinyFilterString() {
   return tinyFilterString
 }
 function removeTinyFilter() {
-  actualSendRoomsName = "alle Räume"
+  actualroomsMenuArrayName = "alle Räume"
   actualSendDiseaseName = "alle Krankheiten"
   jQuery('div#tiny_filter').text(getTinyFilterString())
-  checkAllSendPatients()
+  checkAllPatients()
 }
 function getRow(id) {
   roomName = Global.availableRooms[id].name
@@ -551,35 +563,38 @@ function getColumn(id) {
   }
 }
 function addClassicOptions() {
-  //add Options
-  if (jQuery('div#send_options').length === 0) {
-    jQuery('<div id=\"send_options\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changeSendPatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(sendDiseases) + '</select><select id=\"toggle_recievers\" onChange=\"changeSendPatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Empfänger</option>' + getOptionsString(sendReciever) + '</select><select id=\"toggle_rooms\" onChange=\"changeSendPatientView()\"><option>alle Räume</option>' + getOptionsString(sendRooms) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:14px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeSendFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changeSendPatientView()\" style=\"margin-left: 210px;\"><option>alle Krankheiten</option>' + getOptionsString(sendDiseasesNames) + '</select></div>').insertAfter('div#referral_send_head')
+  if (jQuery('div#referral_patients_menu').length === 0) {
+    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:14px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertAfter('div#referral_patients_count')
   }
   restoreFilterSelection()
 }
 function restoreFilterSelection() {
   //restoreOptionsSelection
+  changePatientViewNecessary = false
   document.getElementById("toggle_patients").selectedIndex = actualSendPatientsIndex
   index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualSendNumberOfDiseases)
   if (index != -1) {
     document.getElementById("toggle_diseases").selectedIndex = index
   } else {
     document.getElementById("toggle_diseases").selectedIndex = 0
-    changeSendPatientView()
+    changePatientViewNecessary = true
   }
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_recievers")), actualSendRecieverName)
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_recievers")), actualdoctorsMenuArrayName)
   if (index != -1) {
     document.getElementById("toggle_recievers").selectedIndex = index
   } else {
     document.getElementById("toggle_recievers").selectedIndex = 0
-    changeSendPatientView()
+    changePatientViewNecessary = true
   }
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualSendRoomsName)
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualroomsMenuArrayName)
   if (index != -1) {
     document.getElementById("toggle_rooms").selectedIndex = index
   } else {
     document.getElementById("toggle_rooms").selectedIndex = 0
-    changeSendPatientView()
+    changePatientViewNecessary = true
+  }
+  if (changePatientViewNecessary) {
+    changePatientView()
   }
 }
 function updateAnalyseTime() {
@@ -590,21 +605,22 @@ function updateAnalyseTime() {
     jQuery('div#analyse_time').text("Time: " + analyseTime + "ms")
   }
 }
-function updateNumberOfSendDiseases() {
+function updateNumberOfDiseases() {
   if (totalDiseasesCount > 1) {
     diseaseCountString = "Krankheiten"
   } else {
     diseaseCountString = "Krankheit"
   }
   if (jQuery('div#total_diseasecount').length === 0) {
-    jQuery('<div id=\"total_diseasecount\" style="position: absolute; top: 430px; left: 188px;">' + totalDiseasesCount + ' : ' + diseaseCountString + '<br />Behandlungszeit mit Medis: ' + getLongTimeString(totalDiseasesDuration/2, true) + '</div>').insertAfter('div#referrals')
+    jQuery('<div id=\"total_diseasecount\" style="position: absolute; top: 430px; left: 188px;">' + totalDiseasesCount + ' : ' + diseaseCountString + '<br />Behandlungszeiten<br />mit Medis: ' + getLongTimeString(totalDiseasesDuration/2, true) + '<br />ohne Medis: ' + getLongTimeString(totalDiseasesDuration, true) + '</div>').insertAfter('div#referrals')
   } else {
-    jQuery('div#total_diseasecount').html(totalDiseasesCount + " : " + diseaseCountString + "<br />Behandlungszeit mit Medis: " + getLongTimeString(totalDiseasesDuration/2, true))
+    jQuery('div#total_diseasecount').html(totalDiseasesCount + " : " + diseaseCountString + "<br />Behandlungszeiten<br />mit Medis: " + getLongTimeString(totalDiseasesDuration/2, true) + "<br />ohne Medis: " + getLongTimeString(totalDiseasesDuration, true))
   }
 }
-function updateNumberOfSendPats() {
-  totalSendPats = numberOfSendPats-numberOfHiddenSendPats
-  jQuery('div#referral_send_head').text(send_head + ": " + totalSendPats)
+function updateSelectedNumberOfPats() {
+  totalPats = numberOfPats-numberOfHiddenPats
+  jQuery('div#referral_patients_count').text("Ausgewählte Patienten: " + totalPats)
+  
 }
 function updateTotalPrice() {
   totalPrice = totalSendPrice-totalRecievePrice
@@ -619,33 +635,49 @@ function updateTotalPrice() {
   };
 
   if (jQuery('div#total_price').length === 0) {
-    jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 315px;">Summe: ' + accounting.formatMoney(totalPrice, options) + ' (' + accounting.formatMoney(newMoney, options) + ')</div>').insertAfter('div#referrals')
+    jQuery('<div id=\"total_price\" style="position: absolute; top: 430px; left: 315px;">hT: ' + accounting.formatMoney(totalPrice, options) + ' (' + accounting.formatMoney(newMoney, options) + ')</div>').insertAfter('div#referrals')
   } else {
-    jQuery('div#total_price').text("Summe: " + accounting.formatMoney(totalPrice, options) + " (" + accounting.formatMoney(newMoney, options) + ")")
+    jQuery('div#total_price').text("hT: " + accounting.formatMoney(totalPrice, options) + " (" + accounting.formatMoney(newMoney, options) + ")")
+  }
+}
+function updateTotalPoints() {
+  actualPoints = jQuery('span#pkt').text().replace(".","").replace(",",".")*1
+  newPoints = actualPoints + totalPoints
+  var options = {
+    decimal : ",",
+    thousand: ".",
+    precision : 0,
+    format: "%v"
+  };
+
+  if (jQuery('div#total_points').length === 0) {
+    jQuery('<div id=\"total_points\" style="position: absolute; top: 443px; left: 315px;">Punkte: ' + accounting.formatMoney(totalPoints, options) + ' (' + accounting.formatMoney(newPoints, options) + ')</div>').insertAfter('div#referrals')
+  } else {
+    jQuery('div#total_points').text("Punkte: " + accounting.formatMoney(totalPoints, options) + " (" + accounting.formatMoney(newPoints, options) + ")")
   }
 }
 function changeTinyFilter(diseaseName, roomName) {
   actualSendDiseaseName = diseaseName
-  actualSendRoomsName = roomName
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualSendRoomsName)
+  actualroomsMenuArrayName = roomName
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualroomsMenuArrayName)
   if (index != -1) {
     document.getElementById("toggle_rooms").selectedIndex = index
   }
   jQuery('div#tiny_filter').text(getTinyFilterString())
-  checkAllSendPatients()
+  checkAllPatients()
 }
-function changeSendPatientView() {
+function changePatientView() {
   var actualIndex = 0
   actualSendPatientsIndex = document.getElementById("toggle_patients").selectedIndex
   actualIndex = document.getElementById("toggle_diseases").selectedIndex
   actualSendNumberOfDiseases = document.getElementById("toggle_diseases")[actualIndex].value
   actualIndex = document.getElementById("toggle_recievers").selectedIndex
-  actualSendRecieverName = document.getElementById("toggle_recievers")[actualIndex].value
+  actualdoctorsMenuArrayName = document.getElementById("toggle_recievers")[actualIndex].value
   actualIndex = document.getElementById("toggle_rooms").selectedIndex
-  actualSendRoomsName = document.getElementById("toggle_rooms")[actualIndex].value
+  actualroomsMenuArrayName = document.getElementById("toggle_rooms")[actualIndex].value
   actualIndex = document.getElementById("toggle_diseasesNames").selectedIndex
   actualSendDiseaseName = document.getElementById("toggle_diseasesNames")[actualIndex].value
-  checkAllSendPatients()
+  checkAllPatients()
 }
 function getOptionsString(array) {
   var optionsString = ""
@@ -655,38 +687,38 @@ function getOptionsString(array) {
   return optionsString
 }
 function changeSorting(column) {
-  if (columnToSort != column) {
-    columnToSort = column
-    sortingDirection = 1
-  } else {
-    sortingDirection++
-    if (sortingDirection === 2) {
-      sortingDirection = -1
+  if (columnsToSort[column] == 0 && column != 1) {
+    for (var i = 0; i < columnsToSort.length; i++) {
+      if (i != 1) {
+        columnsToSort[i] = 0
+      }
     }
   }
+  columnsToSort[column]++
+  if (columnsToSort[column] === 2) {
+    columnsToSort[column] = -1
+  }
+  
   setSortingIcons()
   sortPatients()
 }
 function setSortingIcons() {
-  for (var i = 0; i < headers.length; i++) {
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).text(headers[i])
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).css('padding-bottom', '0px')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[i]).css('margin-top', '0px')
-  }
-  if (sortingDirection === 0) {
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort])
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '0px')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '0px')
-  } else if (sortingDirection === 1) {
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort] + "  ")
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/up.gif" />')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '2px')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '-2px')
-  } else if (sortingDirection === -1) {
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).text(headers[columnToSort] + "  ")
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/down.gif" />')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('padding-bottom', '2px')
-    jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[columnToSort]).css('margin-top', '-2px')
+  for (var i = 0; i < columnsToSort.length; i++) {
+    if (columnsToSort[i] === 0) {
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i])
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '0px')
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('margin-top', '0px')
+    } else if (columnsToSort[i] === 1) {
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i] + "  ")
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/up.gif" />')
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '2px')
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('margin-top', '-2px')
+    } else if (columnsToSort[i] === -1) {
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i] + "  ")
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/down.gif" />')
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '2px')
+      jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('margin-top', '-2px')
+    }
   }
 }
 function getName(object) {
@@ -726,7 +758,154 @@ function getRooms(object) {
  })
  return rooms
 }
+function getSortingFunction(columnToSort, sortingDirection) {
+  if (columnToSort === 0) {
+    return function (left, right) {
+      left = getName(left)
+      right = getName(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 1) {
+    return function (left, right) {
+      left = countDiseases(left)
+      right = countDiseases(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 2) {
+    return function (left, right) {
+      left = getReciever(left)
+      right = getReciever(right)
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 3) {
+    return function (left, right) {
+      left = getPoints(left)*1
+      right = getPoints(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 4) {
+    return function (left, right) {
+      left = getPrice(left)*1
+      right = getPrice(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 5) {
+    return function (left, right) {
+      left = gethTPerTime(left)*1
+      right = gethTPerTime(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  } else if (columnToSort === 6) {
+    return function (left, right) {
+      left = getPointsPerTimeSorting(left)*1
+      right = getPointsPerTimeSorting(right)*1
+      if (left < right) {
+        return -1 * sortingDirection;
+      } else if (left === right) {
+        return 0;
+      } else {
+        return 1 * sortingDirection;
+      }
+    }
+  }
+}
 function sortPatients() {
+  //remove Pats for sorting
+  reciPatsToSort = jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).remove()
+  sendPatsToSort = jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).remove()
+  
+  numberOfColumnsToSort = 0
+  columnToSort = -1
+  for (var i = 0; i < columnsToSort.length; i++) {
+    if (columnsToSort[i] != 0) {
+      numberOfColumnsToSort++
+      if (i != 1) {
+        columnToSort = i
+      }
+    }
+  }
+  if (numberOfColumnsToSort == 1) {
+    //single Column Sort
+    if (columnToSort == -1) {
+      columnToSort = 1
+    }
+    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+  } else if (numberOfColumnsToSort == 2) {
+    console.log("Two Column Sort")
+    //Double Column Sort
+    //sorting after Column 1
+    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(1, columnsToSort[1]))
+    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(1, columnsToSort[1]))
+    console.log("Original Length: " + jQuery(sendPatsToSort).length)
+    if (columnsToSort[1] == 1) {
+      for (var i = 1; i < 7; i++) {
+        reciPartToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i}))
+        reciPatsToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i}))
+        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        reciPatsToSort = reciPatsToSort.add(reciPartToSort)
+
+        sendPartToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i})
+        sendPatsToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i})
+        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        sendPatsToSort = sendPatsToSort.add(sendPartToSort)
+      }
+    } else if (columnsToSort[1] == -1) {
+      for (var i = 6; i > 0; i--) {
+        reciPartToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i}))
+        reciPatsToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i}))
+        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        reciPatsToSort = reciPatsToSort.add(reciPartToSort)
+
+        sendPartToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i})
+        sendPatsToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i})
+        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        sendPatsToSort = sendPatsToSort.add(sendPartToSort)
+      }
+    }
+  }
+
+  //add Sorted Pats
+  reciPatsToSort.insertAfter('#referral_reci_head')
+  sendPatsToSort.insertAfter('#referral_send_head')
+}
+function sortPatientList(listToSort, sortingFunction) {
   //add Merge Sort
   /*!
    * Merge Sort in JavaScript v1.0
@@ -802,95 +981,7 @@ function sortPatients() {
     }
   }());
   //End Merge Sort
-
-  var patsToSort = jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send'))
-  jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).remove()
-  if (columnToSort === 0) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getName(left)
-      right = getName(right)
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 1) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = countDiseases(left)
-      right = countDiseases(right)
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 2) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getReciever(left)
-      right = getReciever(right)
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 3) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getPoints(left)*1
-      right = getPoints(right)*1
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 4) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getPrice(left)*1
-      right = getPrice(right)*1
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 5) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = gethTPerTime(left)*1
-      right = gethTPerTime(right)*1
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  } else if (columnToSort === 6) {
-    $sortedPats = patsToSort.mergeSort(function (left, right) {
-      left = getPointsPerTimeSorting(left)*1
-      right = getPointsPerTimeSorting(right)*1
-      if (left < right) {
-        return -1 * sortingDirection;
-      } else if (left === right) {
-        return 0;
-      } else {
-        return 1 * sortingDirection;
-      }
-    })
-  }
-  $sortedPats.insertAfter(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send'))[jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_send')).length-1])
+  return listToSort.mergeSort(sortingFunction)
 }
 function getPrice(object) {
   if (jQuery('.ref_spatline', object).length == 5) {
@@ -938,7 +1029,7 @@ function isInArray(array, value) {
 function hidePats(Patient, anzahlKrankheiten) {
   if (countDiseases(Patient) === anzahlKrankheiten) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -946,7 +1037,7 @@ function hidePats(Patient, anzahlKrankheiten) {
 function hidePatsGreater(Patient, anzahlKrankheiten) {
   if (countDiseases(Patient) > anzahlKrankheiten) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -954,7 +1045,7 @@ function hidePatsGreater(Patient, anzahlKrankheiten) {
 function hidePatsExcept(Patient, anzahlKrankheiten) {
   if (countDiseases(Patient) != anzahlKrankheiten) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -962,7 +1053,7 @@ function hidePatsExcept(Patient, anzahlKrankheiten) {
 function hidePatsNotTo(Patient, reciever) {
   if (getReciever(Patient) != reciever) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -970,7 +1061,7 @@ function hidePatsNotTo(Patient, reciever) {
 function hidePatsNotForRoom(Patient, room) {
   if (!isInArray(getRooms(Patient), room)) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -978,7 +1069,7 @@ function hidePatsNotForRoom(Patient, room) {
 function hidePatsNotWithDiseases(Patient, disease) {
   if (!isInArray(getDiseaseNames(Patient), disease)) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -987,13 +1078,13 @@ function hidePatsNotMulti(Patient, room) {
   if (room == "alle Räume") {
     if (!getMultiRooms(Patient).length) {
       jQuery(Patient).hide()
-      numberOfHiddenSendPats++
+      numberOfHiddenPats++
       return true
     }
   } else {
     if (!isInArray(getMultiRooms(Patient), room)) {
       jQuery(Patient).hide()
-      numberOfHiddenSendPats++
+      numberOfHiddenPats++
       return true
     }
   }
@@ -1002,7 +1093,7 @@ function hidePatsNotMulti(Patient, room) {
 function hidePatsMulti(Patient) {
   if (getMultiRooms(Patient).length) {
     jQuery(Patient).hide()
-    numberOfHiddenSendPats++
+    numberOfHiddenPats++
     return true
   }
   return false
@@ -1024,7 +1115,7 @@ function checkIfPatNeedsToBeHidden(patient) {
       return false
     }
   } else if (actualSendPatientsIndex == 4) {
-    if (hidePatsNotMulti(patient, actualSendRoomsName)) {
+    if (hidePatsNotMulti(patient, actualroomsMenuArrayName)) {
       return false
     }
   }
@@ -1035,14 +1126,14 @@ function checkIfPatNeedsToBeHidden(patient) {
     }
   }
   //Recievers Filter
-  if (actualSendRecieverName != "alle Empfänger") {
-    if (hidePatsNotTo(patient, actualSendRecieverName)) {
+  if (actualdoctorsMenuArrayName != "alle Ärzte") {
+    if (hidePatsNotTo(patient, actualdoctorsMenuArrayName)) {
       return false
     }
   }
   //Rooms Filter
-  if (actualSendRoomsName != "alle Räume") {
-    if (hidePatsNotForRoom(patient, actualSendRoomsName)) {
+  if (actualroomsMenuArrayName != "alle Räume") {
+    if (hidePatsNotForRoom(patient, actualroomsMenuArrayName)) {
       return false
     }
   }
@@ -1071,7 +1162,7 @@ function checkIfPatNeedsToBeHiddenByTinyGeneral(patient) {
       return false
     }
   } else if (actualSendPatientsIndex == 4) {
-    if (hidePatsNotMulti(patient, actualSendRoomsName)) {
+    if (hidePatsNotMulti(patient, actualroomsMenuArrayName)) {
       return false
     }
   }
@@ -1082,8 +1173,8 @@ function checkIfPatNeedsToBeHiddenByTinyGeneral(patient) {
     }
   }
   //Recievers Filter
-  if (actualSendRecieverName != "alle Empfänger") {
-    if (hidePatsNotTo(patient, actualSendRecieverName)) {
+  if (actualdoctorsMenuArrayName != "alle Ärzte") {
+    if (hidePatsNotTo(patient, actualdoctorsMenuArrayName)) {
       return false
     }
   }
@@ -1093,8 +1184,8 @@ function checkIfPatNeedsToBeHiddenByTinySpecial(patient) {
   //to ensure that all are visible
   if (jQuery(patient).is(':visible')) {
     //Rooms Filter
-    if (actualSendRoomsName != "alle Räume") {
-      if (hidePatsNotForRoom(patient, actualSendRoomsName)) {
+    if (actualroomsMenuArrayName != "alle Räume") {
+      if (hidePatsNotForRoom(patient, actualroomsMenuArrayName)) {
         return false
       }
     }
@@ -1109,16 +1200,17 @@ function checkIfPatNeedsToBeHiddenByTinySpecial(patient) {
     return false
   }
 }
-function checkAllSendPatients() {
-  analyseSendPatients()
+function checkAllPatients() {
+  analysePatients()
   updateTotalPrice()
-  updateNumberOfSendPats()
-  updateNumberOfSendDiseases()
+  updateTotalPoints()
+  updateSelectedNumberOfPats()
+  updateNumberOfDiseases()
   if (debug) {
     updateAnalyseTime()
   }
   if (tiny) {
-    jQuery(jQuery('div#send_options')).remove()
+    jQuery(jQuery('div#referral_patients_menu')).remove()
     addTinyOptions()
   }
 }
@@ -1205,160 +1297,191 @@ function gethTPerTime(object) {
 }
 function getPointsPerTime(object, patientId, level, medsUsed) {
   restTreatmentTimeMin = getRestTreatmentTimeMin(object)
-  totalPoints = getPointsForPatient(patientId, level, medsUsed)
-  return totalPoints / restTreatmentTimeMin
+  points = getPointsForPatient(patientId, level, medsUsed)
+  return points / restTreatmentTimeMin
 }
 function getPointsPerTimeSorting(object) {
   return jQuery(jQuery(object).children()[6]).text().replace(",",".")
 }
-function analyseSendPatients() {
-  //add number of Send Patients
+function analysePatient(patient, recieved) {
+  patientId = getPatientId(patient)
+
+  //counting
+  numberOfPats++
+
+  //adding the ID to Array
+  patientIDsInReferral.push("p"+patientId)
+  
+  var actualPoints = 0
+  //add Points
+  if (jQuery('[class=ref_spatline]', patient).length == 5) {
+    if (pointsCalculation) {
+      jQuery(jQuery('[class=ref_spatline]', patient)[2]).hide()
+      actualPoints = getPointsForPatient(patientId, level, true)
+      jQuery('<div class="ref_spatline" style="width:62px;">' + actualPoints + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[2])
+    }
+  }
+  //add hT/Min
+  var options = {
+    symbol: "hT",
+    decimal : ",",
+    thousand: ".",
+    precision : 2,
+    format: "%v %s"
+  };
+  if (jQuery('[class=ref_spatline]', patient).length == 6) {
+    jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(gethTPerTime(patient), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[4])
+  }
+  if (pointsCalculation) {
+    //add points/Min
+    var options = {
+      decimal : ",",
+      thousand: ".",
+      precision : 2,
+      format: "%v"
+    };
+    if (jQuery('[class=ref_spatline]', patient).length == 7) {
+      jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(patient, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[5])
+    }
+    //depending on Config hide ht/Min or p/min
+    if (points) {
+      jQuery(jQuery('[class=ref_spatline]', patient)[5]).hide()
+    } else {
+      jQuery(jQuery('[class=ref_spatline]', patient)[6]).hide()
+    }
+  }
+  
+  //changeColums Width
+  jQuery(jQuery('[class=ref_spatline]', patient)[1]).attr('style', 'width:96px;')
+  jQuery(jQuery('[class=ref_spatline]', patient)[4]).attr('style', 'width:79px;')
+
+  //Options
+  numberOfDiseases = countDiseases(patient)
+  if (!isInArray(diseasesMenuArray, numberOfDiseases)) {
+    diseasesMenuArray.push(numberOfDiseases)
+  }
+  reciever = getReciever(patient)
+  if (!isInArray(doctorsMenuArray, reciever)) {
+    doctorsMenuArray.push(reciever)
+  }
+  rooms = getRooms(patient)
+  for (var i = 0; i < rooms.length; i++) {
+    if (!isInArray(roomsMenuArray, rooms[i])) {
+      roomsMenuArray.push(rooms[i])
+    }
+  }
+  diseasesNames = getDiseaseNames(patient)
+  for (var i = 0; i < diseasesNames.length; i++) {
+    if (!isInArray(diseasesNamesMenuArray, diseasesNames[i])) {
+      diseasesNamesMenuArray.push(diseasesNames[i])
+    }
+  }
+  
+  if (tiny) {
+    if (checkIfPatNeedsToBeHiddenByTinyGeneral(patient)) {
+      //totalDiseasesCounting
+      countedDiseasesPatient = new Array()
+      countedRoomsPatient = new Array()
+      for (var i = 0; i < countDiseases(patient); i++) {
+        if (!countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(patient)[i])].room[0]]) {
+          countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(patient)[i])].room[0]] = 1
+        }
+        
+        if (!countedDiseasesPatient[getDiseaseID(getDiseases(patient)[i])]) {
+          countedDiseasesPatient[getDiseaseID(getDiseases(patient)[i])] = 1
+        } else {
+          countedDiseasesPatient[getDiseaseID(getDiseases(patient)[i])]++
+        }
+      }
+  
+      for (var i = 0; i < countedDiseasesPatient.length; i++) {
+        if (countedDiseasesPatient[i] > 0) {
+          if (!tinyCountedDiseases[i]) {
+            tinyCountedDiseases[i] = 0
+          }
+          tinyCountedDiseases[i] += countedDiseasesPatient[i]
+        }
+      }
+      for (var i = 0; i < countedRoomsPatient.length; i++) {
+        if (countedRoomsPatient[i] > 0) {
+          if (!tinyCountedRooms[i]) {
+          tinyCountedRooms[i] = 0
+          }
+          tinyCountedRooms[i] += countedRoomsPatient[i]
+        }
+      }
+    }
+  }
+
+  //restoreFilter
+  if (tiny) {
+    isPatientNotHidden = checkIfPatNeedsToBeHiddenByTinySpecial(patient)
+  } else {
+    isPatientNotHidden = checkIfPatNeedsToBeHidden(patient)
+  }
+  if (isPatientNotHidden) {
+    //price
+    if (recieved) {
+      totalRecievePrice += getPrice(patient)*1
+    } else {
+      totalSendPrice += getPrice(patient)*1
+    }
+    //points
+    if (pointsCalculation) {
+      totalPoints += getPoints(patient)*1
+    }
+    //diseases
+    for (var i = 0; i < countDiseases(patient); i++) {
+      if (!countedDiseases[getDiseaseID(getDiseases(patient)[i])]) {
+        countedDiseases[getDiseaseID(getDiseases(patient)[i])] = 1
+      } else {
+        countedDiseases[getDiseaseID(getDiseases(patient)[i])]++
+      }
+    }
+  }
+}
+function analysePatients() {
   startTime = new Date().getTime()
-  numberOfSendPats = 0
-  numberOfHiddenSendPats = 0
+  numberOfPats = 0
+  numberOfHiddenPats = 0
   totalSendPrice = 0
+  totalRecievePrice = 0
+  totalPoints = 0
   countedDiseases = new Array()
-  sendDiseases = new Array()
-  sendReciever = new Array()
-  sendRooms = new Array()
-  sendDiseasesNames = new Array()
+  diseasesMenuArray = new Array()
+  doctorsMenuArray = new Array()
+  roomsMenuArray = new Array()
+  diseasesNamesMenuArray = new Array()
   tinyCountedDiseases = new Array()
   tinyCountedRooms = new Array()
   patientIDsInReferral = new Array()
   levelString = jQuery('#level').text()
   level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1
-  jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).each(function() {
-    patientId = getPatientId(this)
 
-    //counting
-    numberOfSendPats++
-
-    //adding the ID to Array
-    patientIDsInReferral.push("p"+patientId)
-
-    //add Points
-    if (jQuery('[class=ref_spatline]', this).length == 5) {
-      if (pointsCalculation) {
-        jQuery(jQuery('[class=ref_spatline]', this)[2]).hide()
-        jQuery('<div class="ref_spatline" style="width:62px;">' + getPointsForPatient(patientId, level, true) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[2])
-      }
-    }
-    //add hT/Min
-    var options = {
-      symbol: "hT",
-      decimal : ",",
-      thousand: ".",
-      precision : 2,
-      format: "%v %s"
-    };
-    if (jQuery('[class=ref_spatline]', this).length == 6) {
-      jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(gethTPerTime(this), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[4])
-    }
-    if (pointsCalculation) {
-      //add points/Min
-      var options = {
-        decimal : ",",
-        thousand: ".",
-        precision : 2,
-        format: "%v"
-      };
-      if (jQuery('[class=ref_spatline]', this).length == 7) {
-        jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(this, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', this)[5])
-      }
-      //depending on Config hide ht/Min or p/min
-      if (points) {
-        jQuery(jQuery('[class=ref_spatline]', this)[5]).hide()
-      } else {
-        jQuery(jQuery('[class=ref_spatline]', this)[6]).hide()
-      }
-    }
-    
-    //changeColums Width
-    jQuery(jQuery('[class=ref_spatline]', this)[1]).attr('style', 'width:96px;')
-    jQuery(jQuery('[class=ref_spatline]', this)[4]).attr('style', 'width:79px;')
-
-    //Options
-    numberOfDiseases = countDiseases(this)
-    if (!isInArray(sendDiseases, numberOfDiseases)) {
-      sendDiseases.push(numberOfDiseases)
-    }
-    reciever = getReciever(this)
-    if (!isInArray(sendReciever, reciever)) {
-      sendReciever.push(reciever)
-    }
-    rooms = getRooms(this)
-    for (var i = 0; i < rooms.length; i++) {
-      if (!isInArray(sendRooms, rooms[i])) {
-        sendRooms.push(rooms[i])
-      }
-    }
-    diseasesNames = getDiseaseNames(this)
-    for (var i = 0; i < diseasesNames.length; i++) {
-      if (!isInArray(sendDiseasesNames, diseasesNames[i])) {
-        sendDiseasesNames.push(diseasesNames[i])
-      }
-    }
-    
-    if (tiny) {
-      if (checkIfPatNeedsToBeHiddenByTinyGeneral(this)) {
-        //totalDiseasesCounting
-        countedDiseasesPatient = new Array()
-        countedRoomsPatient = new Array()
-        for (var i = 0; i < countDiseases(this); i++) {
-          if (!countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(this)[i])].room[0]]) {
-            countedRoomsPatient[Global.availableDiseases[getDiseaseID(getDiseases(this)[i])].room[0]] = 1
-          }
-          
-          if (!countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])]) {
-            countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])] = 1
-          } else {
-            countedDiseasesPatient[getDiseaseID(getDiseases(this)[i])]++
-          }
-        }
-    
-        for (var i = 0; i < countedDiseasesPatient.length; i++) {
-          if (countedDiseasesPatient[i] > 0) {
-            if (!tinyCountedDiseases[i]) {
-              tinyCountedDiseases[i] = 0
-            }
-            tinyCountedDiseases[i] += countedDiseasesPatient[i]
-          }
-        }
-        for (var i = 0; i < countedRoomsPatient.length; i++) {
-          if (countedRoomsPatient[i] > 0) {
-            if (!tinyCountedRooms[i]) {
-            tinyCountedRooms[i] = 0
-            }
-            tinyCountedRooms[i] += countedRoomsPatient[i]
-          }
-        }
-      }
-    }
-
-    //restoreFilter
-    if (tiny) {
-      isPatientNotHidden = checkIfPatNeedsToBeHiddenByTinySpecial(this)
-    } else {
-      isPatientNotHidden = checkIfPatNeedsToBeHidden(this)
-    }
-    if (isPatientNotHidden) {
-      //price
-      totalSendPrice += getPrice(this)*1
-      //diseases
-      for (var i = 0; i < countDiseases(this); i++) {
-        if (!countedDiseases[getDiseaseID(getDiseases(this)[i])]) {
-          countedDiseases[getDiseaseID(getDiseases(this)[i])] = 1
-        } else {
-          countedDiseases[getDiseaseID(getDiseases(this)[i])]++
-        }
-      }
-    }
+  //recieved Patients
+  jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).each(function() {
+    analysePatient(this, true)
   })
+  if (!jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).is(':visible')) {
+    jQuery('div#referral_reci_head').hide()
+  } else {
+    jQuery('div#referral_reci_head').show()
+  }
+
+  //send Patients
+  jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).each(function() {
+    analysePatient(this, false)
+  })
+  if (!jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_patients')).is(':visible')) {
+    jQuery('div#referral_send_head').hide()
+  } else {
+    jQuery('div#referral_send_head').show()
+  }
   //sort sendOptions
-  sendDiseases.sort(function(a,b){return a - b})
-  sendReciever.sort()
-  sendRooms.sort()
-  sendDiseasesNames.sort()
+  diseasesMenuArray.sort(function(a,b){return a - b})
+  doctorsMenuArray.sort()
+  roomsMenuArray.sort()
+  diseasesNamesMenuArray.sort()
 
   totalDiseasesCount = 0
   totalDiseasesDuration = 0
