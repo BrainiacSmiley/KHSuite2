@@ -1,41 +1,56 @@
-<p>
-<strong>Was ist KHAdvancedAssignment?</strong><br />
-KHAdvancedAssignment ist das Überweisen von Patienten, wie ich es mir vorstelle.
-</p>
-<p>
-<strong>Welche Version hat KHAdvancedAssignment?</strong><br />
-Stand 21.02.12 ist Version 1.2.1<br /><span class="label important">Achtung</span> Unbedingt auf Version 1.2.1 upgraden wenn <%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %> installiert werden soll!
-</p>
-<p>
-<strong>Wie ist KHAdvancedAssignment entstanden?</strong><br />
-Ich habe das Überweisen mit den Funktionen versehen, die mir fehlten:
-<ul>
-<li>Wird ein Patient an die Börse gestellt, wird der MinPreis automatisch eingetragen</li>
-<li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der Max-Preis eingetragen.</li>
-<li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
+<ul class="tabs">
+  <li class="active"><a href="#history"><%= t('tools_history') %></a></li>
+  <li><a href="#description"><%= t('tools_description') %></a></li>
+  <li><a href="#download"><%= t('tools_download') %></a></li>
+  <li><a href="#settings"><%= t('tools_settings') %></a></li>
 </ul>
-</p>
-<p>
-<strong>Was benötige ich um KHAdvancedAssignment installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHAdvancedAssignment her?</strong><br />
-Das gibt es hier:<br />
-<span class="label important">Achtung</span> Unbedingt auf Version 1.2.1 upgraden wenn <%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %> installiert werden soll!<br />
-<a href="../tools/khadvancedassignment/KHAdvancedAssignment.user.js">KHAdvancedAssignment 1.2.1</a>
-</p>
-<p>
-<strong>Wie bestimme ich an welchen Account ausgelagert wird?</strong><br />
-Wenn ihr das erste mal nach dem installieren des Skriptes einen Patienten überweisen wollt. Sieht der Überweisungseintrag so aus:<br />
-<%= image_tag 'tools/khadvancedassignment/screenshot_referral_new.jpg' %><br />
-Nun öffnet ihr einfach das Überweisungsaddressbuch<br />
-<%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_new.jpg' %><br />
-Klickt auf den Namen eurer Wahl</br>
-<%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_assigned.jpg' %><br />
-Und schon habt ihr den Arzt bestimmt, der nun immer automatisch eingetragen wird. Wollt ihr in ändern. Addressbuch auf und anderen Namen anklicken. Der Name wird sich gemerkt, und zwar in der Kombination Server + Arztname. Wenn ihr also auf mehreren Serven spielt, müßt ihr das erste mal auf allen Servern einen Namen bestimmen.
-</p>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khadvancedassignment_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Ich habe das Überweisen mit den Funktionen versehen, die mir fehlten:
+      <ul>
+      <li>Wird ein Patient an die Börse gestellt, wird der eingestellte Preis automatisch eingetragen.</li>
+      <li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der eingestellte Preis eingetragen.</li>
+      <li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
+      <li>Es kann konfiguriert werden, welche Preise für die Überweisung und an der Börse benutzt werden.</li>
+      <li>Es kann konfiguriert werden, das das Überweisen und einstellen an die Börse automatisch passiert (Ihr müßt nicht noch mal den Überweisen/Einstellen Knopf drücken).</li>
+      <li>Das Konfigurationsmenü befindet sich im Einstellungsfenster.</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <li><span class="label important">Achtung</span> mindestens Version 2.0 benutzen, damit das reibungslose Zusammenspiel mit den anderen Tools gewährleistet ist.</li>
+        <li><span class="label important">Achtung</span> unbedingt auf mindestens Version 1.2.1 upgraden wenn <%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %> installiert werden soll!</li>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+        <li>&nbsp;</li>
+        <li>1. <a href="../tools/khbasicscript/KHBasicScript.user.js">KHBasicScript 1.0</a></li>
+        <li>2. <a href="../tools/khadvancedassignment/KHAdvancedAssignment.user.js">KHAdvancedAssignment 2.0</a></li>
+      </ul>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      <strong>Wie bestimme ich an welchen Account ausgelagert wird?</strong><br />
+      Wenn ihr das erste mal nach dem installieren des Skriptes einen Patienten überweisen wollt. Sieht der Überweisungseintrag so aus:<br />
+      <%= image_tag 'tools/khadvancedassignment/screenshot_referral_new.jpg' %><br />
+      Nun öffnet ihr einfach das Überweisungsaddressbuch<br />
+      <%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_new.jpg' %><br />
+      Klickt auf den Namen eurer Wahl</br>
+      <%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_assigned.jpg' %><br />
+      Und schon habt ihr den Arzt bestimmt, der nun immer automatisch eingetragen wird. Wollt ihr in ändern. Addressbuch auf und anderen Namen anklicken. Der Name wird sich gemerkt, und zwar in der Kombination Server + Arztname. Wenn ihr also auf mehreren Serven spielt, müßt ihr das erste mal auf allen Servern einen Namen bestimmen.
+    </p>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

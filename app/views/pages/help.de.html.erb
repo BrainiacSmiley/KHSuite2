@@ -1,12 +1,64 @@
-<p>
-<strong>Wie installiere ich die Tools?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHAdvancedAssignment anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHAdvancedAssignment anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-<b>Opera:</b><br />
-1. Im Konfigurationsfenster ein Verzeichnis für UserScripts angeben.
-2. Link vom KHAdvancedAssignment anklicken und der Installation zustimmen.<br />
-</p>
+<h3>Installationsanleitungen</h3>
+
+<ul class="unstyled">
+  <li><strong>Allgemeiner Hinweis</strong></li>
+  <li>Alle Skripte benötigen als Grundlage das <a href="../tools/khbasicscript/KHBasicScript.user.js">KHBasicScript 1.0</a></li>
+</ul>
+
+<ul class="tabs">
+  <li class="active"><a href="#chrome"><%= image_tag 'help/16-chrome.png', :style => 'top:3px; position:relative;' %> Chrome/SWR Iron</a></li>
+  <li><a href="#firefox"><%= image_tag 'help/16-firefox.png', :style => 'top:3px; position:relative;' %> Firefox</a></li>
+  <li><a href="#opera"><%= image_tag 'help/16-opera.png', :style => 'top:3px; position:relative;' %> Opera</a></li>
+</ul>
+
+<div class="pill-content">
+  <div class="active" id="chrome">
+    <ul class="unstyled">
+      <li><strong>Vorbereitung</strong></li>
+      <li>Nicht nötig.</li>
+      <li>&nbsp;</li>
+      <li><strong>Installation</strong></li>
+      <li>Die Skripte können einfach durch anklicken der Links installiert werden.</li>
+      <li>&nbsp;</li>
+      <li><strong>Verwaltung</strong></li>
+      <li>Eingabe von "chrome://extensions" in der Adresszeile.</li>
+      <li>Nun erscheint eine Liste der installierten Skripte. Sie können aktiviert/deaktiviert und deinstalliert werden.</li>
+      <%= image_tag 'help/screenshot_chrome_extensions.jpg' %>
+    </ul>
+  </div>
+  <div id="firefox">
+    <ul class="unstyled">
+      <li><strong>Vorbereitung</strong></li>
+      <li>Installation des Addons Greasemonkey: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a></li>
+      <li>&nbsp;</li>
+      <li><strong>Installation</strong></li>
+      <li>Die Skripte können nun einfach durch anklicken der Links installiert werden.</li>
+      <li>&nbsp;</li>
+      <li><strong>Verwaltung</strong></li>
+      <li>Anklicken des "Affen-Symbols".</li>
+      <li>Nun erscheint eine Liste der installierten Skripte. Sie können aktiviert/deaktiviert und deinstalliert werden.</li>
+      <%= image_tag 'help/screenshot_firefox_greasemonkey.jpg' %>
+    </ul>
+  </div>
+  <div id="opera">
+    <ul class="unstyled">
+      <li><strong>Vorbereitung</strong></li>
+      <li>Erstellen eines Verzeichnisses in dem ihr die Skripte speichern wollt. Der kann überall auf eurer Festplatte liegen.</li>
+      <li>Dann mit Strg/Ctrl + F12 das Einstellungsfenster des Opera öffnen.</li>
+      <li>Nun tragt ihr wie auf dem Bild, euer eben erstelltes Verzeichnis ein. Bei mir ist das: "D:\My Files}kapihospital".</li>
+      <%= image_tag 'help/screenshot_opera_userscripts.jpg' %>
+      <li>&nbsp;</li>
+      <li><strong>Installation</strong></li>
+      <li>Die Skripte nun einfach per Rechtsklick (speichern als) in das Verzeichnis speichern.</li>
+      <li>&nbsp;</li>
+      <li><strong>Verwaltung</strong></li>
+      <li>Einfach die nicht mehr gewünschten Skripte aus dem Verzeichnis löschen.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

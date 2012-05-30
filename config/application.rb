@@ -45,5 +45,16 @@ module KHSuite2
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
     config.assets.initialize_on_precompile = false
+
+    # Mail config
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      :address              => "smtp.googlemail.com",
+      :port                 => 587,
+      :user_name            => 'khsuite@googlemail.com',
+      :password             => 'Smiley0815',
+      :authentication       => 'plain',
+      :enable_starttls_auto => true }
   end
 end

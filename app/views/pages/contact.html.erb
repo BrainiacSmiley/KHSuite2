@@ -1,0 +1,24 @@
+<h3><%= t(:contact_title) %>:</h3><br/>
+<%= form_tag(contact_email_path, :method => 'post') do %>
+    <div class="clearfix">
+        <%= label_tag t(:contact_sender) %>
+        <div class="input">
+            <%= text_field_tag "sender", @sender %>
+        </div>
+    </div>
+    <div class="clearfix">
+        <%= label_tag t(:contact_subject) %>
+        <div class="input">
+            <%= text_field_tag "subject", @subject %>
+        </div>
+    </div>
+    <div class="clearfix">
+        <%= label_tag t(:contact_message)%>
+        <div class="input">
+            <%= text_area_tag "message", @message, :size => "30x10", :class =>"span8" %>
+        </div>
+    </div>
+    <div class="action">
+        <%= submit_tag t(:button_send_mail), :class => "btn primary" %>
+    </div>
+<% end %>

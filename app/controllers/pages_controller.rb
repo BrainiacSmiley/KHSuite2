@@ -7,8 +7,27 @@ class PagesController < ApplicationController
   def contact
     @title = t(:title_contact)
     find_needed_values
+    @sender = ''
+    @subject = ''
+    @message = ''
   end
 
+  def sendmail
+    @title = t(:title_contact)
+    find_needed_values
+    @sender = params[:sender]
+    @subject = params[:subject]
+    @message = params[:message]
+    if validate_mail(@sender, @subject, @message)
+      ContactMailer.contact(@sender, @subject, @message).deliver      
+      flash[:success] = t(:contact_message_success)
+      redirect_to contact_path
+    else
+      flash.now[:error] = @error     
+      render 'contact'
+    end
+  end
+    
   def about
     @title = t(:title_about)
     find_needed_values
@@ -72,4 +91,21 @@ class PagesController < ApplicationController
     @title = t(:title_khtimer)
     find_needed_values
   end
+
+  private
+    def validate_mail(sender, subject, message)
+      @email_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+      if sender.blank? || subject.blank? || message.blank?
+        @error = t(:contact_error_field_blank)
+        return false
+      elsif subject.length >= 50
+        @error = t(:contact_error_subjectlength)
+        return false
+      elsif sender[@email_regex].nil?
+        @error = t(:contact_error_email)
+        return false
+      else
+        return true
+      end
+    end
 end

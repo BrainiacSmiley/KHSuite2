@@ -6,6 +6,7 @@ KHSuite2::Application.routes.draw do
 
     match '/:locale',               :to => 'pages#home'
     root                            :to => 'pages#home'
+    match '/contact_email',         :to => 'pages#sendmail'
     match '/contact',               :to => 'pages#contact'
     match '/about',                 :to => 'pages#about'
     match '/help',                  :to => 'pages#help'
