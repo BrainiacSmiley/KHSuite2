@@ -1,81 +1,151 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       3.0
-// @include       http://*kapihospital.com/*
+// @version       4.0
+// @include       http://*.de.kapihospital.com/main.php*
+// @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
 
-function addJQuery(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
-  script.addEventListener('load', function() {
-    var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
-}
-function readyJQuery() {
-  jQuery.noConflict();
+function injectScriptStart(callback) {
+  //--- Has jQuery already been added?
+  var jqNode  = document.querySelector("#KHAddedJQuery");
+  if (jqNode) {
+    FireCallback(callback);
+  } else {
+    setTimeout(function() {
+      injectScriptStart(callback);
+    }, 400);
+  }
 
-  initKHAdvancedReferral()
-  //Interval Function
-  window.setInterval("recogniseKHAdvancedReferralWindow()", 100)
-  window.setInterval("recogniseKHAdvancedReferralOptionsWindow()", 100)
-}
-
-function addAccounting(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "https://raw.github.com/josscrowcroft/accounting.js/master/accounting.min.js");
-  script.addEventListener('load', function() {
+  function FireCallback(callback) {
     var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
+    script.id = 'KHAdvancedReferralStart';
+    script.type = 'text/javascript';
+    script.textContent += "(" + callback.toString() + ")();\n";
+    document.body.appendChild (script);
+  }
 }
-function readyAccounting() {
+function injectStartReady() {
+  initAdvancedReferralFunction = window.setInterval("initKHAdvancedReferral();", 100);
 }
 //Begin Injection
-var variablen = new Array()
-variablen.push("numberOfPats = 0")
-variablen.push("numberOfHiddenPats = 0")
-variablen.push("totalSendPrice = 0")
-variablen.push("totalPoints = 0")
-variablen.push("totalRecievePrice = 0")
-variablen.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Ärzte\", \"Punkte\", \"Kosten\", \"hT/Min\", \"Pkt/Min\")")
-variablen.push("columnsToSort = new Array(0, 0, 0, 0, 0, 0, 0)")
-variablen.push("countedDiseases = new Array()")
-variablen.push("totalDiseasesCount = 0")
-variablen.push("totalDiseasesDuration = 0")
-variablen.push("diseasesMenuArray")
-variablen.push("doctorsMenuArray")
-variablen.push("roomsMenuArray")
-variablen.push("diseasesNamesMenuArray")
-variablen.push("actualSendPatientsIndex = 0")
-variablen.push("actualSendNumberOfDiseases = \"# Krankheiten\"")
-variablen.push("actualdoctorsMenuArrayName = \"alle Ärzte\"")
-variablen.push("actualroomsMenuArrayName = \"alle Räume\"")
-variablen.push("actualSendDiseaseName = \"alle Krankheiten\"")
-variablen.push("startTime = 0")
-variablen.push("endTime = 0")
-variablen.push("debug = false")
-variablen.push("tiny = false")
-variablen.push("points = false")
-variablen.push("tinyCountedRooms = new Array()")
-variablen.push("tinyCountedDiseases = new Array()")
-variablen.push("levelBonus = 0.025")
-variablen.push("patientDiseasesStorage = new Object()")
-variablen.push("wwLevel = 0")
-variablen.push("patientIDsInReferral = new Array()")
-variablen.push("pointsCalculation = true")
-variablen.push("tinyMenuVisible = true")
+function injectScript() {
+  var variablesToAdd = new Array();
+  variablesToAdd.push("countedDiseases = new Array()");
+  variablesToAdd.push("debugMode = false");
+  variablesToAdd.push("diseasesMenuArray");
+  variablesToAdd.push("diseasesNamesMenuArray");
+  variablesToAdd.push("doctorsMenuArray");
+  variablesToAdd.push("endTime = 0");
+  variablesToAdd.push("headers = new Array(\"Patientenname\", \"Krankheiten\", \"Ärzte\", \"Punkte\", \"Kosten\", \"hT/Min\", \"Pkt/Min\")");
+  variablesToAdd.push("KHConfigValues");
+  variablesToAdd.push("levelBonus = 0.025");
+  variablesToAdd.push("numberOfHiddenPats = 0");
+  variablesToAdd.push("numberOfPats = 0");
+  variablesToAdd.push("patientDiseasesStorage = new Object()");
+  variablesToAdd.push("patientIDsInReferral = new Array()");
+  variablesToAdd.push("pointsCalculation = true");
+  variablesToAdd.push("roomsMenuArray");
+  variablesToAdd.push("startTime = 0");
+  variablesToAdd.push("tinyCountedDiseases = new Array()");
+  variablesToAdd.push("tinyCountedRooms = new Array()");
+  variablesToAdd.push("tinyMenuVisible = true");
+  variablesToAdd.push("totalDiseasesCount = 0");
+  variablesToAdd.push("totalDiseasesDuration = 0");
+  variablesToAdd.push("totalPoints = 0");
+  variablesToAdd.push("totalRecievePrice = 0");
+  variablesToAdd.push("totalSendPrice = 0");
+  variablesToAdd.push("userName");
+  variablesToAdd.push("$referralMap");
+  variablesToAdd.push("initAdvancedReferralFunction");
 
-function addFunctions() {
-  var functionsToAdd = new Array(initKHAdvancedReferral, recogniseKHAdvancedReferralWindow, recogniseKHAdvancedReferralOptionsWindow, progressAdvancedReferralReferralDetailWindow, progressAdvancedReferralPatientViewWindow, progressKHAdvancedReferralAccountOptionsWindow, progressKHAdvancedReferralWindow, getDiseaseBasePoints, savePatientDiseasesStorage, saveWWConfig, formatPrices, getPointsForPatient, getPatientId, addTinyOptions, saveKHAdvancedReferralConfig, addClassicOptions, updateAnalyseTime, updateNumberOfDiseases, getMultiRooms, hidePats, hidePatsGreater, hidePatsExcept, hidePatsNotTo, hidePatsNotForRoom, hidePatsNotMulti, hidePatsMulti, hidePatsNotWithDiseases, checkIfPatNeedsToBeHidden, checkAllPatients, updateTotalPrice, updateTotalPoints, updateSelectedNumberOfPats, removeFilter, getSelectOptionsArray, findInArray, getOptionsString, getRoomForDisease, getLongTimeString, getDiseasesDuration, getDiseases, getDiseaseID, isInArray, countDiseases, getDiseaseNames, changeTinyFilter, getReciever, getRooms, getName, getPrice, changeSorting, sortPatients, setSortingIcons, changePatientView, restoreFilterSelection, analysePatients, checkIfPatNeedsToBeHiddenByTinyGeneral, checkIfPatNeedsToBeHiddenByTinySpecial, getRow, getColumn, getPoints, gethTPerTime, getPointsPerTime, removeTinyFilter, BonusForMultiDiseases, getRestTreatmentTimeMin, getBasePointsForPatient, getPointsPerTimeSorting, getTinyFilterString, analysePatient, progressRecievePatients, progressSendPatients, addColumnHeaders, addPatientDiv, getSortingFunction, sortPatientList, toggleTinyMenu, setCookie, getCookie)
-  var script = document.createElement("script");
+  var functionsToAdd = new Array();
+  functionsToAdd.push(addAdvancedReferralOptions);
+  functionsToAdd.push(addClassicOptions);
+  functionsToAdd.push(addColumnHeaders);
+  functionsToAdd.push(addPatientDiv);
+  functionsToAdd.push(addTinyOptions);
+  functionsToAdd.push(analysePatient);
+  functionsToAdd.push(analysePatients);
+  functionsToAdd.push(BonusForMultiDiseases);
+  functionsToAdd.push(changePatientView);
+  functionsToAdd.push(changeSorting);
+  functionsToAdd.push(changeTinyFilter);
+  functionsToAdd.push(checkAllPatients);
+  functionsToAdd.push(checkIfPatNeedsToBeHidden);
+  functionsToAdd.push(checkIfPatNeedsToBeHiddenByTinyGeneral);
+  functionsToAdd.push(checkIfPatNeedsToBeHiddenByTinySpecial);
+  functionsToAdd.push(countDiseases);
+  functionsToAdd.push(findInArray);
+  functionsToAdd.push(formatPrices);
+  functionsToAdd.push(generateAdvancedReferralConfigOptions);
+  functionsToAdd.push(generateConfigBase);
+  functionsToAdd.push(generateWWLevelConfigOptions);
+  functionsToAdd.push(getBasePointsForPatient);
+  functionsToAdd.push(getColumn);
+  functionsToAdd.push(getDiseaseBasePoints);
+  functionsToAdd.push(getDiseaseID);
+  functionsToAdd.push(getDiseaseNames);
+  functionsToAdd.push(getDiseases);
+  functionsToAdd.push(getDiseasesDuration);
+  functionsToAdd.push(gethTPerTime);
+  functionsToAdd.push(getLongTimeString);
+  functionsToAdd.push(getMultiRooms);
+  functionsToAdd.push(getName);
+  functionsToAdd.push(getOptionsString);
+  functionsToAdd.push(getPatientId);
+  functionsToAdd.push(getPoints);
+  functionsToAdd.push(getPointsForPatient);
+  functionsToAdd.push(getPointsPerTime);
+  functionsToAdd.push(getPointsPerTimeSorting);
+  functionsToAdd.push(getPrice);
+  functionsToAdd.push(getReciever);
+  functionsToAdd.push(getRestTreatmentTimeMin);
+  functionsToAdd.push(getRoomForDisease);
+  functionsToAdd.push(getRooms);
+  functionsToAdd.push(getRow);
+  functionsToAdd.push(getSelectOptionsArray);
+  functionsToAdd.push(getSortingFunction);
+  functionsToAdd.push(getTinyFilterString);
+  functionsToAdd.push(hidePats);
+  functionsToAdd.push(hidePatsExcept);
+  functionsToAdd.push(hidePatsGreater);
+  functionsToAdd.push(hidePatsMulti);
+  functionsToAdd.push(hidePatsNotForRoom);
+  functionsToAdd.push(hidePatsNotMulti);
+  functionsToAdd.push(hidePatsNotTo);
+  functionsToAdd.push(hidePatsNotWithDiseases);
+  functionsToAdd.push(initKHAdvancedReferral);
+  functionsToAdd.push(isInArray);
+  functionsToAdd.push(progressAdvancedReferralPatientViewWindow);
+  functionsToAdd.push(progressAdvancedReferralReferralDetailWindow);
+  functionsToAdd.push(progressKHAdvancedReferralWindow);
+  functionsToAdd.push(progressRecievePatients);
+  functionsToAdd.push(progressSendPatients);
+  functionsToAdd.push(recogniseKHAdvancedReferralWindow);
+  functionsToAdd.push(removeFilter);
+  functionsToAdd.push(removeTinyFilter);
+  functionsToAdd.push(restoreFilterSelection);
+  functionsToAdd.push(saveKHAdvancedReferralConfig);
+  functionsToAdd.push(savePatientDiseasesStorage);
+  functionsToAdd.push(saveWWConfig);
+  functionsToAdd.push(setSortingIcons);
+  functionsToAdd.push(sortPatientList);
+  functionsToAdd.push(sortPatients);
+  functionsToAdd.push(sortConfigMenu);
+  functionsToAdd.push(storeKHConfigValues);
+  functionsToAdd.push(toggleTinyMenu);
+  functionsToAdd.push(updateProgressTime);
+  functionsToAdd.push(updateNumberOfDiseases);
+  functionsToAdd.push(updateSelectedNumberOfPats);
+  functionsToAdd.push(updateTotalPoints);
+  functionsToAdd.push(updateTotalPrice);
   
-  for (var x = 0; x < variablen.length; x++) {
-    script.textContent += ("var " + variablen[x] + "\n")
+  var script = document.createElement("script");
+  script.id = 'KHAdvancedReferral';
+  script.type = 'text/javascript';
+  
+  for (var x = 0; x < variablesToAdd.length; x++) {
+    script.textContent += ("var " + variablesToAdd[x] + ";\n")
   }
   
   script.textContent += "\n"
@@ -86,56 +156,74 @@ function addFunctions() {
   document.body.appendChild(script);
 }
 //End Injection
-//Begin Manager
+//Begin KHAdvacnedReferral
 function initKHAdvancedReferral() {
-  //restoreSelection Options from Cookie
-  storedTinyOptions = getCookie("KHAdvancedReferralTinyOptions" + jQuery('#username').text())
-  if (storedTinyOptions != null) {
-    if (storedTinyOptions == "true") {
-      tiny = true
-    } else if (storedTinyOptions == "false") {
-      tiny = false
+  if (typeof jQuery != 'undefined') {
+    //check if Dev Mode
+    if (window.location.search == "?dev") {
+      debugMode = true
+    } else {
+      debugMode = false
     }
-  } else {
-    tiny = true
-  }
-
-  //restoreDisplay witch column
-  storedPointsOptions = getCookie("KHAdvancedReferralPointsOptions" + jQuery('#username').text())
-  if (storedPointsOptions != null) {
-    if (storedPointsOptions == "true") {
-      points = true
-    } else if (storedPointsOptions == "false") {
-      points = false
+    
+    //restore patientDiseaseStorage
+    if (localStorage.getItem('patientDiseasesStorage') != undefined) {
+      patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
     }
-  } else {
-    points = false
-  }
-
-  //restore WWCookie
-  storedWWLevel = getCookie("KHWWLevel" + jQuery('#username').text())
-  if (storedWWLevel != null) {
-    wwLevel = storedWWLevel
-  } else {
-    wwLevel = 0
-  }
-
-  //check if Dev Mode
-  if (window.location.search == "?dev") {
-    debug = true
-  } else {
-    debug = false
-  }
+    
+    userName = jQuery('#username').text();
   
-  //restore patientDiseaseStorage
-  if (localStorage.getItem('patientDiseasesStorage') != undefined) {
-    patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
+    //restore KHConfigValues
+    if (localStorage.getItem('KHConfigValues' + userName) != null) {
+      KHConfigValues = JSON.parse(localStorage.getItem('KHConfigValues' + userName));
+    } else {
+      KHConfigValues = new Object();
+    }
+    //Check for Script Values
+    if ( KHConfigValues.wwLevel == undefined) {
+      KHConfigValues.wwLevel = 0
+    }
+    if (KHConfigValues.selectedPatientsIndex == undefined) {
+      KHConfigValues.selectedPatientsIndex = 0
+    }
+    if (KHConfigValues.selectedNumberOfDiseases == undefined) {
+      KHConfigValues.selectedNumberOfDiseases = "# Krankheiten"
+    }
+    if (KHConfigValues.selectedDoctorsName == undefined) {
+      KHConfigValues.selectedDoctorsName = "alle Ärzte"
+    }
+    if (KHConfigValues.selectedRoomsName == undefined) {
+      KHConfigValues.selectedRoomsName = "alle Räume"
+    }
+    if (KHConfigValues.selectedDiseaseName == undefined) {
+      KHConfigValues.selectedDiseaseName = "alle Krankheiten"
+    }
+    if (KHConfigValues.columnsToSort == undefined) {
+      KHConfigValues.columnsToSort = new Array(0, 0, 0, 0, 0, 0, 0);
+    }
+    if (KHConfigValues.points == undefined) {
+      KHConfigValues.points = true;
+    }
+    if (KHConfigValues.tiny == undefined) {
+      KHConfigValues.tiny = true;
+    }
+    storeKHConfigValues();
+  
+    //Interval Function
+    window.setInterval("recogniseKHAdvancedReferralWindow()", 100);
+    window.clearInterval(initAdvancedReferralFunction);
+    if (debugMode) {
+      console.log("KHAdvancedReferral loaded");
+    }
+  } else {
+    if (debugMode) {
+      console.log("KHAdvancedReferral not loaded");
+    }
   }
 }
 function saveWWConfig() {
-  wwLevel = jQuery('#wwLevel').val()
-  var cookieName = "KHWWLevel" + jQuery('#username').text()
-  setCookie(cookieName, wwLevel, 100, "/", window.location.hostname)
+  KHConfigValues.wwLevel = jQuery('#wwLevel').val()
+  storeKHConfigValues();
 }
 function recogniseKHAdvancedReferralWindow() {
   if (jQuery('div#referrals').is(':visible')) {
@@ -144,12 +232,20 @@ function recogniseKHAdvancedReferralWindow() {
         jQuery('div#ref_divdetailsbig').css('background-image') == "url(\"http://pics.kapihospital.de/bg_referral_02.jpg\")")) {
       progressAdvancedReferralReferralDetailWindow()
     } else {
-      progressKHAdvancedReferralWindow()
+      if (!navigator.userAgent.toLowerCase().indexOf("firefox") != -1) {
+        if(!patStored) {
+          progressKHAdvancedReferralWindow()
+        }
+      } else {
+        progressKHAdvancedReferralWindow()
+      }
     }
   } else if (jQuery('div#msgwindow').is(':visible')) {
     if (jQuery('div#msgwindow').css('background-image') == "url(http://pics.kapihospital.de/medicalrecord_1.png)" ||
         jQuery('div#msgwindow').css('background-image') == "url(\"http://pics.kapihospital.de/medicalrecord_1.png\")") {
       progressAdvancedReferralPatientViewWindow()
+    } else if (jQuery('div#b').length && !jQuery('div#KHAdvancedReferralOptions').length) {
+      addAdvancedReferralOptions();
     }
   }
 }
@@ -166,14 +262,16 @@ function progressAdvancedReferralReferralDetailWindow() {
   }
   patientDiseasesStorage["p"+patientID] = diseases
   
-  //only for debuging and bonus calculation
-  basePointsFromUpjers = jQuery(jQuery('div#ref_detcost').children()[0]).text().split(" ")[2]*1
-  basePointsCalculated = getBasePointsForPatient(patientID, true)
-  differenze = basePointsFromUpjers - basePointsCalculated
-  if (!jQuery('div#mypionts').length) {
-    jQuery('<div id="mypionts">Berechnete Punkte: ' + basePointsCalculated + ' | Differenz: ' + differenze + '</div>').appendTo('div#ref_detcost')
+  //only for debugModeing and bonus calculation
+  if (debugMode) {
+    basePointsFromUpjers = jQuery(jQuery('div#ref_detcost').children()[0]).text().split(" ")[2]*1
+    basePointsCalculated = getBasePointsForPatient(patientID, true)
+    differenze = basePointsFromUpjers - basePointsCalculated
+    if (!jQuery('div#mypoints').length) {
+      jQuery('<div id="mypoints">Berechnete Punkte: ' + basePointsCalculated + ' | Differenz: ' + differenze + '</div>').appendTo('div#ref_detcost')
+    }
+  //end debugModeging bonus calculation
   }
-  //end debugging bonus calculation
 }
 function savePatientDiseasesStorage() {
   //cleaning of patientDiseasesStorage
@@ -187,47 +285,79 @@ function savePatientDiseasesStorage() {
   //write actual version to localStorage
   localStorage.setItem('patientDiseasesStorage', JSON.stringify(patientDiseasesStorage));
 }
-function recogniseKHAdvancedReferralOptionsWindow() {
-  if (jQuery('div#b').length && !jQuery('div#KHAdvancedReferralOptions').length) {
-    progressKHAdvancedReferralAccountOptionsWindow()
+function addAdvancedReferralOptions() {
+  //check if ConfigBase present
+  if (!jQuery('ul#KHOptions').length) {
+    jQuery(generateConfigBase()).insertAfter('div#b');
   }
-}
-function progressKHAdvancedReferralAccountOptionsWindow() {
-  if (!jQuery('div#KHOptions').length) {
-    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
+  
+  //check if wwConfig is present
+  if (!jQuery('div#KHWWConfig').length) {
+    jQuery(generateWWLevelConfigOptions()).appendTo('div#KHOptionsContent');
+    jQuery('<li><a href="#KHWWConfig" data-toggle="tab">Allgemein</a></li>').insertAfter(jQuery('ul#KHOptions').children()[0]);
   }
-  jQuery('<div id="KHAdvancedReferralOptions">Filter Ansicht: <select id="khadvancedreferralconfigfilter" onChange="saveKHAdvancedReferralConfig()"><option>Classic</option><option>Tiny</option></select>&nbsp;Pro Zeit Spalte: <select id="khadvancedreferralconfigcolumn" onChange="saveKHAdvancedReferralConfig()"><option>hT</option><option>Punkte</option></div>').appendTo('div#KHOptions')
-  if (tiny) {
+
+  //add AdvancedReferral Options to ConfigBase
+  jQuery(generateAdvancedReferralConfigOptions()).appendTo('div#KHOptionsContent');
+  jQuery('<li><a href="#KHAdvancedReferralOptions" data-toggle="tab">KHAdvancedReferral</a></li>').appendTo('ul#toolsMenu');
+  jQuery('#toolsMenu').parent().show();
+  sortConfigMenu();
+
+  //set AdvancedReferrl Options
+  if (KHConfigValues.tiny) {
     jQuery('select#khadvancedreferralconfigfilter').val('Tiny')
   } else {
     jQuery('select#khadvancedreferralconfigfilter').val('Classic')
   }
-  if (points) {
+  if (KHConfigValues.points) {
     jQuery('select#khadvancedreferralconfigcolumn').val('Punkte')
   } else {
     jQuery('select#khadvancedreferralconfigcolumn').val('hT')
   }
-  if (!jQuery('div#KHWWConfig').length) {
-    jQuery('<div id="KHWWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').appendTo('div#KHOptions')
-  }
+  jQuery('#wwLevel').val(KHConfigValues.wwLevel);
 
+}
+function generateWWLevelConfigOptions() {
+  htmlCode = "";
+  htmlCode += "<div class=\"tab-pane\" id=\"KHWWConfig\" style=\"margin-left:10px;margin-top:-18px;\">";
+  htmlCode += "  Abgeschlossene Weltwunderstufe der ÄV: <input id=\"wwLevel\" type=\"number\" onchange=\"saveWWConfig()\" min=\"0\" max=\"10\" style=\"width:40px;\" value=\"10\">";
+  htmlCode += "</div>";
+  return htmlCode;
+}
+function generateAdvancedReferralConfigOptions() {
+  htmlCode = "";
+  htmlCode += "<div class=\"tab-pane\" id=\"KHAdvancedReferralOptions\" style=\"margin-left:10px;margin-top:-18px;\">";
+  htmlCode += "  Filter Ansicht: <select id=\"khadvancedreferralconfigfilter\" onchange=\"saveKHAdvancedReferralConfig()\"><option>Classic</option><option>Tiny</option></select>&nbsp;Pro Zeit Spalte: <select id=\"khadvancedreferralconfigcolumn\" onchange=\"saveKHAdvancedReferralConfig()\"><option>hT</option><option>Punkte</option></select></p>";
+  htmlCode += "</div>";
+  return htmlCode;
+}
+function generateConfigBase() {
+  htmlCode = "";
+  htmlCode += "<ul id=\"KHOptions\" class=\"nav nav-tabs\" style=\"margin-top: 60px;\">";
+  htmlCode += "<li><a href=\"#\" data-toggle=\"tab\">KHTools Config</a></li>";
+  htmlCode += "  <li class=\"dropdown\">";
+  htmlCode += "    <a href=\"#\" class=\"dropdown-toggle active\" data-toggle=\"dropdown\">Tool <b class=\"caret\"></b></a>";
+  htmlCode += "    <ul id=\"toolsMenu\" class=\"dropdown-menu\">";
+  htmlCode += "    </ul>";
+  htmlCode += "  </li>";
+  htmlCode += "</ul>";
+  htmlCode += "<div id=\"KHOptionsContent\" class=\"tab-content\">";
+  htmlCode += "</div>";
+  return htmlCode;
 }
 function saveKHAdvancedReferralConfig() {
   if (jQuery('select#khadvancedreferralconfigfilter').val() == "Tiny") {
-    tiny = true
+    KHConfigValues.tiny = true
   } else {
-    tiny = false
+    KHConfigValues.tiny = false
   }
-  var cookieName = "KHAdvancedReferralTinyOptions" + jQuery('#username').text()
-  setCookie(cookieName, tiny, 100, "/", window.location.hostname)
 
   if (jQuery('select#khadvancedreferralconfigcolumn').val() == "Punkte") {
-    points = true
+    KHConfigValues.points = true
   } else {
-    points = false
+    KHConfigValues.points = false
   }
-  var cookieName = "KHAdvancedReferralPointsOptions" + jQuery('#username').text()
-  setCookie(cookieName, points, 100, "/", window.location.hostname)
+  storeKHConfigValues();
 }
 function getLongTimeString(time, shortStrings) {
   years = Math.floor(time / 31622400)
@@ -355,14 +485,15 @@ function findInArray(array, value) {
 }
 function removeFilter() {
   document.getElementById("toggle_patients").selectedIndex = 0
-  actualSendPatientsIndex = 0
+  KHConfigValues.selectedPatientsIndex = 0
   document.getElementById("toggle_diseases").selectedIndex = 0
-  actualSendNumberOfDiseases = "# Krankheiten"
+  KHConfigValues.selectedNumberOfDiseases = "# Krankheiten"
   document.getElementById("toggle_recievers").selectedIndex = 0
-  actualdoctorsMenuArrayName = "alle Ärzte"
+  KHConfigValues.selectedDoctorsName = "alle Ärzte"
   document.getElementById('toggle_rooms').selectedIndex = 0
-  actualroomsMenuArrayName = "alle Räume"
-  actualSendDiseaseName = "alle Krankheiten"
+  KHConfigValues.selectedRoomsName = "alle Räume"
+  document.getElementById('toggle_diseasesNames').selectedIndex = 0
+  KHConfigValues.selectedDiseaseName = "alle Krankheiten"
   checkAllPatients()
 }
 function addColumnHeaders() {
@@ -378,10 +509,10 @@ function addColumnHeaders() {
          '</div>').insertBefore('div#referral_patients')
 
   //depending on Config hide ht/Min or p/min
-  if (points) {
+  if (KHConfigValues.points) {
     jQuery(jQuery('div#referral_patients_headers').children()[5]).hide()
   } else {
-    jQuery(jQuery('div+referral_patients_headers').children()[6]).hide()
+    jQuery(jQuery('div#referral_patients_headers').children()[6]).hide()
   }
 }
 function addPatientDiv() {
@@ -395,7 +526,7 @@ function progressRecievePatients() {
     jQuery('div#referral_reci_head').css('font-weight', '')
     jQuery('div#referral_reci_head').text("Überwiesene Patienten")
     jQuery('div[class^="ref_spatline ref_spatlineheader"]', jQuery('div#referral_reci')).remove()
-    addPatientDiv()
+    addPatientDiv();
     jQuery('div#referral_reci').children().remove().appendTo('div#referral_patients')
     jQuery('div#referral_reci').remove()
   } else {
@@ -415,60 +546,78 @@ function progressSendPatients() {
   }
 }
 function progressKHAdvancedReferralWindow() {
-  //recieve
-  progressRecievePatients()
+  if (!jQuery('div#referral_patients').length) {
+    startTime = new Date().getTime();
+    numberOfReferralPats = jQuery('div[id^="rPat"][class^="cursorclickable"]', jQuery('div#referral_reci')).length + jQuery('div[id^="sPat"][class^="cursorclickable"]', jQuery('div#referral_send')).length;
 
-  //always remove spaces between old PatientLists
-  jQuery('br', jQuery('div#referrals')).remove()
-
-  //send
-  progressSendPatients()
-
-  //add Column Headers
-  if (!jQuery('div#referral_patients_headers').length) {
-    addColumnHeaders()
-  }
-  
-  //analyse Patients and Konstrukt Menu
-  if (!jQuery('div#referral_patients_menu').length) {
-    analysePatients()
+    if (numberOfPats != numberOfReferralPats) {
+      //get more Space
+      jQuery('#referrals').css('left', '22')
+      jQuery('#referrals').css('width', '575')
+      //recieve
+      progressRecievePatients()
     
-    //addMenu
-    if (tiny) {
-      addTinyOptions()
-    } else {
-      addClassicOptions()
-    }
-    //restore Visibility
-    if (!tinyMenuVisible) {
-      jQuery('table#tiny_menu').toggle()
-    }
-
-    //addNumberOfSendPatients
-    updateSelectedNumberOfPats()
-
-    //addTotalPrice
-    updateTotalPrice()
+      //always remove spaces between old PatientLists
+      jQuery('br', jQuery('div#referrals')).remove()
+    
+      //send
+      progressSendPatients()
+    
+      //add Column Headers
+      if (!jQuery('div#referral_patients_headers').length) {
+        addColumnHeaders()
+      }
       
-    //addTotalPoints
-    updateTotalPoints()
-
-    //addNumberOfDiseases
-    updateNumberOfDiseases()
-
-    //restoreOld Sorting Options
-    setSortingIcons()
-    sortPatients()
-
-    //debug analyseTime
-    if (debug) {
-      updateAnalyseTime()
+      //analyse Patients and Konstrukt Menu
+      if (!jQuery('div#referral_patients_menu').length) {
+        analysePatients()
+        
+        //addMenu
+        if (KHConfigValues.tiny) {
+          addTinyOptions()
+        } else {
+          addClassicOptions()
+        }
+        //restore Visibility
+        if (!tinyMenuVisible) {
+          jQuery('table#tiny_menu').toggle()
+        }
+    
+        //addNumberOfSendPatients
+        updateSelectedNumberOfPats()
+    
+        //addTotalPrice
+        updateTotalPrice()
+          
+        //addTotalPoints
+        updateTotalPoints()
+    
+        //addNumberOfDiseases
+        updateNumberOfDiseases()
+    
+        //restoreOld Sorting Options
+        setSortingIcons()
+        sortPatients()
+        
+        //storeMap for next use
+        $referralMap = jQuery('div#msgwindow').children();
+      }
+    } else {
+      if (numberOfPats > 0) {
+        jQuery('div#msgwindow').children().remove();
+        jQuery($referralMap).appendTo('div#msgwindow');
+      }
+    }
+    endTime = new Date().getTime()
+    //debugMode progressTime
+    if (debugMode) {
+      updateProgressTime()
     }
   }
 }
 function addTinyOptions() {
   if (jQuery('div#referral_patients_menu').length === 0) {
-    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><center><span style="font-size:9px;" onclick="toggleTinyMenu()">Ein-/Ausblenden</span>&nbsp;&nbsp;Allg. Filter: <select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div></center><table id="tiny_menu" style=\"border-spacing: 0px 3px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-top:-4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertBefore('div#referral_patients_count')
+    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><center><span style="font-size:9px;" onclick="toggleTinyMenu()">Ein-/Ausblenden</span>&nbsp;&nbsp;Allg. Filter: <select id=\"toggle_patients\" onChange=\"changePatientView(true)\" style=\"width:129px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView(true)\" style=\"margin-left:3px;width:111px;\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView(true)\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView(true)\" style=\"display:none;\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:4px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div></center><table id="tiny_menu" style=\"border-spacing: 0px 3px;width:530px;\"><tbody>' + getRow(2) + getRow(3) + getRow(9) + getRow(12) + getRow(13) + getRow(5) + getRow(1) + getRow(4) + getRow(8) + getRow(10) + getRow(7) + getRow(15) + getRow(16) + getRow(17) + '</tbody></table><center><div id=\"tiny_filter\">' + getTinyFilterString() + '</div></center><div title=\"Tiny Filter entfernen\" style=\"float:right;margin-left:10px;margin-right:10px;margin-top:-13px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeTinyFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView(true)\" style=\"margin-left: 210px;display:none;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertBefore('div#referral_patients_count')
   }
   restoreFilterSelection()
 }
@@ -482,20 +631,21 @@ function toggleTinyMenu() {
 }
 function getTinyFilterString() {
   tinyFilterString = "Tiny Filter: "
-  if (actualroomsMenuArrayName != "alle Räume") {
-    tinyFilterString += "Raum = " + actualroomsMenuArrayName
+  if (KHConfigValues.selectedRoomsName != "alle Räume") {
+    tinyFilterString += "Raum = " + KHConfigValues.selectedRoomsName
   }
-  if (actualSendDiseaseName != "alle Krankheiten") {
-    tinyFilterString += "Krankheit = " + actualSendDiseaseName
+  if (KHConfigValues.selectedDiseaseName != "alle Krankheiten") {
+    tinyFilterString += "Krankheit = " + KHConfigValues.selectedDiseaseName
   }
-  if (tinyFilterString == "Tiny Filter: ") {
+  if (KHConfigValues.tinyFilterString == "Tiny Filter: ") {
     tinyFilterString += "kein Filter"
   }
   return tinyFilterString
 }
 function removeTinyFilter() {
-  actualroomsMenuArrayName = "alle Räume"
-  actualSendDiseaseName = "alle Krankheiten"
+  tinyMenuVisible = true
+  KHConfigValues.selectedRoomsName = "alle Räume"
+  KHConfigValues.selectedDiseaseName = "alle Krankheiten"
   jQuery('div#tiny_filter').text(getTinyFilterString())
   checkAllPatients()
 }
@@ -577,29 +727,29 @@ function getColumn(id) {
 }
 function addClassicOptions() {
   if (jQuery('div#referral_patients_menu').length === 0) {
-    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView()\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView()\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView()\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:14px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView()\" style=\"margin-left: 210px;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertAfter('div#referral_patients_count')
+    jQuery('<div id=\"referral_patients_menu\" style=\"margin-bottom:7px;\"><select id=\"toggle_patients\" onChange=\"changePatientView(false)\" style=\"width:149px\"><option>alle Patienten</option><option>keine Simulanten</option><option>nur Simulanten</option><option>keine MultiPats</option><option>nur MultiPats</option></select><select id=\"toggle_diseases\" onChange=\"changePatientView(false)\" style=\"margin-left:3px;width:111px\"><option># Krankheiten</option>' + getOptionsString(diseasesMenuArray) + '</select><select id=\"toggle_recievers\" onChange=\"changePatientView(false)\" style=\"margin-left:3px;width:107px;\"><option>alle Ärzte</option>' + getOptionsString(doctorsMenuArray) + '</select><select id=\"toggle_rooms\" onChange=\"changePatientView(false)\"><option>alle Räume</option>' + getOptionsString(roomsMenuArray) + '</select><div title=\"Alle Filter entfernen\" style=\"float:right; margin-right: 10px; margin-top:14px; width: 15px; background-repeat:none; background-image:url(http://pics.kapihospital.de/referral_icons_15.jpg); background-position: -75px 0px;\" onclick=\"removeFilter()\">&nbsp;</div><select id=\"toggle_diseasesNames\" onChange=\"changePatientView(false)\" style=\"margin-left: 210px;\"><option>alle Krankheiten</option>' + getOptionsString(diseasesNamesMenuArray) + '</select></div>').insertAfter('div#referral_patients_count')
   }
   restoreFilterSelection()
 }
 function restoreFilterSelection() {
   //restoreOptionsSelection
   changePatientViewNecessary = false
-  document.getElementById("toggle_patients").selectedIndex = actualSendPatientsIndex
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), actualSendNumberOfDiseases)
+  document.getElementById("toggle_patients").selectedIndex = KHConfigValues.selectedPatientsIndex
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_diseases")), KHConfigValues.selectedNumberOfDiseases)
   if (index != -1) {
     document.getElementById("toggle_diseases").selectedIndex = index
   } else {
     document.getElementById("toggle_diseases").selectedIndex = 0
     changePatientViewNecessary = true
   }
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_recievers")), actualdoctorsMenuArrayName)
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_recievers")), KHConfigValues.selectedDoctorsName)
   if (index != -1) {
     document.getElementById("toggle_recievers").selectedIndex = index
   } else {
     document.getElementById("toggle_recievers").selectedIndex = 0
     changePatientViewNecessary = true
   }
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualroomsMenuArrayName)
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), KHConfigValues.selectedRoomsName)
   if (index != -1) {
     document.getElementById("toggle_rooms").selectedIndex = index
   } else {
@@ -610,12 +760,12 @@ function restoreFilterSelection() {
     changePatientView()
   }
 }
-function updateAnalyseTime() {
-  analyseTime = endTime - startTime
+function updateProgressTime() {
+  progressTime = endTime - startTime
   if (jQuery('div#analyse_time').length === 0) {
-    jQuery('<div id=\"analyse_time\" style="position: absolute; top: 430px; left: 33px;">Time: ' + analyseTime + 'ms</div>').insertAfter('div#referrals')
+    jQuery('<div id=\"analyse_time\" style="position: absolute; top: 430px; left: 33px;">Time: ' + progressTime + 'ms</div>').insertAfter('div#referrals')
   } else {
-    jQuery('div#analyse_time').text("Time: " + analyseTime + "ms")
+    jQuery('div#analyse_time').text("Time: " + progressTime + "ms")
   }
 }
 function updateNumberOfDiseases() {
@@ -670,26 +820,35 @@ function updateTotalPoints() {
   }
 }
 function changeTinyFilter(diseaseName, roomName) {
-  actualSendDiseaseName = diseaseName
-  actualroomsMenuArrayName = roomName
-  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), actualroomsMenuArrayName)
+  KHConfigValues.selectedDiseaseName = diseaseName
+  KHConfigValues.selectedRoomsName = roomName
+  storeKHConfigValues();
+  index = findInArray(getSelectOptionsArray(document.getElementById("toggle_rooms")), KHConfigValues.selectedRoomsName)
   if (index != -1) {
     document.getElementById("toggle_rooms").selectedIndex = index
   }
   jQuery('div#tiny_filter').text(getTinyFilterString())
   checkAllPatients()
 }
-function changePatientView() {
+function changePatientView(tinyView) {
   var actualIndex = 0
-  actualSendPatientsIndex = document.getElementById("toggle_patients").selectedIndex
+  KHConfigValues.selectedPatientsIndex = document.getElementById("toggle_patients").selectedIndex
   actualIndex = document.getElementById("toggle_diseases").selectedIndex
-  actualSendNumberOfDiseases = document.getElementById("toggle_diseases")[actualIndex].value
+  KHConfigValues.selectedNumberOfDiseases = document.getElementById("toggle_diseases")[actualIndex].value
   actualIndex = document.getElementById("toggle_recievers").selectedIndex
-  actualdoctorsMenuArrayName = document.getElementById("toggle_recievers")[actualIndex].value
-  actualIndex = document.getElementById("toggle_rooms").selectedIndex
-  actualroomsMenuArrayName = document.getElementById("toggle_rooms")[actualIndex].value
-  actualIndex = document.getElementById("toggle_diseasesNames").selectedIndex
-  actualSendDiseaseName = document.getElementById("toggle_diseasesNames")[actualIndex].value
+  KHConfigValues.selectedDoctorsName = document.getElementById("toggle_recievers")[actualIndex].value
+  if (tinyView) {
+    document.getElementById("toggle_rooms").selectedIndex = 0
+    KHConfigValues.selectedRoomsName = document.getElementById("toggle_rooms")[0].value
+    document.getElementById("toggle_diseasesNames").selectedIndex = 0
+    KHConfigValues.selectedDiseaseName = document.getElementById("toggle_diseasesNames")[0].value
+  } else {
+    actualIndex = document.getElementById("toggle_rooms").selectedIndex
+    KHConfigValues.selectedRoomsName = document.getElementById("toggle_rooms")[actualIndex].value
+    actualIndex = document.getElementById("toggle_diseasesNames").selectedIndex
+    KHConfigValues.selectedDiseaseName = document.getElementById("toggle_diseasesNames")[actualIndex].value
+  }
+  storeKHConfigValues();
   checkAllPatients()
 }
 function getOptionsString(array) {
@@ -700,33 +859,34 @@ function getOptionsString(array) {
   return optionsString
 }
 function changeSorting(column) {
-  if (columnsToSort[column] == 0 && column != 1) {
-    for (var i = 0; i < columnsToSort.length; i++) {
+  if (KHConfigValues.columnsToSort[column] == 0 && column != 1) {
+    for (var i = 0; i < KHConfigValues.columnsToSort.length; i++) {
       if (i != 1) {
-        columnsToSort[i] = 0
+        KHConfigValues.columnsToSort[i] = 0
       }
     }
   }
-  columnsToSort[column]++
-  if (columnsToSort[column] === 2) {
-    columnsToSort[column] = -1
+  KHConfigValues.columnsToSort[column]++
+  if (KHConfigValues.columnsToSort[column] === 2) {
+    KHConfigValues.columnsToSort[column] = -1
   }
   
+  storeKHConfigValues();
   setSortingIcons()
   sortPatients()
 }
 function setSortingIcons() {
-  for (var i = 0; i < columnsToSort.length; i++) {
-    if (columnsToSort[i] === 0) {
+  for (var i = 0; i < KHConfigValues.columnsToSort.length; i++) {
+    if (KHConfigValues.columnsToSort[i] === 0) {
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i])
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '0px')
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('margin-top', '0px')
-    } else if (columnsToSort[i] === 1) {
+    } else if (KHConfigValues.columnsToSort[i] === 1) {
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i] + "  ")
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/up.gif" />')
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '2px')
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('margin-top', '-2px')
-    } else if (columnsToSort[i] === -1) {
+    } else if (KHConfigValues.columnsToSort[i] === -1) {
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).text(headers[i] + "  ")
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).append('<img style="position: relative; top: 3px;" src="http://icons.primail.ch/arrows/down.gif" />')
       jQuery(jQuery('div.ref_spatline.ref_spatlineheader', jQuery('#referral_patients_headers'))[i]).css('padding-bottom', '2px')
@@ -865,8 +1025,8 @@ function sortPatients() {
   
   numberOfColumnsToSort = 0
   columnToSort = -1
-  for (var i = 0; i < columnsToSort.length; i++) {
-    if (columnsToSort[i] != 0) {
+  for (var i = 0; i < KHConfigValues.columnsToSort.length; i++) {
+    if (KHConfigValues.columnsToSort[i] != 0) {
       numberOfColumnsToSort++
       if (i != 1) {
         columnToSort = i
@@ -878,37 +1038,35 @@ function sortPatients() {
     if (columnToSort == -1) {
       columnToSort = 1
     }
-    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
-    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
+    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
   } else if (numberOfColumnsToSort == 2) {
-    console.log("Two Column Sort")
     //Double Column Sort
     //sorting after Column 1
-    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(1, columnsToSort[1]))
-    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(1, columnsToSort[1]))
-    console.log("Original Length: " + jQuery(sendPatsToSort).length)
-    if (columnsToSort[1] == 1) {
+    reciPatsToSort = sortPatientList(reciPatsToSort, getSortingFunction(1, KHConfigValues.columnsToSort[1]))
+    sendPatsToSort = sortPatientList(sendPatsToSort, getSortingFunction(1, KHConfigValues.columnsToSort[1]))
+    if (KHConfigValues.columnsToSort[1] == 1) {
       for (var i = 1; i < 7; i++) {
         reciPartToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i}))
         reciPatsToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i}))
-        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
         reciPatsToSort = reciPatsToSort.add(reciPartToSort)
 
         sendPartToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i})
         sendPatsToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i})
-        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
         sendPatsToSort = sendPatsToSort.add(sendPartToSort)
       }
-    } else if (columnsToSort[1] == -1) {
+    } else if (KHConfigValues.columnsToSort[1] == -1) {
       for (var i = 6; i > 0; i--) {
         reciPartToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i}))
         reciPatsToSort = jQuery(jQuery(reciPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i}))
-        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        reciPartToSort = sortPatientList(reciPartToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
         reciPatsToSort = reciPatsToSort.add(reciPartToSort)
 
         sendPartToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length == i})
         sendPatsToSort = jQuery(sendPatsToSort).filter(function(){ return jQuery(jQuery(this).children()[1]).children().length != i})
-        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, columnsToSort[columnToSort]))
+        sendPartToSort = sortPatientList(sendPartToSort, getSortingFunction(columnToSort, KHConfigValues.columnsToSort[columnToSort]))
         sendPatsToSort = sendPatsToSort.add(sendPartToSort)
       }
     }
@@ -1115,44 +1273,44 @@ function checkIfPatNeedsToBeHidden(patient) {
   //to ensure that all are visible
   jQuery(patient).show()
   //Patients Filter
-  if (actualSendPatientsIndex == 1) {
+  if (KHConfigValues.selectedPatientsIndex == 1) {
     if (hidePats(patient, 1)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 2) {
+  } else if (KHConfigValues.selectedPatientsIndex == 2) {
     if (hidePatsGreater(patient, 1)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 3) {
+  } else if (KHConfigValues.selectedPatientsIndex == 3) {
     if (hidePatsMulti(patient)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 4) {
-    if (hidePatsNotMulti(patient, actualroomsMenuArrayName)) {
+  } else if (KHConfigValues.selectedPatientsIndex == 4) {
+    if (hidePatsNotMulti(patient, KHConfigValues.selectedRoomsName)) {
       return false
     }
   }
   //Dieseases Filter
-  if (actualSendNumberOfDiseases != "# Krankheiten") {
-    if (hidePatsExcept(patient, actualSendNumberOfDiseases)) {
+  if (KHConfigValues.selectedNumberOfDiseases != "# Krankheiten") {
+    if (hidePatsExcept(patient, KHConfigValues.selectedNumberOfDiseases)) {
       return false
     }
   }
   //Recievers Filter
-  if (actualdoctorsMenuArrayName != "alle Ärzte") {
-    if (hidePatsNotTo(patient, actualdoctorsMenuArrayName)) {
+  if (KHConfigValues.selectedDoctorsName != "alle Ärzte") {
+    if (hidePatsNotTo(patient, KHConfigValues.selectedDoctorsName)) {
       return false
     }
   }
   //Rooms Filter
-  if (actualroomsMenuArrayName != "alle Räume") {
-    if (hidePatsNotForRoom(patient, actualroomsMenuArrayName)) {
+  if (KHConfigValues.selectedRoomsName != "alle Räume") {
+    if (hidePatsNotForRoom(patient, KHConfigValues.selectedRoomsName)) {
       return false
     }
   }
   //Disease Filter
-  if (actualSendDiseaseName != "alle Krankheiten") {
-    if (hidePatsNotWithDiseases(patient, actualSendDiseaseName)) {
+  if (KHConfigValues.selectedDiseaseName != "alle Krankheiten") {
+    if (hidePatsNotWithDiseases(patient, KHConfigValues.selectedDiseaseName)) {
       return false
     }
   }
@@ -1162,32 +1320,32 @@ function checkIfPatNeedsToBeHiddenByTinyGeneral(patient) {
   //to ensure that all are visible
   jQuery(patient).show()
   //Patients Filter
-  if (actualSendPatientsIndex == 1) {
+  if (KHConfigValues.selectedPatientsIndex == 1) {
     if (hidePats(patient, 1)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 2) {
+  } else if (KHConfigValues.selectedPatientsIndex == 2) {
     if (hidePatsGreater(patient, 1)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 3) {
+  } else if (KHConfigValues.selectedPatientsIndex == 3) {
     if (hidePatsMulti(patient)) {
       return false
     }
-  } else if (actualSendPatientsIndex == 4) {
-    if (hidePatsNotMulti(patient, actualroomsMenuArrayName)) {
+  } else if (KHConfigValues.selectedPatientsIndex == 4) {
+    if (hidePatsNotMulti(patient, KHConfigValues.selectedRoomsName)) {
       return false
     }
   }
   //Dieseases Filter
-  if (actualSendNumberOfDiseases != "# Krankheiten") {
-    if (hidePatsExcept(patient, actualSendNumberOfDiseases)) {
+  if (KHConfigValues.selectedNumberOfDiseases != "# Krankheiten") {
+    if (hidePatsExcept(patient, KHConfigValues.selectedNumberOfDiseases)) {
       return false
     }
   }
   //Recievers Filter
-  if (actualdoctorsMenuArrayName != "alle Ärzte") {
-    if (hidePatsNotTo(patient, actualdoctorsMenuArrayName)) {
+  if (KHConfigValues.selectedDoctorsName != "alle Ärzte") {
+    if (hidePatsNotTo(patient, KHConfigValues.selectedDoctorsName)) {
       return false
     }
   }
@@ -1197,14 +1355,14 @@ function checkIfPatNeedsToBeHiddenByTinySpecial(patient) {
   //to ensure that all are visible
   if (jQuery(patient).is(':visible')) {
     //Rooms Filter
-    if (actualroomsMenuArrayName != "alle Räume") {
-      if (hidePatsNotForRoom(patient, actualroomsMenuArrayName)) {
+    if (KHConfigValues.selectedRoomsName != "alle Räume") {
+      if (hidePatsNotForRoom(patient, KHConfigValues.selectedRoomsName)) {
         return false
       }
     }
     //Disease Filter
-    if (actualSendDiseaseName != "alle Krankheiten") {
-      if (hidePatsNotWithDiseases(patient, actualSendDiseaseName)) {
+    if (KHConfigValues.selectedDiseaseName != "alle Krankheiten") {
+      if (hidePatsNotWithDiseases(patient, KHConfigValues.selectedDiseaseName)) {
         return false
       }
     }
@@ -1219,10 +1377,10 @@ function checkAllPatients() {
   updateTotalPoints()
   updateSelectedNumberOfPats()
   updateNumberOfDiseases()
-  if (debug) {
-    updateAnalyseTime()
+  if (debugMode) {
+    updateProgressTime()
   }
-  if (tiny) {
+  if (KHConfigValues.tiny) {
     jQuery(jQuery('div#referral_patients_menu')).remove()
     addTinyOptions()
   }
@@ -1262,11 +1420,11 @@ function getPointsForPatient(patientId, level, medsUsed) {
     pointsForPiper = Math.floor((getBasePointsForPatient(patientId, medsUsed)+BonusForMultiDiseases(patientDiseasesStorage["p"+patientId].length))*((level-1)*levelBonus+1))
     pointsWithWWBonus = pointsForPiper
     
-    if (wwLevel == 10) {
+    if (KHConfigValues.wwLevel == 10) {
       pointsWithWWBonus = pointsForPiper * 1.05 * 1.05 * 1.1
-    } else if (wwLevel >= 6) {
+    } else if (KHConfigValues.wwLevel >= 6) {
       pointsWithWWBonus = pointsForPiper * 1.05 * 1.05
-    } else if (wwLevel >= 1) {
+    } else if (KHConfigValues.wwLevel >= 1) {
       pointsWithWWBonus = pointsForPiper * 1.05
     }
     
@@ -1327,9 +1485,9 @@ function analysePatient(patient, recieved) {
   
   var actualPoints = 0
   //add Points
-  if (jQuery('[class=ref_spatline]', patient).length == 5) {
+  if (jQuery('[class^=ref_spatline]', patient).length == 5) {
     if (pointsCalculation) {
-      jQuery(jQuery('[class=ref_spatline]', patient)[2]).hide()
+      jQuery(jQuery('[class^=ref_spatline]', patient)[2]).hide()
       actualPoints = getPointsForPatient(patientId, level, true)
       jQuery('<div class="ref_spatline" style="width:62px;">' + actualPoints + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[2])
     }
@@ -1342,7 +1500,7 @@ function analysePatient(patient, recieved) {
     precision : 2,
     format: "%v %s"
   };
-  if (jQuery('[class=ref_spatline]', patient).length == 6) {
+  if (jQuery('[class^=ref_spatline]', patient).length == 6) {
     jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(gethTPerTime(patient), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[4])
   }
   if (pointsCalculation) {
@@ -1353,20 +1511,28 @@ function analysePatient(patient, recieved) {
       precision : 2,
       format: "%v"
     };
-    if (jQuery('[class=ref_spatline]', patient).length == 7) {
+    if (jQuery('[class^=ref_spatline]', patient).length == 7) {
       jQuery('<div class="ref_spatline" style="width:69px;">' + accounting.formatMoney(getPointsPerTime(patient, patientId, level, true), options) + '</div>').insertAfter(jQuery('[class=ref_spatline]', patient)[5])
     }
     //depending on Config hide ht/Min or p/min
-    if (points) {
-      jQuery(jQuery('[class=ref_spatline]', patient)[5]).hide()
+    if (KHConfigValues.points) {
+      jQuery(jQuery('[class^=ref_spatline]', patient)[5]).hide()
     } else {
-      jQuery(jQuery('[class=ref_spatline]', patient)[6]).hide()
+      jQuery(jQuery('[class^=ref_spatline]', patient)[6]).hide()
     }
   }
   
   //changeColums Width
-  jQuery(jQuery('[class=ref_spatline]', patient)[1]).attr('style', 'width:96px;')
-  jQuery(jQuery('[class=ref_spatline]', patient)[4]).attr('style', 'width:79px;')
+  jQuery(jQuery('[class^=ref_spatline]', patient)[1]).attr('style', 'width:96px;')
+  jQuery(jQuery('[class^=ref_spatline]', patient)[4]).attr('style', 'width:79px;')
+  
+  //add Doctor Name to Tooltip
+  if (recieved) {
+    jQuery(jQuery(jQuery(patient).children()[7]).children()[1]).attr('title', 'Überweisung von "' + getReciever(patient) + '" annehmen')
+    jQuery(jQuery(jQuery(patient).children()[7]).children()[2]).attr('title', 'Überweisung von "' + getReciever(patient) + '" ablehnen')
+  } else {
+    jQuery(jQuery(jQuery(patient).children()[7]).children()[2]).attr('title', 'Überweisung an "' + getReciever(patient) + '" zurückziehen')
+  }
 
   //Options
   numberOfDiseases = countDiseases(patient)
@@ -1390,7 +1556,7 @@ function analysePatient(patient, recieved) {
     }
   }
   
-  if (tiny) {
+  if (KHConfigValues.tiny) {
     if (checkIfPatNeedsToBeHiddenByTinyGeneral(patient)) {
       //totalDiseasesCounting
       countedDiseasesPatient = new Array()
@@ -1427,7 +1593,7 @@ function analysePatient(patient, recieved) {
   }
 
   //restoreFilter
-  if (tiny) {
+  if (KHConfigValues.tiny) {
     isPatientNotHidden = checkIfPatNeedsToBeHiddenByTinySpecial(patient)
   } else {
     isPatientNotHidden = checkIfPatNeedsToBeHidden(patient)
@@ -1454,7 +1620,6 @@ function analysePatient(patient, recieved) {
   }
 }
 function analysePatients() {
-  startTime = new Date().getTime()
   numberOfPats = 0
   numberOfHiddenPats = 0
   totalSendPrice = 0
@@ -1506,60 +1671,108 @@ function analysePatients() {
       totalDiseasesDuration += countedDiseases[i] * getDiseasesDuration(i)
     }
   }
-  endTime = new Date().getTime()
   savePatientDiseasesStorage()
 }
-//End Manager
-//Begin General
-function setCookie(name, value, expires, path, domain) {
-  // set time, it's in milliseconds
-  var today = new Date();
-  today.setTime(today.getTime());
-  if (expires) {
-    expires = expires * 1000 * 60 * 60 * 24;
-  }
-  var expires_date = new Date(today.getTime() + (expires));
+function storeKHConfigValues() {
+  //remove old version from localStorage
+  localStorage.removeItem('KHConfigValues' + userName);
+  //write actual version to localStorage
+  localStorage.setItem('KHConfigValues' + userName, JSON.stringify(KHConfigValues));
+}
+function sortConfigMenu() {
+  menuToSort = jQuery('#toolsMenu').children().remove();
+  //add Merge Sort
+  /*!
+   * Merge Sort in JavaScript v1.0
+   * http://github.com/sidewaysmilk/merge-sort
+   *
+   * Copyright (c) 2011, Justin Force
+   * Licensed under the BSD 3-Clause License
+   */
   
-  document.cookie = name + "=" + escape(value) +
-  ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
-  ( ( path ) ? ";path=" + path : "" ) +
-  ( ( domain ) ? ";domain=" + domain : "" );
-}
-function getCookie(check_name) {
-  var a_all_cookies = document.cookie.split( ';' );
-  var a_temp_cookie = '';
-  var cookie_name = '';
-  var cookie_value = '';
-  var b_cookie_found = false; // set boolean t/f default f
-
-  for (i = 0; i < a_all_cookies.length; i++) {
-    // now we'll split apart each name=value pair
-    a_temp_cookie = a_all_cookies[i].split( '=' );
-
-    // and trim left/right whitespace while we're at it
-    cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
-
-    // if the extracted name matches passed check_name
-    if (cookie_name == check_name) {
-      b_cookie_found = true;
-      // we need to handle case where cookie has no value but exists (no = sign, that is):
-      if ( a_temp_cookie.length > 1 ) {
-      	cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
-      }
-      // note that in cases where cookie is initialized but no value, null is returned
-      return cookie_value;
-      break;
+  /*jslint browser: true, indent: 2 */
+  /*global jQuery */
+  (function () {
+    'use strict';
+    // Add stable merge sort method to Array prototype
+    if (!Array.mergeSort) {
+      Array.prototype.mergeSort = function (compare) {
+        var length = this.length,
+          middle = Math.floor(length / 2);
+  
+        // define default comparison function if none is defined
+        if (!compare) {
+          compare = function (left, right) {
+            if (left  <  right) {
+              return -1;
+            } else if (left === right) {
+              return 0;
+            } else {
+              return 1;
+            }
+          };
+        }
+  
+        if (length < 2) {
+          return this;
+        }
+  
+        function merge(left, right, compare) {
+          var result = [];
+          while (left.length > 0 || right.length > 0) {
+            if (left.length > 0 && right.length > 0) {
+              if (compare(left[0], right[0]) <= 0) {
+                result.push(left[0]);
+                left = left.slice(1);
+              } else {
+                result.push(right[0]);
+                right = right.slice(1);
+              }
+            } else if (left.length > 0) {
+              result.push(left[0]);
+              left = left.slice(1);
+            } else if (right.length > 0) {
+              result.push(right[0]);
+              right = right.slice(1);
+            }
+          }
+          return result;
+        }
+        return merge(
+          this.slice(0, middle).mergeSort(compare),
+          this.slice(middle, length).mergeSort(compare),
+          compare
+        );
+      };
     }
-    a_temp_cookie = null;
-    cookie_name = '';
-  }
-  if (!b_cookie_found) {
-    return null;
-  }
+    // Add merge sort to jQuery if it's present
+    if (window.jQuery !== undefined) {
+      jQuery.fn.mergeSort = function (compare) {
+        return jQuery(Array.prototype.mergeSort.call(this, compare));
+      };
+      jQuery.mergeSort = function (array, compare) {
+        return Array.prototype.mergeSort.call(array, compare);
+      };
+    }
+  }());
+  //End Merge Sort
+  
+  sortedMenu = menuToSort.mergeSort(function (left, right) {
+    left = getEntryName(left)
+    right = getEntryName(right)
+    if (left < right) {
+      return -1;
+    } else if (left === right) {
+      return 0;
+    } else {
+      return 1;
+    }
+  });
+
+  jQuery(sortedMenu).appendTo('#toolsMenu');
 }
-//End General
+//End KHAdvancedReferral
 //Begin Script
-addFunctions()
-addJQuery(readyJQuery)
-addAccounting(readyAccounting)
+injectScript();
+injectScriptStart(injectStartReady);
 //End Script

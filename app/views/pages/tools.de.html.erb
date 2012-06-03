@@ -12,194 +12,38 @@
 </p>
 
 <p>
-<h3><%= link_to t('link_khadvancedassignment'), khadvancedassignment_path %></h3>
-</p>
+  <h3><%= link_to t('link_khadvancedassignment'), khadvancedassignment_path %></h3>
   <%= render 'khadvancedassignment_history' %>
-<p>
-<h3><%= link_to t('link_khadvancedmedrack'), khadvancedmedrack_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.2</li>
-  <ul>
-    <li>Das Regal kann nun durchgängig geblättert werden.</li>
-  </ul>
-  <li>1.1</li>
-  <ul>
-    <li>Update der Kofiguration um mit dem anderen Scripten zusammenzuarbeiten</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Alle Medikamente eines Raumes hintereinander</li>
-    <li>Direkter Zugriff auf die Medikamentenshops</li>
-    <li>Beim Einkauf Aufstockung auf eine bestimmte Menge</li>
-    <li>Anzeige wie viel hT ich in Medikamenten gebunden habe</li>
-  </ul>
-</ul>
 </p>
 <p>
-<h3><%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.2</li>
-  <ul>
-    <li>Update der Kofiguration um mit dem anderen Scripten zusammenzuarbeiten</li>
-  </ul>
-  <li>1.1</li>
-  <ul>
-    <li>Einige interne Anpassungen der Berechnungen. Es stimmt noch nicht 100%. Es wird noch daran gearbeitet, wie die Berechnung intern genau funktioniert.</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Behandlungszeiten zeigen nun den Bonus durch WW an.</li>
-    <li>Wieviele Punkte bringt der Patient (mit und ohne Medis)</li>
-    <li>Gesamtkosten der Medis für den Patienten</li>
-    <li>Wieviel Gewinn mache ich mit einem Patienten</li>
-    <li>Bei allen Werten werden die Boni durch die WW schon mit eingerechnet</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khadvancedmedrack'), khadvancedmedrack_path %></h3>
+  <%= render 'khadvancedmedrack_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khadvancedreferral'), khadvancedreferral_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 3.0 Beta</li>
-  <ul>
-    <li>Zugeschickte und Eingelagerte Pats werden nun zusammen behandelt.</li>
-    <li>Wenn man nach der Spalte Anzahl Krankheiten sortiert, kann nun noch eine weitere Spalte, ur Sortierung, ausgewählt werden.</li>
-  </ul>
-  <li><span class="label success">Neu</span> in 2.0 Beta</li>
-  <ul>
-    <li>Es wurden nun die Punkte in der Mappe eingeführt.</li>
-    <li>Zusätzlich kann zwischen einer Spalte für Punke pro Zeit und hT pro Zeit gewählt werden.</li>
-    <li>Punkteberechnung für nicht Simulaten noch nicht 100%tig korrekt. &plusmn;1 Punkt</li>
-  </ul>
-  <li>1.0 Beta</li>
-  <ul>
-    <li>Es kann nun zwischen den klassischen Filtern und der Übersicht von Tiny gewechselt werden.</li>
-    <li>Zusätzliche Anzeigen in der Überweisungsmappe (Anzahl Patienten, Gesamtertrag).</li>
-    <li>5 Filter in der Überweisungsmappe, mit denen der Überblick nicht verloren geht.</li>
-  </ul>
-  <li>0.5 Beta</li>
-  <ul>
-    <li>Zusätzliche Anzeigen in der Überweisungsmappe (Anzahl Patienten, Gesamtertrag)</li>
-    <li>4 Filter in der Überweisungsmappe, mit denen der Überblick nicht verloren geht</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %></h3>
+  <%= render 'khadvancedpatientview_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khmedhelper'), khmedhelper_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.0</li>
-  <li><span class="label important">PA only</span> Skript</li>
-  <ul>
-    <li>Statt der roten Lamp werden nun die Medis angezeigt die noch in dem Raum fehlen.</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khadvancedreferral'), khadvancedreferral_path %></h3>
+  <%= render 'khadvancedreferral_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khopticalimprovements'), khopticalimprovements_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.3.3</li>
-  <ul>
-    <li>Noch ein BugFix der XP Anzeige.</li>
-  </ul>
-  <li>1.3.2</li>
-  <ul>
-    <li>BugFix der XP Anzeige.</li>
-  </ul>
-  <li>1.3.1</li>
-  <ul>
-    <li>Einige Firefox BugFixes</li>
-  </ul>
-  <li>1.3</li>
-  <ul>
-    <li>Im Mouseover eurer Punkte könnt ihr nun sehen, wieviele bis zum nächsten Level noch fehlen.</li>
-  </ul>
-  <li>1.2</li>
-  <ul>
-    <li>Wenn keine Susi gebucht wurde, oder sie nur noch 3 Tage da ist, erscheint ein Ausrufezeichen</li>
-  </ul>
-  <li>1.1</li>
-  <ul>
-    <li>Solange die Wunderpille am Fernseher nich abgeholt wurde, erscheint ein Ausrufezeichen</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Die Pats laufen nun nicht mehr unter dem Fernseher durch</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khmedhelper'), khmedhelper_path %></h3>
+  <%= render 'khmedhelper_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khpatientcounter'), khpatientcounter_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.2</li>
-  <ul>
-    <li>Update der Kofiguration um mit den anderen Scripten zusammenzuarbeiten</li>
-  </ul>
-  <li>1.1</li>
-  <ul>
-    <li>Ihr könnt Olga nun mitteilen, dass ihr die 2 Stufe des Weltwunders abgeschlossen habt. Dann zählt sie die 2 Bonus Patienten, korrekt mit.</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Tooltip für die Ausstattungspunkte der die Anzahl Patienten pro Tag anzeigt.</li>
-    <li>Olga zählt nun die Patienten die den Tag über so eintrudeln.</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khopticalimprovements'), khopticalimprovements_path %></h3>
+  <%= render 'khopticalimprovements_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khshortcuts'), khshortcuts_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 1.2</li>
-  <ul>
-    <li>Noch ein Tastaturshortcuts für KH</li>
-  </ul>
-  <li>1.1</li>
-  <ul>
-    <li>Noch zwei Tastaturshortcuts für KH</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Tastaturshortcuts für KH</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khpatientcounter'), khpatientcounter_path %></h3>
+  <%= render 'khpatientcounter_history' %>
 </p>
 <p>
-<h3><%= link_to t('link_khtimer'), khtimer_path %></h3>
-<ul class="unstyled">
-  <li><span class="label success">Neu</span> in 4.1.1</li>
-  <ul>
-    <li>BugFixes beim LogoutTimer.</li>
-  </ul>
-  <li>4.1</li>
-  <ul>
-    <li>Einige interne Anpassungen und BugFixes. Autokorrektur des GaragenCounters.</li>
-  </ul>
-  <li>4.0</li>
-  <ul>
-    <li>Es gibt nun auch einen LogoutTimer.</li>
-  </ul>
-  <li>3.1</li>
-  <ul>
-    <li>Im Fenster mit der Anzeige wieviele Patienten nun fertig sind, ist nun auch ausblendbar.</li>
-  </ul>
-  <li>3.0</li>
-  <ul>
-    <li>Alle Timer sind nun ein und ausblendbar.</li>
-    <li>Läuft ein Timer nur noch 30 sec. Wird er grün.</li>
-    <li>Der KH Timer verrät nun wo der Timer ausläuft</li>
-    <li>Im Fenster mit der Anzeige wieviele Patienten nun fertig sind, wird angezeigt auf welchen Etagen sie fertig sind.</li>
-    <li>Der Fenstertitle verrät auch auf welchem Level der aktuelle Timer ausläuft.</li>
-  </ul>
-  <li>2.0</li>
-  <ul>
-    <li>Timer für jeden Raum</li>
-    <li>Timer für die Mini-Behandlungen</li>
-    <li>Timer für die Etage mit der kürzesten Behandlungszeit</li>
-    <li>Timer für das KH mit der kürzesten Behandlungszeit</li>
-    <li>Counter für jede abgeschlossene Behandlung</li>
-    <li>Der KH Timer und der Counter werden im Fenstertitle angezeigt. So kann ich in der Taskleiste, oder dem Browsertab sehen was im KH passiert ist.</li>
-  </ul>
-  <li>1.0</li>
-  <ul>
-    <li>Das Fahreug hat nun eine Fortschritsanzeige und Timer für die aktuelle Quest</li>
-  </ul>
-</ul>
+  <h3><%= link_to t('link_khshortcuts'), khshortcuts_path %></h3>
+  <%= render 'khshortcuts_history' %>
+</p>
+<p>
+  <h3><%= link_to t('link_khtimer'), khtimer_path %></h3>
+  <%= render 'khtimer_history' %>
 </p>

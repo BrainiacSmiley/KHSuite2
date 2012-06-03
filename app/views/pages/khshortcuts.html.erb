@@ -1,43 +1,65 @@
-<p>
-<strong>Was ist KHShortcuts?</strong><br />
-KHShortcuts führt Tastaturkürzel im KH ein.
-</p>
-<p>
-<strong>Welche Version hat KHShortcuts?</strong><br />
-Stand 29.03.12 ist Version 1.2<br />
-</p>
-<p>
-<strong>Wie ist KHShortcuts entstanden?</strong><br />
-Ich arbeite lieber mit der Tastatur als mit der Maus.<br />
-Folgende Shortcuts sind integriert:
-<ul>
-<li>ALT + 1-5: Wechsel zur jeweiligen Etage wenn vorhanden</li>
-<li>ALT + G: Direkter Weg zu den Quests in die Garage</li>
-<li>ALT + B: Direkter Weg an die Börse</li>
-<li>ALT + M: Die Überweisungsmappe</li>
-<li>ALT + O: Was Olga so notiert hat</li>
-<li>ALT + S: Die Statistiken im Büro bei PA</li>
-</ul>
-</p>
-<p>
-<strong>Was benötige ich um KHShortcuts installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHShortcuts her?</strong><br />
-Das gibt es hier:<br />
-<a href="../tools/khshortcuts/KHShortcuts.user.js">KHShortcuts 1.2</a>
-</p>
-<p>
-<strong>Wie installiere ich KHShortcuts?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHShortcuts anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHShortcuts anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-</p>
+<%= render 'toolsdescription_navigation' %>
+
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khshortcuts_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Es sind nun folgende Tastaturkürzel im KH verfügbar:
+      <ul>
+        <li>ALT + 1-5: Wechsel zur jeweiligen Etage wenn vorhanden</li>
+        <li>ALT + G: Direkter Weg zu den Quests in die Garage</li>
+        <li>ALT + B: Direkter Weg an die Börse</li>
+        <li>ALT + M: Die Überweisungsmappe</li>
+        <li>ALT + O: Was Olga so notiert hat</li>
+        <li>ALT + S: Die Statistiken im Büro bei PA</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khshortcuts_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHhortCuts", "../tools/khshortcuts/KHShortCuts.user.js" %></td>
+          <td><%= file_version('khshortcuts/KHShortCuts.user.js') %></td>
+          <td><%= file_timestamp('khshortcuts/KHShortCuts.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      Es muss nichts konfiguriert werden.
+    </p>
+  </div>
+  <div id="screenshots">
+    <p>
+      Keine Bilder!
+    </p>
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Alles Erledigt!</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

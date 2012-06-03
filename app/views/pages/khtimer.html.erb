@@ -1,42 +1,77 @@
-<p>
-<strong>Was ist KHTimer?</strong><br />
-KHTimer zeigt nun für alle Behandlungen und Quests Timer an. Zusätzlich wird die noch kürzeste Behandlungszeit pro Etage und für das gesamte KH angezeigt.<br />
-Damit man nicht die gane Zeit im KH unterwegs sein muss, wird der KH Timer auch in der Titelzeile angezeigt. Somit sieht man immer wie lange es noch dauert bis es wieder was zu tun gibt. Zusätzlich wird jedes mal wenn ein Timer ausläuft mitgezählt und angezeigt.
-Zusätzlich wird angezeigt wo der nächste Timer abläuft und wo Timer schon abgelaufen sind. Als letztes wird man nun dank des LogoutTimers nicht mehr von einem Logout überrascht.
-Für die Quest wird ein Timer, Counter und Fortschrittsbalken angezeigt.
-</p>
-<p>
-<strong>Welche Version hat KHTimer?</strong><br />
-Stand 31.03.12 ist Version 4.1.1<br />
-</p>
-<p>
-<strong>Wie ist KHTimer entstanden?</strong><br />
-Mir war es zu doof immer wieder in der Garage nachzuschauen wie weit die Quest ist. Nun seh ich das bequem per Timer.
-Desweiteren wollte ich nich alle Nase Zeit im KH verbringen müssen, um zu sehen ob sich was getan hat und irgendwer fertig ist.
-</p>
-<p>
-<strong>Was benötige ich um KHTimer installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHTimer her?</strong><br />
-Das gibt es hier:<br />
-<a href="../tools/khtimer/KHTimer.user.js">KHTimer 4.1.1</a>
-</p>
-<p>
-<strong>Wie installiere ich KHTimer?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHTimer anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHTimer anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-</p>
-<p>
-<strong>Wie setze ich den Counter von KHTimer zurück?</strong><br />
-Einfach einmal in den Counter klicken schon wird er auf 0 zurückgesetzt.
-</p>
+<%= render 'toolsdescription_navigation' %>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khtimer_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Es werden folgende Timer und Anzeigen eingeführt:
+      <ul>
+        <li>Jeder Raum bekommt seinen Timer.</li>
+        <li>Jede Etage bekommt einen Timer mit der kürzesten Behandlungszeit dieser Etage.</li>
+        <li>Susi hat nun auch einen Timer.</li>
+        <li>Die Garage bekommt einen Zähler und einen Timer.</li>
+        <li>Durch einen Klick auf den Garagen-Timer kommt man in die Garage.</li>
+        <li>Das gesamte Krankenhaus bekommt einen Timer mit der kürzesten Behandlungszeit im ganzen Krankenhaus.</li>
+        <li>Es gibt einen Logout-Timer.</li>
+        <li>Es gibt eine Anzeige die zählt wo Timer ausgelaufen sind. So sieht man auf einen Blick in welchen Etagen es wieder etwas zu tun gibt.</li>
+        <li>Der Titel von KH zeigt nun den Krankenhaus-Timer und die Anzahl fertiger Patienten an. So kann ich im Browser Tab sehen wann es wieder was zu tun gibt, ohne das ich ins KH switchen muss.</li>
+        <li>Fast alle Timer sind ein-/ausblendbar.</li>
+        <li>Ab 30s bekommt ein Timer einen grünen Hintergrund.</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khadvancedreferral_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHTimer", "../tools/khtimer/KHTimer.user.js" %></td>
+          <td><%= file_version('khtimer/KHTimer.user.js') %></td>
+          <td><%= file_timestamp('khtimer/KHTimer.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      <strong>Wie stelle ich ein, welche Timer angezeigt werden?</strong><br />
+      Öffnet euer Profil<br />
+      Dann wählt ihr unter Tools KHTimer aus<br />
+      <%= image_tag 'tools/khtimer/screenshot_config.jpg' %><br />
+      Nun sezt einfach die Haken bei den Timern die ihr haben wollt. Das wird sich wieder für jeden Arzt/Server gemerkt.
+    </p>
+    <p>
+      <strong>Wie setze ich den Behandlungszähler zurück?</strong><br />
+      Einfach einmal in den Counter klicken schon wird er auf 0 zurückgesetzt.
+    </p>
+  </div>
+  <div id="screenshots">
+    Timer:<br />
+    <%= image_tag 'tools/khtimer/screenshot_01.jpg', :width => 650 %><br />
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Timer bei den Pillenwerkstätten entfernen</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

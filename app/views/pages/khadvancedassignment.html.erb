@@ -1,9 +1,4 @@
-<ul class="tabs">
-  <li class="active"><a href="#history"><%= t('tools_history') %></a></li>
-  <li><a href="#description"><%= t('tools_description') %></a></li>
-  <li><a href="#download"><%= t('tools_download') %></a></li>
-  <li><a href="#settings"><%= t('tools_settings') %></a></li>
-</ul>
+<%= render 'toolsdescription_navigation' %>
  
 <div class="pill-content">
   <div class="active" id="history">
@@ -13,26 +8,35 @@
     <p>
       Ich habe das Überweisen mit den Funktionen versehen, die mir fehlten:
       <ul>
-      <li>Wird ein Patient an die Börse gestellt, wird der eingestellte Preis automatisch eingetragen.</li>
-      <li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der eingestellte Preis eingetragen.</li>
-      <li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
-      <li>Es kann konfiguriert werden, welche Preise für die Überweisung und an der Börse benutzt werden.</li>
-      <li>Es kann konfiguriert werden, das das Überweisen und einstellen an die Börse automatisch passiert (Ihr müßt nicht noch mal den Überweisen/Einstellen Knopf drücken).</li>
-      <li>Das Konfigurationsmenü befindet sich im Einstellungsfenster.</li>
+        <li>Wird ein Patient an die Börse gestellt, wird der eingestellte Preis automatisch eingetragen.</li>
+        <li>Wird ein Patient überwiesen, wird ein Standard Empfänger (bei mir mein AuslagerAccount) eingetragen und der eingestellte Preis eingetragen.</li>
+        <li>Nach dem Einlagern/Überweisen wird die Mappe automatisch wieder ausgeblendet.</li>
+        <li>Es kann konfiguriert werden, welche Preise für die Überweisung und an der Börse benutzt werden.</li>
+        <li>Es kann konfiguriert werden, das das Überweisen und einstellen an die Börse automatisch passiert (Ihr müßt nicht noch mal den Überweisen/Einstellen Knopf drücken).</li>
       </ul>
     </p>
   </div>
   <div id="download">
     <p>
       <ul class="unstyled">
-        <li><span class="label important">Achtung</span> mindestens Version 2.0 benutzen, damit das reibungslose Zusammenspiel mit den anderen Tools gewährleistet ist.</li>
-        <li><span class="label important">Achtung</span> unbedingt auf mindestens Version 1.2.1 upgraden wenn <%= link_to t('link_khadvancedpatientview'), khadvancedpatientview_path %> installiert werden soll!</li>
+        <%= render 'khadvancedassignment_important' %>
         <li>&nbsp;</li>
         <li><%= link_to t('link_installdescription'), help_path %></li>
-        <li>&nbsp;</li>
-        <li>1. <a href="../tools/khbasicscript/KHBasicScript.user.js">KHBasicScript 1.0</a></li>
-        <li>2. <a href="../tools/khadvancedassignment/KHAdvancedAssignment.user.js">KHAdvancedAssignment 2.0</a></li>
       </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHAdvancedMedRack", "../tools/khadvancedassignment/KHAdvancedAssignment.user.js" %></td>
+          <td><%= file_version('khadvancedassignment/KHAdvancedAssignment.user.js') %></td>
+          <td><%= file_timestamp('khadvancedassignment/KHAdvancedAssignment.user.js') %></td>
+        </tr>
+      </table>
     </p>
   </div>
   <div id="settings">
@@ -44,8 +48,32 @@
       <%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_new.jpg' %><br />
       Klickt auf den Namen eurer Wahl</br>
       <%= image_tag 'tools/khadvancedassignment/screenshot_addressbook_assigned.jpg' %><br />
-      Und schon habt ihr den Arzt bestimmt, der nun immer automatisch eingetragen wird. Wollt ihr in ändern. Addressbuch auf und anderen Namen anklicken. Der Name wird sich gemerkt, und zwar in der Kombination Server + Arztname. Wenn ihr also auf mehreren Serven spielt, müßt ihr das erste mal auf allen Servern einen Namen bestimmen.
+      Und schon habt ihr den Arzt bestimmt, der nun immer automatisch eingetragen wird. Der Name wird sich gemerkt, und zwar in der Kombination Server + Arztname. Wenn ihr also auf mehreren Serven spielt, müßt ihr das erste mal auf allen Servern einen Namen bestimmen.
     </p>
+    <p>
+      <strong>Wie ändere ich an welchen Account ausgelagert wird?</strong><br />
+      Einfach das Überweisungsaddressbuch auf machen und anderen Namen anklicken. Die Option "Auto Überweisung" darf dazu nicht angehackt sein.
+    </p>
+    <p>
+      <strong>Wie komme ich ins Konfigurationsmenü?</strong><br />
+      Öffnet euer Profil<br />
+      Dann wählt ihr unter Tools KHAdvancedAssignment aus<br />
+      <%= image_tag 'tools/khadvancedassignment/screenshot_config.jpg' %><br />
+      Nun habt ihr alle Konfigurationsmöglichkeiten auf einen Blick.<br />
+      Die Prozentangabe bezieht sich auf den MaxPreis.
+    </p>
+  </div>
+  <div id="screenshots">
+    <p>
+      Überweisungsaddressbuch mit Zuweisung:<br />
+      <%= image_tag 'tools/khadvancedassignment/screenshot_01.jpg' %>
+    </p>
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Anpassungen, das die Punkte sicher in der Mappe angezeigt werden können.</li>
+      </ul>
   </div>
 </div>
  

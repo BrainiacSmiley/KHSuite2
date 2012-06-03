@@ -1,50 +1,74 @@
-<p>
-<strong>Was ist KHAdvancedMedRack?</strong><br />
-KHAdvancedMedRack ist der Medikamentenschrank so wie ich ihn mir vorstelle.
-</p>
-<p>
-<strong>Welche Version hat KHAdvancedMedRack?</strong><br />
-Stand 19.03.12 ist Version 1.2<br />
-</p>
-<p>
-<strong>Wie ist KHAdvancedMedRack entstanden?</strong><br />
-Ich fand es sehr ungeschickt, mehrmals blättern zu müssen, um eine Sorte Behandlungsräume mit Meds versorgen zu können. Daher wurde der Medizinschrank umgestalltet.
-<ul>
-<li>Alle Medikamente für einen Raum sind nun hintereinander.</li>
-<li>Das neueste Medikament sortiert sich immer am Ende ein.</li>
-<li>Alle Medikamente für einen Raum sind auf einer Seite. Passen sie nicht mehr auf die aktuelle Seite, wanden alle auf eine neue Seite.</li>
-<li>Unter den Meds steht nun wieviel hT in Meds angelegt sind.</li>
-<li>Durch einen Doppelklick auf das Medikament geht nun direkt der Shop auf der es verkauft. Wobei bei nicht PA Accounts darauf geachtet wird das man nur Mittwochs und Samstags nach Bruchberg kommt.</li>
-<li>Ihr könnt eine Standardmenge für Medikamente und Seuchen hinterlegen. Beim einkaufen wird dann automatisch die fehlende Menge des Medikaments eingetragen.</li>
-<li>Das Regal ist durchgängig blätterbar. Wenn ihr auf der letzten Seite seid, springt ihr wieder auf die erste.</li>
-</ul>
-</p>
-<p>
-<strong>Was benötige ich um KHAdvancedMedRack installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHAdvancedMedRack her?</strong><br />
-Das gibt es hier:<br />
-<a href="../tools/khadvancedmedrack/KHAdvancedMedRack.user.js">KHAdvancedMedRack 1.2</a>
-</p>
-<p>
-<strong>Wie installiere ich KHAdvancedMedRack?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHAdvancedMedRack anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHAdvancedMedRack anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-</p>
-<p>
-<strong>Wie bestimme die Menge auf die beim Medikamentenkauf aufgestockt werden soll?</strong><br />
-Standardmäßig sind 50 als Menge für Medikamente und 5 für Seuchemmedikamente voreingestellt.
-Um dies zu ändern macht ihr euer Account Fenster auf:
-<%= image_tag 'tools/khadvancedmedrack/screenshot_config.jpg' %><br />
-Nun könnt ihr die Werte eintragen die ihr möchtet. Er merkt sich eure Werte wieder für jeden Server/Ärztenamen.
-</p>
+<%= render 'toolsdescription_navigation' %>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khadvancedmedrack_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Dieses völlige Chaos im Medischrank und das man mehrmals blättern muss, um eine Sorte Behandlungsräume mit Meds versorgen zu können, fand ich sehr ungeschickt. Daher wurde der Medizinschrank umgestalltet.
+      <ul>
+        <li>Alle Medikamente für einen Raum sind nun hintereinander und haben alle den gleichen Hintergrund.</li>
+        <li>Das neueste Medikament sortiert sich immer am Ende ein.</li>
+        <li>Alle Medikamente für einen Raum sind auf einer Seite. Passen sie nicht mehr auf die aktuelle Seite, wanden alle auf eine neue Seite.</li>
+        <li>Unter den Meds steht nun wieviel hT in Meds angelegt sind.</li>
+        <li>Durch einen Doppelklick auf das Medikament geht nun direkt der Shop auf der es verkauft. Wobei bei nicht PA Accounts darauf geachtet wird das man nur Mittwochs und Samstags nach Bruchberg kommt.</li>
+        <li>Ihr könnt eine Standardmenge für Medikamente und Seuchen hinterlegen. Beim einkaufen wird dann automatisch die fehlende Menge des Medikaments eingetragen.</li>
+        <li>Das Regal ist durchgängig blätterbar. Wenn ihr auf der letzten Seite seid, springt ihr wieder auf die erste.</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khadvancedmedrack_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHAdvancedMedRack", "../tools/khadvancedmedrack/KHAdvancedMedRack.user.js" %></td>
+          <td><%= file_version('khadvancedmedrack/KHAdvancedMedRack.user.js') %></td>
+          <td><%= file_timestamp('khadvancedmedrack/KHAdvancedMedRack.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      <strong>Wie ändere ich die Menge, auf die beim Medikamentenkauf, aufgestockt werden soll?</strong><br />
+      Standardmäßig sind 50 als Menge für Medikamente und 5 für Seuchemmedikamente voreingestellt.<br />
+      Öffnet euer Profil<br />
+      Dann wählt ihr unter Tools KHAdvancedMedRack aus<br />
+      Um dies zu ändern macht ihr euer Account Fenster auf:
+      <%= image_tag 'tools/khadvancedmedrack/screenshot_config.jpg' %><br />
+      Nun habt ihr alle Konfigurationsmöglichkeiten auf einen Blick.<br />
+      Nun könnt ihr die Werte eintragen die ihr möchtet. Er merkt sich eure Werte wieder für jeden Server/Ärztenamen.
+    </p>
+  </div>
+  <div id="screenshots">
+    <p>
+      Sortierter Medischrank:<br />
+      <%= image_tag 'tools/khadvancedmedrack/screenshot_01.jpg' %>
+    </p>
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Wenn eine konfigurierbare Medimenge unterschritten wird, rotfärbung des Hintergrundes.</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

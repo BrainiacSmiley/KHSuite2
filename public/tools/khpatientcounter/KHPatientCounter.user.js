@@ -1,65 +1,131 @@
 // ==UserScript==
 // @name          KHPatientCounter
-// @version       1.2
-// @include       http://*kapihospital.com/*
+// @version       2.0
+// @include       http://*.de.kapihospital.com/main.php*
+// @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
 
-function addJQuery(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
-  script.addEventListener('load', function() {
+function injectScriptStart(callback) {
+  //--- Has jQuery already been added?
+  var jqNode  = document.querySelector("#KHAddedJQuery");
+  if (jqNode) {
+    FireCallback(callback);
+  } else {
+    setTimeout(function() {
+      injectScriptStart(callback);
+    }, 400);
+  }
+
+  function FireCallback(callback) {
     var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
+    script.id = 'KHPatientCounterStart';
+    script.type = 'text/javascript';
+    script.textContent += "(" + callback.toString() + ")();\n";
+    document.body.appendChild (script);
+  }
 }
-function readyJQuery() {
-  jQuery.noConflict();
-  initPatientCounter()
-  setAPOverlay()
-  //Interval Function
-  window.setInterval("checkPatientCounterWindows()", 200)
+function injectStartReady() {
+  initPatientCounterFunction = window.setInterval("initPatientCounter();", 100);
 }
 //Begin Injection
-var variablen = new Array()
-variablen.push("normalPatients")
-variablen.push("nextPatient")
-variablen.push("olgaValuesSet")
-variablen.push("countedNormalPatients")
-variablen.push("countedQuestPatients")
-variablen.push("countedShowPatients")
-variablen.push("countedAlienPatients")
-variablen.push("countedExchangePatients")
-variablen.push("countedReferralPatients")
-variablen.push("cuntedLevelupPatients")
-variablen.push("wwLevel = 0")
+function injectScript() {
+  var variablesToAdd = new Array();
+  variablesToAdd.push("debugMode = false");
+  variablesToAdd.push("KHConfigValues");
+  variablesToAdd.push("numberOfNormalPatients = 0");
+  variablesToAdd.push("olgaValuesSet");
+  variablesToAdd.push("userName");
+  variablesToAdd.push("initPatientCounterFunction");
 
-function addFunctions() {
-  var functionsToAdd = new Array(initPatientCounter, setAPOverlay, checkPatientCounterWindows, progressOlgaWindow, progressWWAccountOptionsWindow, getPatientsPerLevel, saveWWConfig, setCookie, getCookie)
+  var functionsToAdd = new Array();
+  functionsToAdd.push(addPatientCounterOptions);
+  functionsToAdd.push(checkPatientCounterWindows);
+  functionsToAdd.push(generateConfigBase);
+  functionsToAdd.push(generatePatientCounterConfigOptions);
+  functionsToAdd.push(getPatientsPerLevel);
+  functionsToAdd.push(initPatientCounter);
+  functionsToAdd.push(progressOlgaWindow);
+  functionsToAdd.push(saveWWConfig);
+  functionsToAdd.push(setAPOverlay);
+  functionsToAdd.push(storeKHConfigValues);
+
   var script = document.createElement("script");
+  script.id = 'KHPatientCounter';
+  script.type = 'text/javascript';
   
-  for (var x = 0; x < variablen.length; x++) {
-    script.textContent += ("var " + variablen[x] + "\n")
+  for (var x = 0; x < variablesToAdd.length; x++) {
+    script.textContent += ("var " + variablesToAdd[x] + ";\n");
   }
   
   script.textContent += "\n"
   
   for (var x = 0; x < functionsToAdd.length; x++) {
-    script.textContent += (functionsToAdd[x].toString() + "\n\n");
+    if (typeof functionsToAdd[x] != 'undefined') {
+      script.textContent += (functionsToAdd[x].toString() + "\n\n");
+    }
   }
   document.body.appendChild(script);
 }
 //End Injection
 //Begin OpticalFixes
-function setAPOverlay() {
-  var punkteText
-  if (nextPatient === 1) {
-    punkteText = " Punkt."
+function initPatientCounter() {
+  if (typeof jQuery != 'undefined') {
+    //check if Dev Mode
+    if (window.location.search == "?dev") {
+      debugMode = true
+    } else {
+      debugMode = false
+    }
+
+    userName = jQuery('#username').text();
+  
+    //restore KHConfigValues
+    if (localStorage.getItem('KHConfigValues' + userName) != null) {
+      KHConfigValues = JSON.parse(localStorage.getItem('KHConfigValues' + userName));
+    } else {
+      KHConfigValues = new Object();
+    }
+    //Check for Script Values
+    if (typeof KHConfigValues.wwLevel == 'undefined') {
+      KHConfigValues.wwLevel = 0;
+    }
+    storeKHConfigValues();
+
+    setAPOverlay();
+    
+    //interval Functions
+    window.setInterval("checkPatientCounterWindows()", 200);
+    window.clearInterval(initPatientCounterFunction);
+    if (debugMode) {
+      console.log("KHPatientCounter loaded");
+    }
   } else {
-    punkteText = " Punkten."
+    if (debugMode) {
+      console.log("KHPatientCounter not loaded");
+    }
   }
-  jQuery('#upgrades').attr('title', "Du bekommst täglich " + normalPatients + " normale Patienten. Den nächsten Patient gibts in: " + nextPatient + punkteText)
+}
+function setAPOverlay() {
+  //calculation
+  levelString = jQuery('#level').text();
+  level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1;
+  numberOfLevelPatients = getPatientsPerLevel(level);
+  ap = jQuery('#upgrades').text()*1;
+  numberOfAPPatients = Math.floor(ap/12);
+  numberOfNormalPatients = numberOfLevelPatients + numberOfAPPatients;
+  if (KHConfigValues.wwLevel >= 2) {
+    numberOfNormalPatients += 2;
+  }
+  apForNextPatient = 12 - (ap%12);
+  //formating
+  punkteText = "";
+  if (apForNextPatient === 1) {
+    punkteText = " Punkt.";
+  } else {
+    punkteText = " Punkten.";
+  }
+  //adding the text
+  jQuery('#upgrades').attr('title', "Du bekommst täglich " + numberOfNormalPatients + " normale Patienten. Den nächsten Patient gibts in: " + apForNextPatient + punkteText);
 }
 function getPatientsPerLevel(level) {
   if (level <= 4) {
@@ -70,157 +136,125 @@ function getPatientsPerLevel(level) {
     return 14;
   }
 }
-function initPatientCounter() {
-  //restore WWCookie
-  storedWWLevel = getCookie("KHWWLevel" + jQuery('#username').text())
-  if (storedWWLevel != null) {
-    wwLevel = storedWWLevel
-  } else {
-    wwLevel = 0
-  }
-
-  var levelString = jQuery('#level').text()
-  var level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1
-  normalPatients = getPatientsPerLevel(level)
-  var ap = jQuery('#upgrades').text()*1
-  var bonusPatients = Math.floor(ap/12)
-  normalPatients += bonusPatients
-  if (wwLevel >= 2) {
-    normalPatients += 2
-  }
-  nextPatient = 12 - (ap%12)
-  
-}
 function saveWWConfig() {
-  wwLevel = jQuery('#wwLevel').val()
-  var cookieName = "KHWWLevel" + jQuery('#username').text()
-  setCookie(cookieName, wwLevel, 100, "/", window.location.hostname)
-  initPatientCounter()
+  KHConfigValues.wwLevel = jQuery('#wwLevel').val()
+  setAPOverlay();
+  storeKHConfigValues();
 }
 function checkPatientCounterWindows() {
   if (jQuery('div#b').length && !jQuery('div#KHWWConfig').length) {
-    progressWWAccountOptionsWindow()
-    olgaValuesSet = false
+    addPatientCounterOptions();
+    olgaValuesSet = false;
   } else if (jQuery('div#nurse_messages').is(':visible')) {
-    progressOlgaWindow()
+    progressOlgaWindow();
   } else {
-    olgaValuesSet = false
+    olgaValuesSet = false;
   }
 }
 function progressOlgaWindow() {
   if (!olgaValuesSet) {
-    wholeText = jQuery('pre', jQuery('#nurse_messages')).text()
-    patientListToday = wholeText.substr(wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text()) + jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text().length, wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[1]).text()) - wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text()) - jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text().length)
-    patientListTodayArray = patientListToday.split(" ")
-    countedNormalPatients = 0
-    countedQuestPatients = 0
-    countedShowPatients = 0
-    countedAlienPatients = 0
-    countedExchangePatients = 0
-    countedReferralPatients = 0
-    countedLevelupPatients = 0
+    wholeText = jQuery('pre', jQuery('#nurse_messages')).text();
+    patientListToday = wholeText.substr(wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text()) + jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text().length, wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[1]).text()) - wholeText.indexOf(jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text()) - jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text().length);
+    patientListTodayArray = patientListToday.split(" ");
+    countedNormalPatients = 0;
+    countedQuestPatients = 0;
+    countedShowPatients = 0;
+    countedAlienPatients = 0;
+    countedExchangePatients = 0;
+    countedReferralPatients = 0;
+    countedLevelupPatients = 0;
     
     for (var i = 0; i < patientListTodayArray.length; i++) {
       if (patientListTodayArray[i] === "NORMAL") {
-        countedNormalPatients++
+        countedNormalPatients++;
       } else if (patientListTodayArray[i] === "QUEST") {
-        countedQuestPatients++
+        countedQuestPatients++;
       } else if (patientListTodayArray[i] === "BÜHNE") {
-        countedShowPatients++
+        countedShowPatients++;
       } else if (patientListTodayArray[i] === "ALIENS" || patientListTodayArray[i] === "ALIEN") {
-        countedAlienPatients++
+        countedAlienPatients++;
       } else if (patientListTodayArray[i] === "KAUF") {
-        countedExchangePatients++
+        countedExchangePatients++;
       } else if (patientListTodayArray[i] === "ÜBERWEISUNG") {
-        countedReferralPatients++
+        countedReferralPatients++;
       } else if (patientListTodayArray[i] === "AUFSTIEG") {
-        countedLevelupPatients++
+        countedLevelupPatients++;
       }
     }
-    actualOlgaDate = jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text()
-    var countedPatientsString = ""
+    actualOlgaDate = jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text();
+    countedPatientsString = "";
     if (countedNormalPatients > 0) {
-      countedPatientsString += " | " + countedNormalPatients + "/" + normalPatients + " N"
+      countedPatientsString += " | " + countedNormalPatients + "/" + numberOfNormalPatients + " N";
     }
     if (countedQuestPatients > 0) {
-      countedPatientsString += " | " + countedQuestPatients + " Q"
+      countedPatientsString += " | " + countedQuestPatients + " Q";
     }
     if (countedShowPatients > 0) {
-      countedPatientsString += " | " + countedShowPatients + " B"
+      countedPatientsString += " | " + countedShowPatients + " B";
     }
     if (countedAlienPatients > 0) {
-      countedPatientsString += " | " + countedAlienPatients + " A"
+      countedPatientsString += " | " + countedAlienPatients + " A";
     }
     if (countedExchangePatients > 0) {
-      countedPatientsString += " | " + countedExchangePatients + " K"
+      countedPatientsString += " | " + countedExchangePatients + " K";
     }
     if (countedReferralPatients > 0) {
-      countedPatientsString += " | " + countedReferralPatients + " Ü"
+      countedPatientsString += " | " + countedReferralPatients + " Ü";
     }
     if (countedLevelupPatients > 0) {
-      countedPatientsString += " | " + countedLevelupPatients + " L"
+      countedPatientsString += " | " + countedLevelupPatients + " L";
     }
-    jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text(actualOlgaDate + countedPatientsString)
-    jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).attr('title', "N = Normal Patienten | Q = Quest Patienten | B = Bühnen Patienten | A = Alien Patienten | K = Börsen Patienten | Ü = Überwiesene Patienten | L = Levelaufstieg Patienten")
-    olgaValuesSet = true
+    jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).text(actualOlgaDate + countedPatientsString);
+    jQuery(jQuery('b', jQuery('#nurse_messages'))[0]).attr('title', "N = Normal Patienten | Q = Quest Patienten | B = Bühnen Patienten | A = Alien Patienten | K = Börsen Patienten | Ü = Überwiesene Patienten | L = Levelaufstieg Patienten");
+    olgaValuesSet = true;
   }
 }
-function progressWWAccountOptionsWindow() {
-  if (!jQuery('div#KHOptions').length) {
-    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
+function addPatientCounterOptions() {
+  //check if ConfigBase present
+  if (!jQuery('ul#KHOptions').length) {
+    jQuery(generateConfigBase()).insertAfter('div#b');
   }
-  jQuery('<div id="KHWWConfig">Abgeschlossene Weltwunderstufe der ÄV: <input id="wwLevel" type="number" size="4" onChange="saveWWConfig()" value="' + wwLevel + '" min="0" max="10"></div>').appendTo('div#KHOptions')
+  //add AdvancedAssignment Options to ConfigBase
+  jQuery(generatePatientCounterConfigOptions()).appendTo('div#KHOptionsContent');
+  jQuery('<li><a href="#KHWWConfig" data-toggle="tab">Allgemein</a></li>').insertAfter(jQuery('ul#KHOptions').children()[0]);
+
+  //hide Menu if not used
+  if (!jQuery('#toolsMenu').children().length) {
+    jQuery('#toolsMenu').parent().hide();
+  }
+
+  //set AdvancedAssignment Options
+  jQuery('#wwLevel').val(KHConfigValues.wwLevel);
+}
+function generateConfigBase() {
+  htmlCode = "";
+  htmlCode += "<ul id=\"KHOptions\" class=\"nav nav-tabs\" style=\"margin-top: 60px;\">";
+  htmlCode += "<li><a href=\"#\" data-toggle=\"tab\">KHTools Config</a></li>";
+  htmlCode += "  <li class=\"dropdown\">";
+  htmlCode += "    <a href=\"#\" class=\"dropdown-toggle active\" data-toggle=\"dropdown\">Tool <b class=\"caret\"></b></a>";
+  htmlCode += "    <ul id=\"toolsMenu\" class=\"dropdown-menu\">";
+  htmlCode += "    </ul>";
+  htmlCode += "  </li>";
+  htmlCode += "</ul>";
+  htmlCode += "<div id=\"KHOptionsContent\" class=\"tab-content\">";
+  htmlCode += "</div>";
+  return htmlCode;
+}
+function generatePatientCounterConfigOptions() {
+  htmlCode = "";
+  htmlCode += "<div class=\"tab-pane\" id=\"KHWWConfig\" style=\"margin-left:10px;margin-top:-18px;\">";
+  htmlCode += "  Abgeschlossene Weltwunderstufe der ÄV: <input id=\"wwLevel\" type=\"number\" onchange=\"saveWWConfig()\" min=\"0\" max=\"10\" style=\"width:40px;\" value=\"10\">";
+  htmlCode += "</div>";
+  return htmlCode;
+}
+function storeKHConfigValues() {
+  //remove old version from localStorage
+  localStorage.removeItem('KHConfigValues' + userName);
+  //write actual version to localStorage
+  localStorage.setItem('KHConfigValues' + userName, JSON.stringify(KHConfigValues));
 }
 //EndOpticalFixes
-//Begin General
-function setCookie(name, value, expires, path, domain) {
-  // set time, it's in milliseconds
-  var today = new Date();
-  today.setTime(today.getTime());
-  if (expires) {
-    expires = expires * 1000 * 60 * 60 * 24;
-  }
-  var expires_date = new Date(today.getTime() + (expires));
-  
-  document.cookie = name + "=" + escape(value) +
-  ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
-  ( ( path ) ? ";path=" + path : "" ) +
-  ( ( domain ) ? ";domain=" + domain : "" );
-}
-function getCookie(check_name) {
-  var a_all_cookies = document.cookie.split( ';' );
-  var a_temp_cookie = '';
-  var cookie_name = '';
-  var cookie_value = '';
-  var b_cookie_found = false; // set boolean t/f default f
-
-  for (i = 0; i < a_all_cookies.length; i++) {
-    // now we'll split apart each name=value pair
-    a_temp_cookie = a_all_cookies[i].split( '=' );
-
-    // and trim left/right whitespace while we're at it
-    cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
-
-    // if the extracted name matches passed check_name
-    if (cookie_name == check_name) {
-      b_cookie_found = true;
-      // we need to handle case where cookie has no value but exists (no = sign, that is):
-      if ( a_temp_cookie.length > 1 ) {
-      	cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
-      }
-      // note that in cases where cookie is initialized but no value, null is returned
-      return cookie_value;
-      break;
-    }
-    a_temp_cookie = null;
-    cookie_name = '';
-  }
-  if (!b_cookie_found) {
-    return null;
-  }
-}
-//End General
 //Begin Script
-addFunctions()
-addJQuery(readyJQuery)
+injectScript();
+injectScriptStart(injectStartReady);
 //End Script

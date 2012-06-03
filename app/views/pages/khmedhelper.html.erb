@@ -1,35 +1,56 @@
-<p>
-<strong>Was ist KHMedHelper?</strong><br />
-Eine Anzeige welche Meds noch in einem Raum fehlen.
-</p>
-<p>
-<strong>Welche Version hat KHMedHelper?</strong><br />
-Stand 18.03.12 ist Version 1.0<br />
-</p>
-<p>
-<strong>Wie ist KHMedHelper entstanden?</strong><br />
-Ich stecke morgens erst mal alle Pats in die ganzen Räume. Wenn dann jeder Raum nen Pat hat, verteile ich die Medis. Da ich dann aber nicht mehr weiß was ich in welchen Raum gepackt habe, war mir das zu doof jedes mal im Tooltip nachschauen zu müssen. Das nun direkt zu sehen ist viel angenehmer.
-</p>
-<p>
-<strong>Was benötige ich um KHMedHelper installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHMedHelper her?</strong><br />
-<span class="label important">PA only</span> Skript<br />
-Das gibt es hier:<br />
-<a href="../tools/khmedhelper/KHMedHelper.user.js">KHMedHelper 1.0</a>
-</p>
-<p>
-<strong>Wie installiere ich KHMedHelper?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHMedHelper anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHMedHelper anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-</p>
+<%= render 'toolsdescription_navigation' %>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khmedhelper_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Wird ein Patient in einen Raum gepackt, erscheint statt des roten Lämpchens nun die Bilder der Medikamente die noch fehlen. Damit wird dann auch bei Reihenbehandlung kein Medikament mehr vergessen.<br />
+      <%= image_tag 'tools/khmedhelper/screenshot_room.jpg' %>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khmedhelper_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHMedHelper", "../tools/khmedhelper/KHMedHelper.user.js" %></td>
+          <td><%= file_version('khmedhelper/KHMedHelper.user.js') %></td>
+          <td><%= file_timestamp('khmedhelper/KHMedHelper.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      Es muss nichts konfiguriert werden.
+    </p>
+  </div>
+  <div id="screenshots">
+    <%= image_tag 'tools/khmedhelper/screenshot_01.jpg', :width => '650' %><br />
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Alles Erledigt!</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

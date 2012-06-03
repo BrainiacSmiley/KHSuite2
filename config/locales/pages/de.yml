@@ -1,5 +1,5 @@
 de:
-  title_home:                  "Start"
+  title_home:                  "Willkommen zur Skript-Sammlung für Kapihospital"
   title_contact:               "Kontakt"
   title_about:                 "Impressum"
   title_help:                  "Hilfe"
@@ -44,6 +44,8 @@ de:
   tools_description:           "Beschreibung"
   tools_download:              "Download"
   tools_settings:              "Einstellungen"
+  tools_screenshots:           "Bilder"
+  tools_todo:                  "ToDo"
   link_installdescription:     "Detailierte Installationsanleitung"
   contact_title:               "Ihre Nachricht"
   button_send_mail:            "E-Mail abschicken"

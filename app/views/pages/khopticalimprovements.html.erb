@@ -1,36 +1,80 @@
-<p>
-<strong>Was ist KHOpticalImprovements?</strong><br />
-KHOpticalImprovements behebt Anzeigefehler, optische Probleme und fügt neue Anzeigen hinzu.
-</p>
-<p>
-<strong>Welche Version hat KHOpticalImprovements?</strong><br />
-Stand 30.03.12 ist Version 1.3.3<br />
-</p>
-<p>
-<strong>Wie ist KHOpticalImprovements entstanden?</strong><br />
-Ich fand es unschön, das die Pats immer unter dem Fernseher durch mußten, nun könen sie wieder vor ihm vorbei.<br />
-Desweitern hab ich ab und an vergessen die Wunderpille abzuholen, da der Fernseher nicht so deutlich zeigt ob an oder aus. Nun verigsst man sie nicht mehr.<br />
-Da ich auch hin und wieder vergessen habe die Susi nahczukaufen, erinnert mich nun ein rotes Ausrufezeichen, 3 Tage bevor sie verschwindet, daran.
-</p>
-<p>
-<strong>Was benötige ich um KHOpticalImprovements installieren zu können?</strong><br />
-Das hängt vom Browser ab. Für Firefox wird as Addon Greasemonkey benötigt, bei Chrome und SWR Iron geht es ohne Addon.
-</p>
-<p>
-<strong>Wo bekomme ich Greasemonkey her?</strong><br />
-Greasmonkey gibt es auf der Addon Seit von Mozilla: <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey :: Add-ons for Firefox</a>
-</p>
-<p>
-<strong>Wo bekomme ich KHOpticalImprovements her?</strong><br />
-Das gibt es hier:<br />
-<a href="../tools/khopticalimprovements/KHOpticalImprovements.user.js">KHOpticalImprovements 1.3.3</a><br />
-</p>
-<p>
-<strong>Wie installiere ich KHOpticalImprovements?</strong><br />
-<b>Firefox:</b><br />
-1. Das Addon installieren<br />
-2. Link vom KHOpticalImprovements anklicken und der Installation zustimmen.<br />
-<b>Chrome:</b><br />
-1. Link vom KHOpticalImprovements anklicken und der Installation zustimmen.<br />
-Danach einfach KH mit F5 neu laden und es ist aktiv.
-</p>
+<%= render 'toolsdescription_navigation' %>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khopticalimprovements_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Es werden Anzeigefehler, optische Probleme behoben und neue Anzeigen hinzugefügt:
+      <ul>
+        <li>Die Pats müssen nicht mehr unter dem Fernseher hindurch.</li>
+        <li>Wurde am Fernseher noch keine Wunderpille abgeholt, hat er nun ein Ausrufezeichen.</li>
+        <li>Wurde die Wunderpille am Fernseher abgeholt, wird er ausgeblendet (konfigurierbar).</li>
+        <li>Das Susi-Zeichen erhält ein Ausrufezeichen, wenn sie eine Mindestlaufzeit unterschreitet.</li>
+        <li>Die Upjers-Bar oben kann ausgeblendet werden (konfigurierbar).</li>
+        <li>Das Aktions-Item kann ausgeblendet werden (konfigurierbar).</li>
+        <li>Die Punkteanzeige hat nun ein Mouseover mit der Anzeige wieviel zum nächsten Level noch fehlt.</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khopticalimprovements_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to "KHBasicScript", "../tools/khbasicscript/KHBasicScript.user.js" %></td>
+          <td><%= file_version('khbasicscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('khbasicscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to "KHOpticalImprovements", "../tools/khopticalimprovements/KHOpticalImprovements.user.js" %></td>
+          <td><%= file_version('khopticalimprovements/KHOpticalImprovements.user.js') %></td>
+          <td><%= file_timestamp('khopticalimprovements/KHOpticalImprovements.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      <strong>Wie kann ich bestimmen was ausgeblendet werden soll, oder welche Vorwarnzeit die Susi haben soll?</strong><br />
+      Öffnet euer Profil<br />
+      Dann wählt ihr unter Tools KHOpticalImprovements aus<br />
+      <%= image_tag 'tools/khopticalimprovements/screenshot_config.jpg' %><br />
+      Nun habt ihr alle Konfigurationsmöglichkeiten auf einen Blick.<br />
+      Die Vorwarnzeit der Susi wird in Tagen gerechnet. Bei einem Wert von -1 wird nicht gewarnt.
+    </p>
+  </div>
+  <div id="screenshots">
+    <p>
+      Punkteanzeige:<br />
+      <%= image_tag 'tools/khopticalimprovements/screenshot_01.jpg' %>
+    </p>
+    <p>
+      Fernseher:<br />
+      <%= image_tag 'tools/khopticalimprovements/screenshot_02.jpg' %>
+    </p>
+    <p>
+      Susi:<br />
+      <%= image_tag 'tools/khopticalimprovements/screenshot_03.jpg' %>
+    </p>
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Alles Erledigt!</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

@@ -1,72 +1,90 @@
 // ==UserScript==
 // @name          KHAdvancedMedRack
-// @version       1.2
-// @include       http://*kapihospital.com/*
+// @version       2.0
+// @include       http://*.de.kapihospital.com/main.php*
+// @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
 
-function addJQuery(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
-  script.addEventListener('load', function() {
+function injectScriptStart(callback) {
+  //--- Has jQuery already been added?
+  var jqNode  = document.querySelector("#KHAddedJQuery");
+  if (jqNode) {
+    FireCallback(callback);
+  } else {
+    setTimeout(function() {
+      injectScriptStart(callback);
+    }, 400);
+  }
+
+  function FireCallback(callback) {
     var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
+    script.id = 'KHAdvancedMedRackStart';
+    script.type = 'text/javascript';
+    script.textContent += "(" + callback.toString() + ")();\n";
+    document.body.appendChild (script);
+  }
 }
-function readyJQuery() {
-  jQuery.noConflict();
-  jQuery(document).ready(function() {
-    initAdvancedMedRack()
-    
-    //Add new Functions to KH
-    jQuery('div#racknavigation_left').attr('onClick', 'generateMedRack(currentPage -1)')
-    jQuery('div#racknavigation_right').attr('onClick', 'generateMedRack(currentPage +1)')
-    jQuery('div#rackItems').on("dblclick", function(event) {
-      openMedShop(Global.availableMedics._object["med"+event.target.getAttribute("medid")]["shop"])
-    })
-    
-    //Interval Functions
-    window.setInterval("checkMedRack()", 200)
-    window.setInterval("recogniseAdvancedMedRackWindows()", 200)
-  })
-}
-function addAccounting(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "https://raw.github.com/josscrowcroft/accounting.js/master/accounting.min.js");
-  script.addEventListener('load', function() {
-    var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
-}
-function readyAccounting() {
+function injectStartReady() {
+  initAdvancedMedRackFunction = window.setInterval("initAdvancedMedRack();", 100);
 }
 //Begin Injection
-var variablen = new Array()
-variablen.push("allMeds")
-variablen.push("oldRackLength")
-variablen.push("oldCountedAvailabledMeds = 0")
-variablen.push("oldMedSum")
-variablen.push("oldShoppingSum")
-variablen.push("currentPage = 0")
-variablen.push("allMedsPages")
-variablen.push("numberOfRackItems")
-variablen.push("medStackSize")
-variablen.push("epidemicStackSize")
-variablen.push("amountAlreadyEntered")
-variablen.push("lastEnteredMed")
+function injectScript() {
+  var variablesToAdd = new Array();
+  variablesToAdd.push("allMeds");
+  variablesToAdd.push("allMedsPages");
+  variablesToAdd.push("amountAlreadyEntered");
+  variablesToAdd.push("currentPage = 0");
+  variablesToAdd.push("debugMode = false");
+  variablesToAdd.push("KHConfigValues");
+  variablesToAdd.push("lastEnteredMed");
+  variablesToAdd.push("numberOfRackItems");
+  variablesToAdd.push("oldCountedAvailabledMeds = 0");
+  variablesToAdd.push("oldMedSum");
+  variablesToAdd.push("oldRackLength");
+  variablesToAdd.push("oldShoppingSum");
+  variablesToAdd.push("userName");
+  variablesToAdd.push("initAdvancedMedRackFunction");
 
-function addFunctions() {
-  var functionsToAdd = new Array(initAdvancedMedRack, initMeds, recogniseAdvancedMedRackWindows, progressAccountOptionsWindow, getRackObject, setMedPrices, countAvailableMeds, checkMedRack, getMedsAvailibleForRoom, generateRackPages, getMedPrice, getMedId, getMedAvailibleAmount, getMedAmountNeeded, getMedsToShop, sumMedPrices, sumMedShopPrices, generateMedRack, saveConfig, setCookie, getCookie, openMedShop, progressShoppingAmountWindow)
+  var functionsToAdd = new Array();
+  functionsToAdd.push(addAdvancedMedRackOptions);
+  functionsToAdd.push(changeMedsBackgrounds);
+  functionsToAdd.push(checkMedRack);
+  functionsToAdd.push(countAvailableMeds);
+  functionsToAdd.push(generateAdvancedMedRackConfigOptions);
+  functionsToAdd.push(generateConfigBase);
+  functionsToAdd.push(generateMedRack);
+  functionsToAdd.push(generateRackPages);
+  functionsToAdd.push(getEntryName);
+  functionsToAdd.push(getMedAmountNeeded);
+  functionsToAdd.push(getMedAvailibleAmount);
+  functionsToAdd.push(getMedBackground);
+  functionsToAdd.push(getMedId);
+  functionsToAdd.push(getMedPrice);
+  functionsToAdd.push(getMedsAvailibleForRoom);
+  functionsToAdd.push(getMedsToShop);
+  functionsToAdd.push(getRackObject);
+  functionsToAdd.push(initAdvancedMedRack);
+  functionsToAdd.push(initMeds);
+  functionsToAdd.push(isInArray);
+  functionsToAdd.push(openMedShop);
+  functionsToAdd.push(progressShoppingAmountWindow);
+  functionsToAdd.push(recogniseAdvancedMedRackWindows);
+  functionsToAdd.push(saveAdvancedMedRackConfig);
+  functionsToAdd.push(setMedPrices);
+  functionsToAdd.push(sortConfigMenu);
+  functionsToAdd.push(storeKHConfigValues);
+  functionsToAdd.push(sumMedPrices);
+  functionsToAdd.push(sumMedShopPrices);
+
   var script = document.createElement("script");
+  script.id = 'KHAdvancedMedRack';
+  script.type = 'text/javascript';
   
-  for (var x = 0; x < variablen.length; x++) {
-    script.textContent += ("var " + variablen[x] + "\n");
+  for (var x = 0; x < variablesToAdd.length; x++) {
+    script.textContent += ("var " + variablesToAdd[x] + ";\n");
   }
   
-  script.textContent += "\n"
+  script.textContent += "\n";
   
   for (var x = 0; x < functionsToAdd.length; x++) {
     script.textContent += (functionsToAdd[x].toString() + "\n\n");
@@ -76,146 +94,372 @@ function addFunctions() {
 //End Injection
 //Begin AdvancedMedRack
 function initAdvancedMedRack() {
-  initMeds()
-  currentPage = 0;
+  if (typeof jQuery != 'undefined') {
+    //check if Dev Mode
+    if (window.location.search == "?dev") {
+      debugMode = true
+    } else {
+      debugMode = false
+    }
 
-  storedMedStackSize = getCookie("KHMedStackSize" + jQuery('#username').text())
-  if (storedMedStackSize != null) {
-    medStackSize = storedMedStackSize
+    initMeds();
+    currentPage = 0;
+  
+    userName = jQuery('#username').text();
+  
+    //restore KHConfigValues
+    if (localStorage.getItem('KHConfigValues' + userName) != null) {
+      KHConfigValues = JSON.parse(localStorage.getItem('KHConfigValues' + userName));
+    } else {
+      KHConfigValues = new Object();
+    }
+    //Check for Script Values
+    if (typeof KHConfigValues.medStackSize == 'undefined') {
+      KHConfigValues.medStackSize = 50;
+    }
+    if (typeof KHConfigValues.epidemicStackSize == 'undefined') {
+      KHConfigValues.epidemicStackSize = 5;
+    }
+    storeKHConfigValues();
+  
+    //Add new Functions to KH
+    jQuery('div#racknavigation_left').attr('onClick', 'generateMedRack(currentPage -1)');
+    jQuery('div#racknavigation_right').attr('onClick', 'generateMedRack(currentPage +1)');
+    jQuery('div#rackItems').on("dblclick", function(event) {
+      openMedShop(Global.availableMedics._object["med"+event.target.getAttribute("medid")]["shop"]);
+    });
+    
+    //Interval Functions
+    window.setInterval("checkMedRack()", 200);
+    window.setInterval("recogniseAdvancedMedRackWindows()", 200);
+    window.clearInterval(initAdvancedMedRackFunction);
+    if (debugMode) {
+      console.log("KHAdvancedMedRack loaded");
+    }
   } else {
-    medStackSize = 50
-  }
-  storedEpidemicStackSize = getCookie("KHEpidemicStackSize" + jQuery('#username').text())
-  if (storedEpidemicStackSize != null) {
-    epidemicStackSize = storedEpidemicStackSize
-  } else {
-    epidemicStackSize = 5
+    if (debugMode) {
+      console.log("KHAdvancedMedRack not loaded");
+    }
   }
 }
 function initMeds() {
-  allMeds = new Array(15)
-  allMeds[0] = new Array(1, 2, 6, 5, 12, 11, 10, 909)
-  allMeds[1] = new Array(3, 4, 18, 58, 73)
-  allMeds[2] = new Array(26, 44, 30, 113, 94, 99, 52, 75)
-  allMeds[3] = new Array(48, 66, 49, 80, 103, 904, 110, 55, 60)
-  allMeds[4] = new Array(8, 9, 34, 902, 88, 96, 27, 33, 108, 50)
-  allMeds[5] = new Array(71, 67, 79, 37, 83, 100, 907, 41, 46)
-  allMeds[6] = new Array(19, 39, 77, 107, 40, 101, 53, 65)
-  allMeds[7] = new Array(61, 21, 86, 22, 98, 905, 38, 105, 43, 74)
-  allMeds[8] = new Array(36, 45, 900, 78, 84, 56, 90, 111, 20, 32, 76)
-  allMeds[9] = new Array(35, 31, 901, 82, 93, 95, 57, 24, 64)
-  allMeds[10] = new Array(29, 16, 91, 13, 97, 106, 63, 72)
-  allMeds[11] = new Array(51, 15, 87, 7, 104, 14, 114, 47, 908, 17)
-  allMeds[12] = new Array(69, 54, 903, 23, 81, 112, 92, 42, 109, 59)
-  allMeds[13] = new Array(68, 28, 906, 85, 102, 89, 62, 70)
-  allMeds[14] = new Array(1)
-  allMeds[14][0] = 899
+  allMeds = new Array(15);
+  //Behandlungsraum
+  allMeds[0] = new Array(1, 2, 6, 5, 12, 11, 10, 909);
+  //Röntgenraum
+  allMeds[1] = new Array(3, 4, 18, 58, 73);
+  //Ultraschall
+  allMeds[2] = new Array(26, 44, 30, 113, 94, 99, 52, 75);
+  //Orthopädie
+  allMeds[3] = new Array(48, 66, 49, 80, 103, 904, 110, 55, 60);
+  //Psychotherapie
+  allMeds[4] = new Array(8, 9, 34, 902, 88, 96, 27, 33, 108, 50);
+  //EKG / EEG
+  allMeds[5] = new Array(71, 67, 79, 37, 83, 100, 907, 41, 46);
+  //Operationssaal
+  allMeds[6] = new Array(19, 39, 77, 107, 40, 101, 53, 65);
+  //Laboratorium
+  allMeds[7] = new Array(61, 21, 86, 22, 98, 905, 38, 105, 43, 74);
+  //Dunkelkammer
+  allMeds[8] = new Array(36, 45, 900, 78, 84, 56, 90, 111, 20, 32, 76);
+  //Gummizelle
+  allMeds[9] = new Array(35, 31, 901, 82, 93, 95, 57, 24, 64);
+  //Tomographie
+  allMeds[10] = new Array(29, 16, 91, 13, 97, 106, 63, 72);
+  //Tropenmedizin
+  allMeds[11] = new Array(51, 15, 87, 7, 104, 14, 114, 47, 908, 17);
+  //Nuklearmedizin
+  allMeds[12] = new Array(69, 54, 903, 23, 81, 112, 92, 42, 109, 59);
+  //Zahnmedizin
+  allMeds[13] = new Array(68, 28, 906, 85, 102, 89, 62, 70);
+  //Wunderpille
+  allMeds[14] = new Array(1);
+  allMeds[14][0] = 899;
 }
 function recogniseAdvancedMedRackWindows() {
-  if (jQuery('div#b').length && !jQuery('div#KHAdvancedMedRackConfig').length) {
-    progressAccountOptionsWindow()
+  if (jQuery('div#b').length && !jQuery('div#KHAdvancedMedRackOptions').length) {
+    addAdvancedMedRackOptions();
   } else if (jQuery('div#dlg_message').is(':visible')) {
     if (jQuery('div#dlg_header').text() == "Frage") {
       if (jQuery('input[class^=inputamount]').length) {
-        progressShoppingAmountWindow()
+        progressShoppingAmountWindow();
       }
     }
   }
 }
-function progressAccountOptionsWindow() {
-  if (!jQuery('div#KHOptions').length) {
-    jQuery('<div id="KHOptions" style="margin-top: 60px;"></div>').insertAfter('div#b')
+function getEntryName(entry) {
+  return jQuery(entry).children().text();
+}
+function sortConfigMenu() {
+  menuToSort = jQuery('#toolsMenu').children().remove();
+  //add Merge Sort
+  /*!
+   * Merge Sort in JavaScript v1.0
+   * http://github.com/sidewaysmilk/merge-sort
+   *
+   * Copyright (c) 2011, Justin Force
+   * Licensed under the BSD 3-Clause License
+   */
+  
+  /*jslint browser: true, indent: 2 */
+  /*global jQuery */
+  (function () {
+    'use strict';
+    // Add stable merge sort method to Array prototype
+    if (!Array.mergeSort) {
+      Array.prototype.mergeSort = function (compare) {
+        var length = this.length,
+          middle = Math.floor(length / 2);
+  
+        // define default comparison function if none is defined
+        if (!compare) {
+          compare = function (left, right) {
+            if (left  <  right) {
+              return -1;
+            } else if (left === right) {
+              return 0;
+            } else {
+              return 1;
+            }
+          };
+        }
+  
+        if (length < 2) {
+          return this;
+        }
+  
+        function merge(left, right, compare) {
+          var result = [];
+          while (left.length > 0 || right.length > 0) {
+            if (left.length > 0 && right.length > 0) {
+              if (compare(left[0], right[0]) <= 0) {
+                result.push(left[0]);
+                left = left.slice(1);
+              } else {
+                result.push(right[0]);
+                right = right.slice(1);
+              }
+            } else if (left.length > 0) {
+              result.push(left[0]);
+              left = left.slice(1);
+            } else if (right.length > 0) {
+              result.push(right[0]);
+              right = right.slice(1);
+            }
+          }
+          return result;
+        }
+        return merge(
+          this.slice(0, middle).mergeSort(compare),
+          this.slice(middle, length).mergeSort(compare),
+          compare
+        );
+      };
+    }
+    // Add merge sort to jQuery if it's present
+    if (window.jQuery !== undefined) {
+      jQuery.fn.mergeSort = function (compare) {
+        return jQuery(Array.prototype.mergeSort.call(this, compare));
+      };
+      jQuery.mergeSort = function (array, compare) {
+        return Array.prototype.mergeSort.call(array, compare);
+      };
+    }
+  }());
+  //End Merge Sort
+  
+  sortedMenu = menuToSort.mergeSort(function (left, right) {
+    left = getEntryName(left)
+    right = getEntryName(right)
+    if (left < right) {
+      return -1;
+    } else if (left === right) {
+      return 0;
+    } else {
+      return 1;
+    }
+  });
+
+  jQuery(sortedMenu).appendTo('#toolsMenu');
+}
+function addAdvancedMedRackOptions() {
+  //check if ConfigBase present
+  if (!jQuery('ul#KHOptions').length) {
+    jQuery(generateConfigBase()).insertAfter('div#b');
   }
-  jQuery('<div id ="KHAdvancedMedRackConfig">Normale Meds pro Stapel: <input id="medicStackSize" type="number" size="4" onChange="saveConfig()" value="' + medStackSize + '">&nbsp;&nbsp;Seuchen Meds pro Stapel: <input id="epidemicStackSize" type="number" size="4" onChange="saveConfig()" value="' + epidemicStackSize + '"></div>').appendTo('div#KHOptions')
+
+  //add AdvancedAssignment Options to ConfigBase
+  jQuery(generateAdvancedMedRackConfigOptions()).appendTo('div#KHOptionsContent');
+  jQuery('<li><a href="#KHAdvancedMedRackOptions" data-toggle="tab">KHAdvancedMedRack</a></li>').appendTo('ul#toolsMenu');
+  jQuery('#toolsMenu').parent().show();
+  sortConfigMenu();
+
+  //set AdvancedAssignment Options
+  jQuery('#medicStackSize').val(KHConfigValues.medStackSize);
+  jQuery('#epidemicStackSize').val(KHConfigValues.epidemicStackSize);
+}
+function generateAdvancedMedRackConfigOptions() {
+  htmlCode = "";
+  htmlCode += "<div class=\"tab-pane\" id=\"KHAdvancedMedRackOptions\" style=\"margin-left:10px;margin-top:-18px;\">";
+  htmlCode += "  Normale Meds pro Stapel: <input id=\"medicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"110\" style=\"width:50px;\"><br />Seuchen Meds pro Stapel: <input id=\"epidemicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"5\"  style=\"width:50px;\">";
+  htmlCode += "</div>";
+  return htmlCode;
+}
+function generateConfigBase() {
+  htmlCode = "";
+  htmlCode += "<ul id=\"KHOptions\" class=\"nav nav-tabs\" style=\"margin-top: 60px;\">";
+  htmlCode += "<li><a href=\"#\" data-toggle=\"tab\">KHTools Config</a></li>";
+  htmlCode += "  <li class=\"dropdown\">";
+  htmlCode += "    <a href=\"#\" class=\"dropdown-toggle active\" data-toggle=\"dropdown\">Tool <b class=\"caret\"></b></a>";
+  htmlCode += "    <ul id=\"toolsMenu\" class=\"dropdown-menu\">";
+  htmlCode += "    </ul>";
+  htmlCode += "  </li>";
+  htmlCode += "</ul>";
+  htmlCode += "<div id=\"KHOptionsContent\" class=\"tab-content\">";
+  htmlCode += "</div>";
+  return htmlCode;
 }
 function getRackObject(id) {
   for (var i = 0; i < Rack.elements.length; i++) {
     if (Rack.elements[i].product === id) {
-      return Rack.elements[i]
+      return Rack.elements[i];
     }
   }
-  return null
+  return null;
 }
 function setMedPrices(medSum, medShopSum) {
   if (jQuery('div#medPrices').length) {
-    jQuery('div#medPrices').html("Medikamentenwert: " + medSum + "<br />Neuauffüllung: " + medShopSum)
+    jQuery('div#medPrices').html("Medikamentenwert: " + medSum + "<br />Neuauffüllung: " + medShopSum);
   } else {
-    jQuery('<div id="medPrices" class="medamount" style="height: 28px; position: absolute; left: 4px; width: 210px; top: 485px; z-index: 100">Medikamentenwert: ' + sumMedPrices() + '<br />Neuauffüllung: ' + sumMedShopPrices() + '</div>').appendTo('div#toprack')
+    jQuery('<div id="medPrices" class="medamount" style="height: 28px; position: absolute; left: 4px; width: 210px; top: 485px; z-index: 100">Medikamentenwert: ' + sumMedPrices() + '<br />Neuauffüllung: ' + sumMedShopPrices() + '</div>').appendTo('div#toprack');
   }
 }
 function countAvailableMeds() {
-  countedAvailableMeds = 0
+  countedAvailableMeds = 0;
   for (var i = 0; i < Rack.elements.length; i++) {
-    countedAvailableMeds += Rack.elements[i].amount
+    countedAvailableMeds += Rack.elements[i].amount;
   }
-  return countedAvailableMeds
+  return countedAvailableMeds;
 }
 function checkMedRack() {
-  if (oldRackLength != Rack.elements.length) {
-    oldRackLength = Rack.elements.length
-    currentPage = 0
-    generateRackPages()
-    generateMedRack(currentPage)
+  if (Rack != null) {
+    if (Rack.elements != null) {
+      if (oldRackLength != Rack.elements.length) {
+        oldRackLength = Rack.elements.length;
+        currentPage = 0;
+        generateRackPages();
+        generateMedRack(currentPage);
+      }
+    
+      if (allMedsPages[currentPage].length > (jQuery('div', jQuery('div#rackItems')).length/3) ||
+          oldCountedAvailabledMeds != countAvailableMeds()) {
+        oldCountedAvailabledMeds = countAvailableMeds();
+        generateMedRack(currentPage);
+      }
+    
+      newMedSum = sumMedPrices();
+      newShoppingSum = sumMedShopPrices();
+      if (oldMedSum != newMedSum || oldShoppingSum != newShoppingSum) {
+        oldMedSum = newMedSum;
+        oldShoppingSum = newShoppingSum;
+        setMedPrices(newMedSum, newShoppingSum);
+      }
+      changeMedsBackgrounds();
+    }
   }
-
-  if (allMedsPages[currentPage].length > (jQuery('div', jQuery('div#rackItems')).length/3) ||
-      oldCountedAvailabledMeds != countAvailableMeds()) {
-    oldCountedAvailabledMeds = countAvailableMeds()
-    generateMedRack(currentPage)
+}
+function changeMedsBackgrounds() {
+  jQuery('[class^="med ri_a ri_"]', jQuery('div#rackItems')).each(function() {
+    medId = jQuery(this).attr('medid')*1;
+    medClass = jQuery(this).attr('class').split("_");
+    medClass[2] = getMedBackground(medId);
+    jQuery(this).attr('class', medClass.join("_"));
+  });
+}
+function getMedBackground(medId) {
+  //Psychotherapie, Gummizelle, Wunderpille = schwarz = 0
+  if (isInArray(allMeds[4], medId) ||
+      isInArray(allMeds[9], medId) ||
+      isInArray(allMeds[14], medId)) {
+    return 1;
   }
-
-  newMedSum = sumMedPrices()
-  newShoppingSum = sumMedShopPrices()
-  if (oldMedSum != newMedSum || oldShoppingSum != newShoppingSum) {
-    oldMedSum = newMedSum
-    oldShoppingSum = newShoppingSum
-    setMedPrices(newMedSum, newShoppingSum)
+  //Behandlungsraum, EKG / EEG, Tomographie = rot = 1
+  else if (isInArray(allMeds[0], medId) ||
+           isInArray(allMeds[5], medId) ||
+           isInArray(allMeds[10], medId)) {
+    return 2;
   }
+  //Röntgenraum, Operationssaal, Tropenmedizin = blau = 2
+  else if (isInArray(allMeds[1], medId) ||
+           isInArray(allMeds[6], medId) ||
+           isInArray(allMeds[11], medId)) {
+    return 3;
+  }
+  //Ultraschall, Laboratorium, Nuklearmedizin = grün = 3
+  else if (isInArray(allMeds[2], medId) ||
+           isInArray(allMeds[7], medId) ||
+           isInArray(allMeds[12], medId)) {
+    return 4;
+  }
+  //Orthopädie, Dunkelkammer, Zahnmedizin = lila = 4
+  else if (isInArray(allMeds[3], medId) ||
+           isInArray(allMeds[8], medId) ||
+           isInArray(allMeds[13], medId)) {
+    return 5;
+  }
+}
+function isInArray(array, value) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === value) {
+      return true
+    }
+  }
+  return false
 }
 function getMedsAvailibleForRoom(room) {
-  var medsForRoom = new Array()
+  var medsForRoom = new Array();
   for (var i = 0; i < allMeds[room].length; i++) {
     if (getRackObject(allMeds[room][i]) != null) {
-      medsForRoom.push(allMeds[room][i])
+      medsForRoom.push(allMeds[room][i]);
     }
   }
-  return medsForRoom
+  return medsForRoom;
 }
 function generateRackPages() {
-  allMedsPages = new Array(1)
+  allMedsPages = new Array(1);
   pageToFill = 0;
-  allMedsPages[pageToFill] = new Array()
+  allMedsPages[pageToFill] = new Array();
   for (var i = 0; i < allMeds.length; i++) {
-    actualMedsToAdd = getMedsAvailibleForRoom(i)
+    actualMedsToAdd = getMedsAvailibleForRoom(i);
     if (allMedsPages[pageToFill].length + actualMedsToAdd.length > 16) {
-      allMedsPages.push(new Array())
-      pageToFill++
+      allMedsPages.push(new Array());
+      pageToFill++;
     }
     for (var j = 0; j < actualMedsToAdd.length; j++) {
-      allMedsPages[pageToFill].push(actualMedsToAdd[j])
+      allMedsPages[pageToFill].push(actualMedsToAdd[j]);
     }
   }
 }
 function getMedPrice(id) {
   for (var med in Global.availableMedics._object) {
     if (Global.availableMedics._object[med.toString()].id === id*1) {
-      return Global.availableMedics._object[med.toString()].price
+      return Global.availableMedics._object[med.toString()].price;
     }
   }
-  return 0.0
+  return 0.0;
 }
 function getMedId(name) {
   for (var med in Global.availableMedics._object) {
     if (Global.availableMedics._object[med.toString()].name === name) {
-      return Global.availableMedics._object[med.toString()].id
+      return Global.availableMedics._object[med.toString()].id;
     }
   }
-  return -1
+  return -1;
 }
 function sumMedPrices() {
-  var sumMeds = 0
+  var sumMeds = 0;
   for (var i = 0; i < Rack.elements.length; i++) {
-    sumMeds += Rack.elements[i].amount * getMedPrice(Rack.elements[i].product)*1
+    sumMeds += Rack.elements[i].amount * getMedPrice(Rack.elements[i].product)*1;
   }
   var options = {
 	symbol : "hT",
@@ -224,245 +468,245 @@ function sumMedPrices() {
 	precision : 2,
 	format: "%v %s"
   };
-  return accounting.formatMoney(sumMeds, options)
+  return accounting.formatMoney(sumMeds, options);
 }
 function getMedsToShop(level) {
-  var medsToShop = new Array()
+  var medsToShop = new Array();
   if (level >= 1) {
-    medsToShop.push(1, 2)
+    medsToShop.push(1, 2);
   }
   if (level >= 2) {
-    medsToShop.push(3)
+    medsToShop.push(3);
   }
   if (level >= 3) {
-    medsToShop.push(6)
+    medsToShop.push(6);
   }
   if (level >= 4) {
-    medsToShop.push(5, 4)
+    medsToShop.push(5, 4);
   }
   if (level >= 5) {
-    medsToShop.push(12)
+    medsToShop.push(12);
   }
   if (level >= 6) {
-    medsToShop.push(26, 11, 18)
+    medsToShop.push(26, 11, 18);
   }
   if (level >= 7) {
-    medsToShop.push(44, 30)
+    medsToShop.push(44, 30);
   }
   if (level >= 8) {
-    medsToShop.push(48, 66)
+    medsToShop.push(48, 66);
   }
   if (level >= 9) {
-    medsToShop.push(113)
+    medsToShop.push(113);
   }
   if (level >= 10) {
-    medsToShop.push(8, 9)
+    medsToShop.push(8, 9);
   }
   if (level >= 11) {
-    medsToShop.push(71, 67)
+    medsToShop.push(71, 67);
   }
   if (level >= 12) {
-    medsToShop.push(19, 39)
+    medsToShop.push(19, 39);
   }
   if (level >= 13) {
-    medsToShop.push(34, 61)
+    medsToShop.push(34, 61);
   }
   if (level >= 14) {
-    medsToShop.push(21)
+    medsToShop.push(21);
   }
   if (level >= 15) {
-    medsToShop.push(49)
+    medsToShop.push(49);
   }
   if (level >= 16) {
-    medsToShop.push(36, 94, 45)
+    medsToShop.push(36, 94, 45);
   }
   if (level >= 17) {
-    medsToShop.push(80)
+    medsToShop.push(80);
   }
   if (level >= 18) {
-    medsToShop.push(35, 31)
+    medsToShop.push(35, 31);
   }
   if (level >= 19) {
-    medsToShop.push(900, 29, 16, 78, 86)
+    medsToShop.push(900, 29, 16, 78, 86);
   }
   if (level >= 20) {
-    medsToShop.push(902, 79)
+    medsToShop.push(902, 79);
   }
   if (level >= 21) {
-    medsToShop.push(901, 51, 15, 87)
+    medsToShop.push(901, 51, 15, 87);
   }
   if (level >= 22) {
-    medsToShop.push(91)
+    medsToShop.push(91);
   }
   if (level >= 23) {
-    medsToShop.push(77, 37, 84)
+    medsToShop.push(77, 37, 84);
   }
   if (level >= 24) {
-    medsToShop.push(88, 99, 82)
+    medsToShop.push(88, 99, 82);
   }
   if (level >= 25) {
-    medsToShop.push(56, 22, 83)
+    medsToShop.push(56, 22, 83);
   }
   if (level >= 26) {
-    medsToShop.push(96, 98, 107)
+    medsToShop.push(96, 98, 107);
   }
   if (level >= 27) {
-    medsToShop.push(90, 69, 54)
+    medsToShop.push(90, 69, 54);
   }
   if (level >= 28) {
-    medsToShop.push(103, 903)
+    medsToShop.push(103, 903);
   }
   if (level >= 29) {
-    medsToShop.push(68, 100, 28)
+    medsToShop.push(68, 100, 28);
   }
   if (level >= 30) {
-    medsToShop.push(111, 906)
+    medsToShop.push(111, 906);
   }
   if (level >= 31) {
-    medsToShop.push(7, 85, 23)
+    medsToShop.push(7, 85, 23);
   }
   if (level >= 32) {
-    medsToShop.push(104, 102)
+    medsToShop.push(104, 102);
   }
   if (level >= 33) {
-    medsToShop.push(10, 13, 93)
+    medsToShop.push(10, 13, 93);
   }
   if (level >= 34) {
-    medsToShop.push(97, 907)
+    medsToShop.push(97, 907);
   }
   if (level >= 35) {
-    medsToShop.push(14)
+    medsToShop.push(14);
   }
   if (level >= 36) {
-    medsToShop.push(904, 81)
+    medsToShop.push(904, 81);
   }
   if (level >= 37) {
-    medsToShop.push(909, 20)
+    medsToShop.push(909, 20);
   }
   if (level >= 38) {
-    medsToShop.push(110, 112)
+    medsToShop.push(110, 112);
   }
   if (level >= 39) {
-    medsToShop.push(27, 32)
+    medsToShop.push(27, 32);
   }
   if (level >= 40) {
-    medsToShop.push(92, 905)
+    medsToShop.push(92, 905);
   }
   if (level >= 41) {
-    medsToShop.push(33, 38)
+    medsToShop.push(33, 38);
   }
   if (level >= 42) {
-    medsToShop.push(114, 106)
+    medsToShop.push(114, 106);
   }
   if (level >= 43) {
-    medsToShop.push(40, 41)
+    medsToShop.push(40, 41);
   }
   if (level >= 44) {
-    medsToShop.push(108, 105)
+    medsToShop.push(108, 105);
   }
   if (level >= 45) {
-    medsToShop.push(42, 43)
+    medsToShop.push(42, 43);
   }
   if (level >= 46) {
-    medsToShop.push(109, 101)
+    medsToShop.push(109, 101);
   }
   if (level >= 47) {
-    medsToShop.push(46, 47)
+    medsToShop.push(46, 47);
   }
   if (level >= 48) {
-    medsToShop.push(908, 89)
+    medsToShop.push(908, 89);
   }
   if (level >= 49) {
-    medsToShop.push(50)
+    medsToShop.push(50);
   }
   if (level >= 50) {
-    medsToShop.push(17)
+    medsToShop.push(17);
   }
   if (level >= 51) {
-    medsToShop.push(53)
+    medsToShop.push(53);
   }
   if (level >= 52) {
-    medsToShop.push(95)
+    medsToShop.push(95);
   }
   if (level >= 53) {
-    medsToShop.push(57)
+    medsToShop.push(57);
   }
   if (level >= 54) {
-    medsToShop.push(52)
+    medsToShop.push(52);
   }
   if (level >= 55) {
-    medsToShop.push(59)
+    medsToShop.push(59);
   }
   if (level >= 56) {
-    medsToShop.push(24)
+    medsToShop.push(24);
   }
   if (level >= 57) {
-    medsToShop.push(62)
+    medsToShop.push(62);
   }
   if (level >= 58) {
-    medsToShop.push(55)
+    medsToShop.push(55);
   }
   if (level >= 59) {
-    medsToShop.push(64)
+    medsToShop.push(64);
   }
   if (level >= 60) {
-    medsToShop.push(58)
+    medsToShop.push(58);
   }
   if (level >= 61) {
-    medsToShop.push(70)
+    medsToShop.push(70);
   }
   if (level >= 62) {
-    medsToShop.push(60)
+    medsToShop.push(60);
   }
   if (level >= 63) {
-    medsToShop.push(73)
+    medsToShop.push(73);
   }
   if (level >= 64) {
-    medsToShop.push(63)
+    medsToShop.push(63);
   }
   if (level >= 65) {
-    medsToShop.push(76)
+    medsToShop.push(76);
   }
   if (level >= 66) {
-    medsToShop.push(65)
+    medsToShop.push(65);
   }
   if (level >= 67) {
-    medsToShop.push(72)
+    medsToShop.push(72);
   }
   if (level >= 68) {
-    medsToShop.push(74)
+    medsToShop.push(74);
   }
   if (level >= 69) {
-    medsToShop.push(75)
+    medsToShop.push(75);
   }
-  return medsToShop
+  return medsToShop;
 }
 function getMedAvailibleAmount(id) {
   if (getRackObject(id) != null) {
-    return getRackObject(id).amount
+    return getRackObject(id).amount;
   } else {
-    return 0
+    return 0;
   }
 }
 function getMedAmountNeeded(id) {
   if (id > 899) {
-    amountToShop = epidemicStackSize
+    amountToShop = KHConfigValues.epidemicStackSize;
   } else {
-    amountToShop = medStackSize
+    amountToShop = KHConfigValues.medStackSize;
   }
-  return amountToShop - getMedAvailibleAmount(id)
+  return amountToShop - getMedAvailibleAmount(id);
 }
 function sumMedShopPrices() {
-  var sumShopMeds = 0
-  var levelString = jQuery('#level').text()
-  var level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1
-  var medsToShop = getMedsToShop(level)
-  var amountToShop = 0
+  var sumShopMeds = 0;
+  var levelString = jQuery('#level').text();
+  var level = levelString.substr(levelString.indexOf('(')+2, (levelString.lastIndexOf(' ')-(levelString.indexOf('(')+2)))*1;
+  var medsToShop = getMedsToShop(level);
+  var amountToShop = 0;
   
   for (var i = 0; i < medsToShop.length; i++) {
-    missingAmount = getMedAmountNeeded(medsToShop[i])
+    missingAmount = getMedAmountNeeded(medsToShop[i]);
     if (missingAmount > 0) {
-      sumShopMeds += getMedPrice(medsToShop[i])*1 * missingAmount
+      sumShopMeds += getMedPrice(medsToShop[i])*1 * missingAmount;
     }
   }
 
@@ -473,109 +717,63 @@ function sumMedShopPrices() {
 	precision : 2,
 	format: "%v %s"
   };
-  return accounting.formatMoney(sumShopMeds, options)
+  return accounting.formatMoney(sumShopMeds, options);
 }
 function generateMedRack(page) {
   if (page < 0) {
-    page = allMedsPages.length-1
+    page = allMedsPages.length-1;
   }
   if (page > allMedsPages.length-1) {
-    page = 0
+    page = 0;
   }
 
-  currentPage = page
-  jQuery('div', jQuery('div#rackItems')).remove()
+  currentPage = page;
+  jQuery('div', jQuery('div#rackItems')).remove();
   Global.rackItems = new Array();
   for (var i = 0; i < allMedsPages[page].length; i++) {
-    Global.rackItems.push(new RackItem(getRackObject(allMedsPages[page][i])))
+    Global.rackItems.push(new RackItem(getRackObject(allMedsPages[page][i])));
   }
 }
-function saveConfig() {
-  medStackSize = jQuery('#medicStackSize').val()
-  epidemicStackSize = jQuery('#epidemicStackSize').val()
-  var cookieName = "KHMedStackSize" + jQuery('#username').text()
-  setCookie(cookieName, medStackSize, 100, "/", window.location.hostname)
-  var cookieName = "KHEpidemicStackSize" + jQuery('#username').text()
-  setCookie(cookieName, epidemicStackSize, 100, "/", window.location.hostname)
-  checkMedRack()
+function saveAdvancedMedRackConfig() {
+  KHConfigValues.medStackSize = jQuery('#medicStackSize').val();
+  KHConfigValues.epidemicStackSize = jQuery('#epidemicStackSize').val();
+  storeKHConfigValues();
+  checkMedRack();
+}
+function storeKHConfigValues() {
+  //remove old version from localStorage
+  localStorage.removeItem('KHConfigValues' + userName);
+  //write actual version to localStorage
+  localStorage.setItem('KHConfigValues' + userName, JSON.stringify(KHConfigValues));
 }
 function openMedShop(shop) {
   var today = (new Date()).getDay();
   if (shop < 3 || Global.ISPREMIUM || today === 3 || today === 6) {
     if (shop > 0) {
-      show_page("shop"+shop)
+      show_page("shop"+shop);
     } else {
-     alert("Wunderpillen können nicht gekauft werden. Du bekommst sie einmal täglich durch den Fernseher, oder durch die Pillenwerkstatt.")
+     Dialog.information("Wunderpillen können nicht gekauft werden. Du bekommst sie einmal täglich durch den Fernseher, oder durch die Pillenwerkstatt.");
     }
   } else {
-    alert("Dieser Shop kann heute nicht erreicht werden! Als nicht PA Spieler bitte bis Mittwoch oder Samstag warten. Oder auf PA upgraden.")
+    Dialog.information("Dieser Shop kann heute nicht erreicht werden! Als nicht PA Spieler bitte bis Mittwoch oder Samstag warten. Oder auf PA upgraden.");
   }
 }
 function progressShoppingAmountWindow() {
   if (lastEnteredMed != jQuery('b', jQuery('div#inputme')).text()) {
-    lastEnteredMed = jQuery('b', jQuery('div#inputme')).text()
-    amountAlreadyEntered = false
+    lastEnteredMed = jQuery('b', jQuery('div#inputme')).text();
+    amountAlreadyEntered = false;
   }
   if (jQuery('input[class^=inputamount]').val() == 0 && !amountAlreadyEntered) {
-    missingAmount = getMedAmountNeeded(getMedId(jQuery('b', jQuery('div#inputme')).text()))
+    missingAmount = getMedAmountNeeded(getMedId(jQuery('b', jQuery('div#inputme')).text()));
     if (missingAmount > 0) {
-      amountAlreadyEntered = true
-      jQuery('input[class^=inputamount]').val(missingAmount)
+      amountAlreadyEntered = true;
+      jQuery('input[class^=inputamount]').val(missingAmount);
       Cart.validateItemValue(0, 1000, jQuery('input[class^=inputamount]')[0]);
     }
   }
 }
 //End AdvancedMedRack
-//Begin General
-function setCookie(name, value, expires, path, domain) {
-  // set time, it's in milliseconds
-  var today = new Date();
-  today.setTime(today.getTime());
-  if (expires) {
-    expires = expires * 1000 * 60 * 60 * 24;
-  }
-  var expires_date = new Date(today.getTime() + (expires));
-  
-  document.cookie = name + "=" + escape(value) +
-  ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
-  ( ( path ) ? ";path=" + path : "" ) +
-  ( ( domain ) ? ";domain=" + domain : "" );
-}
-function getCookie(check_name) {
-  var a_all_cookies = document.cookie.split( ';' );
-  var a_temp_cookie = '';
-  var cookie_name = '';
-  var cookie_value = '';
-  var b_cookie_found = false; // set boolean t/f default f
-
-  for (i = 0; i < a_all_cookies.length; i++) {
-    // now we'll split apart each name=value pair
-    a_temp_cookie = a_all_cookies[i].split( '=' );
-
-    // and trim left/right whitespace while we're at it
-    cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
-
-    // if the extracted name matches passed check_name
-    if (cookie_name == check_name) {
-      b_cookie_found = true;
-      // we need to handle case where cookie has no value but exists (no = sign, that is):
-      if ( a_temp_cookie.length > 1 ) {
-      	cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
-      }
-      // note that in cases where cookie is initialized but no value, null is returned
-      return cookie_value;
-      break;
-    }
-    a_temp_cookie = null;
-    cookie_name = '';
-  }
-  if (!b_cookie_found) {
-    return null;
-  }
-}
-//End General
 //Begin Script
-addFunctions()
-addAccounting(readyAccounting)
-addJQuery(readyJQuery)
+injectScript();
+injectScriptStart(injectStartReady);
 //End Script

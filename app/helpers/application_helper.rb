@@ -20,6 +20,21 @@ module ApplicationHelper
     link_to image_tag("flags/"+localization_string+".png", :alt => language_string, :class => "flags") + language_name(language_string), get_actual_path(localization_string)
   end
 
+  def file_timestamp(filename)
+    "Stand: #{l File.mtime(File.join(File.dirname(File.dirname(__FILE__)), '..', 'public', 'tools', filename)), :format => :short}"
+  end
+  
+  def file_version(filename)
+    counter = 0
+    File.open(File.join(File.dirname(File.dirname(__FILE__)), '..', 'public', 'tools', filename), 'r') do |infile|
+      while (counter != 3)
+        @line = infile.gets
+        counter = counter + 1
+      end
+    end
+    "Version: #{@line.split(' ')[2]}"
+  end
+
   def bootstrap_formular_field(formular, field, type, *args)
     fieldname = ""
     helptext = ""

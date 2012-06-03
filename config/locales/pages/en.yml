@@ -1,5 +1,5 @@
 en:
-  title_home:                  "Home"
+  title_home:                  "Welcome to the Script Collection for KapiHospital"
   title_contact:               "Contact"
   title_about:                 "About"
   title_help:                  "Help"
@@ -44,6 +44,8 @@ en:
   tools_description:           "Description"
   tools_download:              "Download"
   tools_settings:              "Settings"
+  tools_screenshots:           "Screenshots"
+  tools_todo:                  "ToDo"
   link_installdescription:     "Detailed install description"
   contact_title:               "Your message"
   button_send_mail:            "Send mail"
