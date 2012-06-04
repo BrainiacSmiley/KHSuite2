@@ -1,5 +1,5 @@
 class ContactMailer < ActionMailer::Base  
-  default :to => "wehmeyer.jan.hendrik@googlemail.com"
+  default :to => "khsuite@googlemail.com"
 
   def contact (sender, subject, message, sent_at = Time.now)
     @sender = sender
