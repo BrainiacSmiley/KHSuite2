@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedMedRack
-// @version       2.0
+// @version       2.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -75,6 +75,8 @@ function injectScript() {
   functionsToAdd.push(storeKHConfigValues);
   functionsToAdd.push(sumMedPrices);
   functionsToAdd.push(sumMedShopPrices);
+  functionsToAdd.push(medAmountEnough);
+  functionsToAdd.push(checkMedAmounts);
 
   var script = document.createElement("script");
   script.id = 'KHAdvancedMedRack';
@@ -119,6 +121,13 @@ function initAdvancedMedRack() {
     }
     if (typeof KHConfigValues.epidemicStackSize == 'undefined') {
       KHConfigValues.epidemicStackSize = 5;
+    }
+    //Check for Script Values
+    if (typeof KHConfigValues.medWarningStackSize == 'undefined') {
+      KHConfigValues.medWarningStackSize = 5;
+    }
+    if (typeof KHConfigValues.epidemicWarningStackSize == 'undefined') {
+      KHConfigValues.epidemicWarningStackSize = 1;
     }
     storeKHConfigValues();
   
@@ -297,11 +306,14 @@ function addAdvancedMedRackOptions() {
   //set AdvancedAssignment Options
   jQuery('#medicStackSize').val(KHConfigValues.medStackSize);
   jQuery('#epidemicStackSize').val(KHConfigValues.epidemicStackSize);
+  jQuery('#medicWarningStackSize').val(KHConfigValues.medWarningStackSize);
+  jQuery('#epidemicWarningStackSize').val(KHConfigValues.epidemicWarningStackSize);
 }
 function generateAdvancedMedRackConfigOptions() {
   htmlCode = "";
   htmlCode += "<div class=\"tab-pane\" id=\"KHAdvancedMedRackOptions\" style=\"margin-left:10px;margin-top:-18px;\">";
-  htmlCode += "  Normale Meds pro Stapel: <input id=\"medicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"110\" style=\"width:50px;\"><br />Seuchen Meds pro Stapel: <input id=\"epidemicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"5\"  style=\"width:50px;\">";
+  htmlCode += "  Normale Meds: Mindestmenge <input id=\"medicWarningStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"110\" style=\"width:50px;\"> | Kaufmenge <input id=\"medicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"110\" style=\"width:50px;\"> proStapel.<br/>";
+  htmlCode += "  Seuchen Meds: Mindestmenge <input id=\"epidemicWarningStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"5\"  style=\"width:50px;\"> | Kaufmenge <input id=\"epidemicStackSize\" type=\"number\" onchange=\"saveAdvancedMedRackConfig()\" value=\"5\"  style=\"width:50px;\"> pro Stapel.";
   htmlCode += "</div>";
   return htmlCode;
 }
@@ -365,6 +377,7 @@ function checkMedRack() {
         setMedPrices(newMedSum, newShoppingSum);
       }
       changeMedsBackgrounds();
+      checkMedAmounts();
     }
   }
 }
@@ -375,6 +388,27 @@ function changeMedsBackgrounds() {
     medClass[2] = getMedBackground(medId);
     jQuery(this).attr('class', medClass.join("_"));
   });
+}
+function checkMedAmounts() {
+  jQuery('div.medamount', jQuery('div#rackItems')).each(function() {
+    medId = jQuery(this).parent().attr('medid')*1;
+    amount = jQuery(this).text()*1;
+    if (!medAmountEnough(medId, amount)) {
+      jQuery(this).css('background-color', 'red');
+      jQuery(this).css('color', 'white');
+    } else {
+      jQuery(this).removeAttr('style');
+    }
+  });
+}
+function medAmountEnough(medId, amount) {
+  if (medId < 899 && amount < KHConfigValues.medWarningStackSize) {
+    return false;
+  }
+  if (medId >899 && amount < KHConfigValues.epidemicWarningStackSize) {
+    return false;
+  }
+  return true;
 }
 function getMedBackground(medId) {
   //Psychotherapie, Gummizelle, Wunderpille = schwarz = 0
@@ -737,6 +771,8 @@ function generateMedRack(page) {
 function saveAdvancedMedRackConfig() {
   KHConfigValues.medStackSize = jQuery('#medicStackSize').val();
   KHConfigValues.epidemicStackSize = jQuery('#epidemicStackSize').val();
+  KHConfigValues.medWarningStackSize = jQuery('#medicWarningStackSize').val();
+  KHConfigValues.epidemicWarningStackSize = jQuery('#epidemicWarningStackSize').val();
   storeKHConfigValues();
   checkMedRack();
 }
