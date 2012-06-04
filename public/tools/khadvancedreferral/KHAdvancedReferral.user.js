@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       4.0
+// @version       4.0.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -57,6 +57,7 @@ function injectScript() {
   variablesToAdd.push("userName");
   variablesToAdd.push("$referralMap");
   variablesToAdd.push("initAdvancedReferralFunction");
+  variablesToAdd.push("patStored = false");
 
   var functionsToAdd = new Array();
   functionsToAdd.push(addAdvancedReferralOptions);
@@ -167,8 +168,8 @@ function initKHAdvancedReferral() {
     }
     
     //restore patientDiseaseStorage
-    if (localStorage.getItem('patientDiseasesStorage') != undefined) {
-      patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage'));
+    if (localStorage.getItem('patientDiseasesStorage' + userName) != undefined) {
+      patientDiseasesStorage = JSON.parse(localStorage.getItem('patientDiseasesStorage' + userName));
     }
     
     userName = jQuery('#username').text();
@@ -180,31 +181,31 @@ function initKHAdvancedReferral() {
       KHConfigValues = new Object();
     }
     //Check for Script Values
-    if ( KHConfigValues.wwLevel == undefined) {
+    if (typeof KHConfigValues.wwLevel == 'undefined') {
       KHConfigValues.wwLevel = 0
     }
-    if (KHConfigValues.selectedPatientsIndex == undefined) {
+    if (typeof KHConfigValues.selectedPatientsIndex == 'undefined') {
       KHConfigValues.selectedPatientsIndex = 0
     }
-    if (KHConfigValues.selectedNumberOfDiseases == undefined) {
+    if (typeof KHConfigValues.selectedNumberOfDiseases == 'undefined') {
       KHConfigValues.selectedNumberOfDiseases = "# Krankheiten"
     }
-    if (KHConfigValues.selectedDoctorsName == undefined) {
+    if (typeof KHConfigValues.selectedDoctorsName == 'undefined') {
       KHConfigValues.selectedDoctorsName = "alle Ärzte"
     }
-    if (KHConfigValues.selectedRoomsName == undefined) {
+    if (typeof KHConfigValues.selectedRoomsName == 'undefined') {
       KHConfigValues.selectedRoomsName = "alle Räume"
     }
-    if (KHConfigValues.selectedDiseaseName == undefined) {
+    if (typeof KHConfigValues.selectedDiseaseName == 'undefined') {
       KHConfigValues.selectedDiseaseName = "alle Krankheiten"
     }
-    if (KHConfigValues.columnsToSort == undefined) {
+    if (typeof KHConfigValues.columnsToSort == 'undefined') {
       KHConfigValues.columnsToSort = new Array(0, 0, 0, 0, 0, 0, 0);
     }
-    if (KHConfigValues.points == undefined) {
+    if (typeof KHConfigValues.points == 'undefined') {
       KHConfigValues.points = true;
     }
-    if (KHConfigValues.tiny == undefined) {
+    if (typeof KHConfigValues.tiny == 'undefined') {
       KHConfigValues.tiny = true;
     }
     storeKHConfigValues();
@@ -232,11 +233,7 @@ function recogniseKHAdvancedReferralWindow() {
         jQuery('div#ref_divdetailsbig').css('background-image') == "url(\"http://pics.kapihospital.de/bg_referral_02.jpg\")")) {
       progressAdvancedReferralReferralDetailWindow()
     } else {
-      if (!navigator.userAgent.toLowerCase().indexOf("firefox") != -1) {
-        if(!patStored) {
-          progressKHAdvancedReferralWindow()
-        }
-      } else {
+      if(!patStored) {
         progressKHAdvancedReferralWindow()
       }
     }
@@ -281,9 +278,9 @@ function savePatientDiseasesStorage() {
     }
   }
   //remove old version from localStorage
-  localStorage.removeItem('patientDiseasesStorage');
+  localStorage.removeItem('patientDiseasesStorage' + userName);
   //write actual version to localStorage
-  localStorage.setItem('patientDiseasesStorage', JSON.stringify(patientDiseasesStorage));
+  localStorage.setItem('patientDiseasesStorage' + userName, JSON.stringify(patientDiseasesStorage));
 }
 function addAdvancedReferralOptions() {
   //check if ConfigBase present
