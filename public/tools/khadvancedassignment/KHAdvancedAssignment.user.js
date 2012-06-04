@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedAssignment
-// @version       2.0
+// @version       2.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -54,6 +54,7 @@ function injectScript() {
   functionsToAdd.push(generateConfigBase);
   functionsToAdd.push(getAssignmentPrice);
   functionsToAdd.push(getDiseaseId);
+  functionsToAdd.push(getEntryName);
   functionsToAdd.push(getExchangePrice);
   functionsToAdd.push(getMedIdForDisease);
   functionsToAdd.push(getMedPrice);
@@ -132,6 +133,23 @@ function initAdvancedAssignment() {
     webServer = jQuery('div#border4').children().text();
     jQuery('div#border4').children().text(webServer + " | AutoReferral: deaktiv");
   
+    window.addEventListener("keydown", function(event){
+      if (event.altKey) {
+        switch (event.keyCode) {
+          case 65: //A = AutoReferral
+            autoReferral = !autoReferral;
+            if (autoReferral) {
+              jQuery('div#border4').children().text(webServer + " | AutoReferral: aktiv");
+              oldAutoAssignment = KHConfigValues.autoAssignment;
+              KHConfigValues.autoAssignment = true;
+            } else {
+              jQuery('div#border4').children().text(webServer + " | AutoReferral: deaktiv");
+              KHConfigValues.autoAssignment = oldAutoAssignment;
+            }
+            break;
+        }
+      }
+    });
     //interval Functions
     window.setInterval("recogniseAdvancedAssignmentWindows()", 200);
     window.clearInterval(initAdvancedAssignmentFunction);
@@ -177,6 +195,16 @@ function progressAssignmentWindow() {
     alreadyEnteredPatName = jQuery('div#ref_detname').text();
     jQuery('input#ref_recipient').val(KHConfigValues.assignmentTarget);
     jQuery('input#ref_demand').val(getAssignmentPrice());
+
+    //StorePat for PointsCalculation
+    if (typeof patientDiseasesStorage != 'undefined') {
+      patientID = jQuery('#ref_magichand').attr('onclick').split("(")[1].split(")")[0]*1;
+      patientDiseasesStorage["p"+patientID] = Global.refPatients.get("p" + patientID).diseases;
+      //remove old version from localStorage
+      localStorage.removeItem('patientDiseasesStorage' + userName);
+      //write actual version to localStorage
+      localStorage.setItem('patientDiseasesStorage' + userName, JSON.stringify(patientDiseasesStorage));
+    }
 
     if (KHConfigValues.autoAssignment) {
       jQuery('#ref_magichand').click();
