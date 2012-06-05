@@ -17,6 +17,7 @@ KHSuite2::Application.routes.draw do
     match '/khadvancedmemberlist',  :to => 'pages#khadvancedmemberlist'
     match '/khadvancedpatientview', :to => 'pages#khadvancedpatientview'
     match '/khadvancedreferral',    :to => 'pages#khadvancedreferral'
+    match '/khimprovedgraphics',    :to => 'pages#khimprovedgraphics'
     match '/khmedhelper',           :to => 'pages#khmedhelper'
     match '/khopticalimprovements', :to => 'pages#khopticalimprovements'
     match '/khpatientcounter',      :to => 'pages#khpatientcounter'

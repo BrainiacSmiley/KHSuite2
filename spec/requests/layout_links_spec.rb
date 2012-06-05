@@ -111,6 +111,8 @@ describe "LayoutLinks" do
       response.should have_selector('title', :content => I18n.t(:title_khadvancedpatientview))
       click_link I18n.t(:link_khadvancedreferral)
       response.should have_selector('title', :content => I18n.t(:title_khadvancedreferral))
+      click_link I18n.t(:link_khimprovedgraphics)
+      response.should have_selector('title', :content => I18n.t(:title_khimprovedgraphics))
       click_link I18n.t(:link_khmedhelper)
       response.should have_selector('title', :content => I18n.t(:title_khmedhelper))
       click_link I18n.t(:link_khopticalimprovements)
