@@ -57,6 +57,11 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
+  def khadvancedmemberlist
+    @title = t(:title_khadvancedmemberlist)
+    find_needed_values
+  end
+
   def khadvancedpatientview
     @title = t(:title_khadvancedpatientview)
     find_needed_values
