@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedAssignment
-// @version       2.1
+// @version       2.0.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -42,7 +42,6 @@ function injectScript() {
   variablesToAdd.push("userName");
   variablesToAdd.push("webServer");
   variablesToAdd.push("initAdvancedAssignmentFunction");
-  variablesToAdd.push("autoReferral = false");
 
   var functionsToAdd = new Array();
   functionsToAdd.push(addAdvancedAssignmentOptions);
@@ -132,24 +131,7 @@ function initAdvancedAssignment() {
     
     webServer = jQuery('div#border4').children().text();
     jQuery('div#border4').children().text(webServer + " | AutoReferral: deaktiv");
-  
-    window.addEventListener("keydown", function(event){
-      if (event.altKey) {
-        switch (event.keyCode) {
-          case 65: //A = AutoReferral
-            autoReferral = !autoReferral;
-            if (autoReferral) {
-              jQuery('div#border4').children().text(webServer + " | AutoReferral: aktiv");
-              oldAutoAssignment = KHConfigValues.autoAssignment;
-              KHConfigValues.autoAssignment = true;
-            } else {
-              jQuery('div#border4').children().text(webServer + " | AutoReferral: deaktiv");
-              KHConfigValues.autoAssignment = oldAutoAssignment;
-            }
-            break;
-        }
-      }
-    });
+
     //interval Functions
     window.setInterval("recogniseAdvancedAssignmentWindows()", 200);
     window.clearInterval(initAdvancedAssignmentFunction);
@@ -233,14 +215,19 @@ function getExchangePrice() {
   switch(KHConfigValues.exchangePrice) {
     case 0:
       return maxPrice;
+      break;
     case 1:
       return minPrice;
+      break;
     case 2:
       return maxPrice.replace(".","").replace(",",".")*1 - stillNeededMedsCosts();
+      break;
     case 3:
       return minPrice.replace(".","").replace(",",".")*1 - stillNeededMedsCosts();
+      break;
     case -1:
-      return maxPrice.replace(".","").replace(",",".")*1 * KHConfigValues.assignmentPercent*1 / 100;
+      return maxPrice.replace(".","").replace(",",".")*1 * KHConfigValues.exchangePercent*1 / 100;
+      break;
   }
 }
 function stillNeededMedsCosts() {
