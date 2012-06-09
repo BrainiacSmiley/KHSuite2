@@ -1,6 +1,6 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name          KHAdvancedAssignment
-// @version       2.0.1
+// @version       2.1.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
