@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHImprovedGraphics
-// @version       1.0
+// @version       1.0.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -126,6 +126,13 @@ function changeGraphics() {
       upgradeRooms(this);
     }
     showAnimatedCoinRoom(this);
+
+    //begin personal stuff
+    if (userName == "Prof. Dr. Brainiac") {
+      changeElefant(this);
+      changePersonalPreverences(this);
+    }
+    //end personal stuff
   });
 }
 function changeCleaningWagon(room) {
@@ -168,6 +175,7 @@ function showAnimatedCoinRoom(room) {
 }
 function upgradeRooms(room) {
   roomGrafik = jQuery(room).css('background-image').split("/")[3].split(".");
+  roomGrafik[roomGrafik.length-1] = roomGrafik[roomGrafik.length-1].replace("\"","");
   roomID = roomGrafik[0]*1;
   if (roomGrafik[2] != 1) {
     switch (roomID) {
@@ -187,11 +195,7 @@ function upgradeRooms(room) {
       case 17:
       case 39:
         roomGrafik[1] = 3;
-        if (navigator.userAgent.toLowerCase().indexOf("firefox") != -1) {
-          jQuery(room).css('background-image', 'url("http://pics.kapihospital.de/' + roomGrafik.join("."));
-        } else {
-          jQuery(room).css('background-image', 'url(http://pics.kapihospital.de/' + roomGrafik.join("."));
-        }
+        jQuery(room).css('background-image', 'url(http://pics.kapihospital.de/' + roomGrafik.join("."));
         break;
       case 27:
         if (roomGrafik[2] = 3) {
