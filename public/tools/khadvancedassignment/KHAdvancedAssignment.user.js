@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name          KHAdvancedAssignment
 // @version       2.1.1
 // @include       http://*.de.kapihospital.com/main.php*
@@ -166,6 +166,21 @@ function recogniseAdvancedAssignmentWindows() {
     progressReferralWindow();
   } else if (jQuery('div#b').length && !jQuery('div#KHAdvancedAssignmentOptions').length) {
     addAdvancedAssignmentOptions();
+  //begin private Stuff
+  } else if (jQuery('div#msgwindow').is(':visible') &&
+       (jQuery('div#msgwindow').css('background-image') == "url(http://pics.kapihospital.de/medicalrecord_1.png)" ||
+        jQuery('div#msgwindow').css('background-image') == "url(\"http://pics.kapihospital.de/medicalrecord_1.png\")")) {
+      if (autoReferral) {
+        jQuery('div#medi_referral').click();
+      }
+  } else {
+    if (autoReferral) {
+      referralPatient(getReadyPatientID());
+    }
+    if (Global.ISPREMIUM) {
+      cashupPatients();
+    }
+  //end private Stuff
   }
 }
 function progressAssignmentWindow() {
