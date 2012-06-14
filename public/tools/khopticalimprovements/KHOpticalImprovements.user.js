@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHOpticalImprovements
-// @version       2.0
+// @version       2.0.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -114,7 +114,7 @@ function initOpticalImprovements() {
       checkUpjersBar();
       
       //remove Aktion Text
-      if (jQuery('div#avatar').next().text() == "Hier zur Kapi Hospital Fan-Seite bei Facebook!") {
+      if (jQuery('div#avatar').next().text() == "\"Der Fußball-EM 2012 Flausch\": Jetzt gratis zu jedem Kauf ab 9,99€") {
         jQuery('div#avatar').next().hide();
       }
     });
@@ -332,17 +332,15 @@ function checkCampaignItem() {
 function checkUpjersBar() {
   if (KHConfigValues.hideUpjersBar) {
     jQuery('div#uplogo').parent().parent().hide()
-    jQuery('div#toprack').css('top', '159px');
     jQuery('body').css('margin-top', '-30px');
   } else {
     jQuery('div#uplogo').parent().parent().show();
-    jQuery('div#toprack').css('top', '129px');
     jQuery('body').css('margin-top', '');
   }
 }
 function checkRackPositions() {
+  jQuery('div#toprack').css('top', '159px');
   if (KHConfigValues.hideUpjersBar) {
-    jQuery('div#toprack').css('top', '159px');
     jQuery('div#playersofficerack').css('top', '129px');
   }
 }
