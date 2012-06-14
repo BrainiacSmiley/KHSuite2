@@ -26,6 +26,7 @@ en:
   link_tools:                  "Tools"
   link_tools_overview:         "Overview"
   link_khplanner:              "KHPlanner"
+  link_basickhscript:          "BasicKHScript"
   link_khadvancedassignment:   "KHAdvancedAssignment"
   link_khadvancedmedrack:      "KHAdvancedMedRack"
   link_khadvancedmemberlist:   "KHAdvancedMemberlist"
