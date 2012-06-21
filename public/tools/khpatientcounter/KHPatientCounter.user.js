@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHPatientCounter
-// @version       2.0
+// @version       2.0.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -138,7 +138,9 @@ function getPatientsPerLevel(level) {
 }
 function saveWWConfig() {
   KHConfigValues.wwLevel = jQuery('#wwLevel').val()
-  setAPOverlay();
+  if (typeof setAPOverlay != 'undefined') {
+    setAPOverlay();
+  }
   storeKHConfigValues();
 }
 function checkPatientCounterWindows() {

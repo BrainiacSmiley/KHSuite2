@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       4.0.1
+// @version       4.0.2
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -224,6 +224,9 @@ function initKHAdvancedReferral() {
 }
 function saveWWConfig() {
   KHConfigValues.wwLevel = jQuery('#wwLevel').val()
+  if (typeof setAPOverlay != 'undefined') {
+    setAPOverlay();
+  }
   storeKHConfigValues();
 }
 function recogniseKHAdvancedReferralWindow() {
@@ -312,7 +315,6 @@ function addAdvancedReferralOptions() {
     jQuery('select#khadvancedreferralconfigcolumn').val('hT')
   }
   jQuery('#wwLevel').val(KHConfigValues.wwLevel);
-
 }
 function generateWWLevelConfigOptions() {
   htmlCode = "";
