@@ -52,6 +52,11 @@ class PagesController < ApplicationController
     find_needed_values
   end
 
+  def khadvancedmail
+    @title = t(:title_khadvancedmail)
+    find_needed_values
+  end
+
   def khadvancedmedrack
     @title = t(:title_khadvancedmedrack)
     find_needed_values

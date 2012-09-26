@@ -1,0 +1,67 @@
+<%= render 'toolsdescription_navigation' %>
+ 
+<div class="pill-content">
+  <div class="active" id="history">
+    <%= render 'khadvancedmail_history' %>
+  </div>
+  <div id="description">
+    <p>
+      Dieses völlige Chaos im Medischrank und das man mehrmals blättern muss, um eine Sorte Behandlungsräume mit Meds versorgen zu können, fand ich sehr ungeschickt. Daher wurde der Medizinschrank umgestalltet.
+      <ul>
+        <li>Alle Medikamente für einen Raum sind nun hintereinander und haben alle den gleichen Hintergrund.</li>
+        <li>Wird eine konfigurierbare Mindestmenge unterschritten, färbt sich der Hintergrund rot.</li>
+        <li>Das neueste Medikament sortiert sich immer am Ende ein.</li>
+        <li>Alle Medikamente für einen Raum sind auf einer Seite. Passen sie nicht mehr auf die aktuelle Seite, wanden alle auf eine neue Seite.</li>
+        <li>Unter den Meds steht nun wieviel hT in Meds angelegt sind.</li>
+        <li>Durch einen Doppelklick auf das Medikament geht nun direkt der Shop auf der es verkauft. Wobei bei nicht PA Accounts darauf geachtet wird das man nur Mittwochs und Samstags nach Bruchberg kommt.</li>
+        <li>Ihr könnt eine Standardmenge für Medikamente und Seuchen hinterlegen. Beim einkaufen wird dann automatisch die fehlende Menge des Medikaments eingetragen.</li>
+        <li>Das Regal ist durchgängig blätterbar. Wenn ihr auf der letzten Seite seid, springt ihr wieder auf die erste.</li>
+      </ul>
+    </p>
+  </div>
+  <div id="download">
+    <p>
+      <ul class="unstyled">
+        <%= render 'khadvancedmail_important' %>
+        <li>&nbsp;</li>
+        <li><%= link_to t('link_installdescription'), help_path %></li>
+      </ul>
+      <table>
+        <tr>
+          <td>1.</td>
+          <td><%= link_to t('link_basickhscript'), "../tools/basickhscript/BasicKHScript.user.js" %></td>
+          <td><%= file_version('basickhscript/BasicKHScript.user.js') %></td>
+          <td><%= file_timestamp('basickhscript/BasicKHScript.user.js') %></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td><%= link_to t('link_khadvancedmail'), "../tools/khadvancedmail/KHAdvancedMail.user.js" %></td>
+          <td><%= file_version('khadvancedmail/KHAdvancedMail.user.js') %></td>
+          <td><%= file_timestamp('khadvancedmail/KHAdvancedMail.user.js') %></td>
+        </tr>
+      </table>
+    </p>
+  </div>
+  <div id="settings">
+    <p>
+      Es muss nichts konfiguriert werden.
+    </p>
+  </div>
+  <div id="screenshots">
+    <p>
+      Keine Bilder!
+    </p>
+  </div>
+  <div id="todo">
+      Todo-Liste:
+      <ul>
+        <li>Alles Erledigt!</li>
+      </ul>
+  </div>
+</div>
+ 
+<script>
+  $(function () {
+    $('.tabs').tabs()
+  })
+</script>

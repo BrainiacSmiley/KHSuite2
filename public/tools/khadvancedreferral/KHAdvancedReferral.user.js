@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedReferral
-// @version       4.0.2
+// @version       4.1
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -223,7 +223,7 @@ function initKHAdvancedReferral() {
   }
 }
 function saveWWConfig() {
-  KHConfigValues.wwLevel = jQuery('#wwLevel').val()
+  KHConfigValues.wwLevel = jQuery('#wwLevel').val();
   if (typeof setAPOverlay != 'undefined') {
     setAPOverlay();
   }
@@ -465,6 +465,9 @@ function getRoomForDisease(diseaseIdString) {
     //Zahnmedizin
     case 28: case 62: case 68: case 70: case 85: case 89: case 102: case 906:
       return "Zahnmedizin"
+	//Area 51
+	case 115: case 116: case 117: case 118: case 119:
+	  return "Area51-Labor"
   }
 }
 function getSelectOptionsArray(object) {
@@ -708,6 +711,9 @@ function getRow(id) {
       color = "#A5DBDF"
       rooms = getColumn(68) + getColumn(28) + getColumn(85) + getColumn(102) + getColumn(89) + getColumn(62) + getColumn(70) + "<td colspan=\"6\"></td>"
       break
+	case 47:
+	  color = "#E9A4B1"
+	  rooms = getColumn(115) + getColumn(116) + getColumn(117) + getColumn(118) + getColumn(119)
   }
   if (numberForRoom > 0) {
     return "<tr style=\"background-color: " + color + ";height:17px;\"><td width=\"30px;\">" + numberForRoom + "</td><td width=\"110\"><a onclick=\"changeTinyFilter('alle Krankheiten','" + roomName + "')\" href=\"#\" style=\"text-decoration: none;\">" + roomName + "</a></td>" + rooms + "</tr>"
@@ -786,7 +792,7 @@ function updateSelectedNumberOfPats() {
 }
 function updateTotalPrice() {
   totalPrice = totalSendPrice-totalRecievePrice
-  actualMoney = jQuery('span#bar').text().replace(".","").replace(",",".")*1
+  actualMoney = jQuery('span#bar').text().replace(/\./g,"").replace(",",".")*1
   newMoney = actualMoney + totalPrice
   var options = {
     symbol : "hT",

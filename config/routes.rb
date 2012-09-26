@@ -13,6 +13,7 @@ KHSuite2::Application.routes.draw do
     match '/tools',                 :to => 'pages#tools'
     match '/khplanner',             :to => 'pages#khplanner'
     match '/khadvancedassignment',  :to => 'pages#khadvancedassignment'
+    match '/khadvancedmail',        :to => 'pages#khadvancedmail'
     match '/khadvancedmedrack',     :to => 'pages#khadvancedmedrack'
     match '/khadvancedmemberlist',  :to => 'pages#khadvancedmemberlist'
     match '/khadvancedpatientview', :to => 'pages#khadvancedpatientview'

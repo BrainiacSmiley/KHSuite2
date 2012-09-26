@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          KHAdvancedMedRack
-// @version       2.1
+// @version       2.2
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -152,7 +152,7 @@ function initAdvancedMedRack() {
   }
 }
 function initMeds() {
-  allMeds = new Array(15);
+  allMeds = new Array(16);
   //Behandlungsraum
   allMeds[0] = new Array(1, 2, 6, 5, 12, 11, 10, 909);
   //Röntgenraum
@@ -181,9 +181,12 @@ function initMeds() {
   allMeds[12] = new Array(69, 54, 903, 23, 81, 112, 92, 42, 109, 59);
   //Zahnmedizin
   allMeds[13] = new Array(68, 28, 906, 85, 102, 89, 62, 70);
+  //Area 51
+  allMeds[14] = new Array(115, 116, 117, 118, 119);
   //Wunderpille
-  allMeds[14] = new Array(1);
-  allMeds[14][0] = 899;
+  allMeds[15] = new Array(1);
+  allMeds[15][0] = 899;
+  
 }
 function recogniseAdvancedMedRackWindows() {
   if (jQuery('div#b').length && !jQuery('div#KHAdvancedMedRackOptions').length) {
@@ -411,16 +414,17 @@ function medAmountEnough(medId, amount) {
   return true;
 }
 function getMedBackground(medId) {
-  //Psychotherapie, Gummizelle, Wunderpille = schwarz = 0
+  //Psychotherapie, Gummizelle, Area 51 = schwarz = 0
   if (isInArray(allMeds[4], medId) ||
       isInArray(allMeds[9], medId) ||
       isInArray(allMeds[14], medId)) {
     return 1;
   }
-  //Behandlungsraum, EKG / EEG, Tomographie = rot = 1
+  //Behandlungsraum, EKG / EEG, Tomographie, Wunderpille = rot = 1
   else if (isInArray(allMeds[0], medId) ||
            isInArray(allMeds[5], medId) ||
-           isInArray(allMeds[10], medId)) {
+           isInArray(allMeds[10], medId) ||
+		   isInArray(allMeds[15], medId)) {
     return 2;
   }
   //Röntgenraum, Operationssaal, Tropenmedizin = blau = 2
@@ -600,10 +604,10 @@ function getMedsToShop(level) {
     medsToShop.push(7, 85, 23);
   }
   if (level >= 32) {
-    medsToShop.push(104, 102);
+    medsToShop.push(104, 102, 115);
   }
   if (level >= 33) {
-    medsToShop.push(10, 13, 93);
+    medsToShop.push(10, 13, 93, 116);
   }
   if (level >= 34) {
     medsToShop.push(97, 907);
@@ -612,19 +616,19 @@ function getMedsToShop(level) {
     medsToShop.push(14);
   }
   if (level >= 36) {
-    medsToShop.push(904, 81);
+    medsToShop.push(904, 81, 117);
   }
   if (level >= 37) {
     medsToShop.push(909, 20);
   }
   if (level >= 38) {
-    medsToShop.push(110, 112);
+    medsToShop.push(110, 112, 118);
   }
   if (level >= 39) {
     medsToShop.push(27, 32);
   }
   if (level >= 40) {
-    medsToShop.push(92, 905);
+    medsToShop.push(92, 905, 119);
   }
   if (level >= 41) {
     medsToShop.push(33, 38);
