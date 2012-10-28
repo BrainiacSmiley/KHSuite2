@@ -5,6 +5,7 @@ flags/en.png: flags/en-5eff7cb172588fa7efe07b2c5be27a5f.png
 help/16-chrome.png: help/16-chrome-707c1ae9e3078cfb14cabaefe04f8802.png
 help/16-firefox.png: help/16-firefox-c04fcc71381ed3def73664406cf21d1a.png
 help/16-opera.png: help/16-opera-72c9d9787a85a830960414732418e80e.png
+help/16-swriron.png: help/16-swriron-3cb5304140a34b4128373774a49eef72.png
 help/screenshot_chrome_extensions.jpg: help/screenshot_chrome_extensions-029568fdd5adda65d6c471485db548af.jpg
 help/screenshot_firefox_greasemonkey.jpg: help/screenshot_firefox_greasemonkey-9a482d614c35659c6f196d41adf68783.jpg
 help/screenshot_opera_userscripts.jpg: help/screenshot_opera_userscripts-a86922de719aa6bb6b2e1cd89448ad0a.jpg
