@@ -15,13 +15,30 @@
 </ul>
 
 <ul class="tabs">
-  <li class="active"><a href="#chrome"><%= image_tag 'help/16-chrome.png', :style => 'top:3px; position:relative;' %> Chrome/SWR Iron</a></li>
+  <li class="active"><a href="#chrome"><%= image_tag 'help/16-chrome.png', :style => 'top:3px; position:relative;' %> Chrome</a></li>
+  <li><a href="#swriron"><%= image_tag 'help/16-swriron.png', :style => 'top:3px; position:relative;' %> SWR Iron</a></li>
   <li><a href="#firefox"><%= image_tag 'help/16-firefox.png', :style => 'top:3px; position:relative;' %> Firefox</a></li>
   <li><a href="#opera"><%= image_tag 'help/16-opera.png', :style => 'top:3px; position:relative;' %> Opera</a></li>
 </ul>
 
 <div class="pill-content">
   <div class="active" id="chrome">
+    <ul class="unstyled">
+      <li><strong>Vorbereitung</strong></li>
+      <li>Erstellen eines Verzeichnisses in dem ihr die Skripte speichern wollt. Der kann überall auf eurer Festplatte liegen.</li>
+      <li>Die Skripte nun einfach per Rechtsklick (speichern als) in das Verzeichnis speichern.</li>
+      <li>Eingabe von "chrome://extensions" in der Adresszeile.</li>
+      <li>&nbsp;</li>
+      <li><strong>Installation</strong></li>
+      <li>Die Skripte nun per Drag and Drop aus dem Ordner auf die gerade geöffnete Seite ziehen. Nun können sie installiert werden.</li>
+      <li>&nbsp;</li>
+      <li><strong>Verwaltung</strong></li>
+      <li>Eingabe von "chrome://extensions" in der Adresszeile.</li>
+      <li>Nun erscheint eine Liste der installierten Skripte. Sie können aktiviert/deaktiviert und deinstalliert werden.</li>
+      <%= image_tag 'help/screenshot_chrome_extensions.jpg' %>
+    </ul>
+  </div>
+  <div class="active" id="swriron">
     <ul class="unstyled">
       <li><strong>Vorbereitung</strong></li>
       <li>Nicht nötig.</li>
