@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name          KHSampleScript
-// @version       1.0
+// @name          KHAdvancedMail
+// @version       2.0
 // @include       http://*.de.kapihospital.com/main.php*
 // @exclude       http://forum.de.kapihospital.com/*
 // ==/UserScript==
@@ -36,6 +36,7 @@ function injectScript() {
   var functionsToAdd = new Array();
   functionsToAdd.push(initAdvancedMail);
   functionsToAdd.push(recogniseAdvancedMailWindows);
+  functionsToAdd.push(selectAllExchangeMails);
   functionsToAdd.push(selectAllReferralMails);
 
   var script = document.createElement("script");
@@ -80,10 +81,14 @@ function recogniseAdvancedMailWindows() {
   if (jQuery('div#msgwindow').is(':visible')) {
     if (jQuery('div#msgwindow').css('background-image') == "url(http://pics.kapihospital.de/bg_mail.png)" ||
         jQuery('div#msgwindow').css('background-image') == "url(\"http://pics.kapihospital.de/bg_mail.png\")") {
-	  if (!jQuery('input#checkallreferral').length) {
-            jQuery('<input class="checkbox cursorclickable" type="checkbox" id="checkallreferral" name="checkallreferral" onclick="selectAllReferralMails();">').appendTo('div#msgNavigation');
-            jQuery('div#msgNavigation').get(0).innerHTML = jQuery('div#msgNavigation').get(0).innerHTML+'alle Überweisungen';
-	  }
+      if (!jQuery('input#checkallreferral').length && jQuery('input#checkall').length > 0) {
+	//Referral      
+        jQuery('<input class="checkbox cursorclickable" type="checkbox" id="checkallreferral" name="checkallreferral" onclick="selectAllReferralMails();">').appendTo('div#msgNavigation');
+        jQuery('div#msgNavigation').get(0).innerHTML = jQuery('div#msgNavigation').get(0).innerHTML+'alle Überweisungen';
+	//Exchange      
+        jQuery('<input class="checkbox cursorclickable" type="checkbox" id="checkallexchange" name="checkallexchange" onclick="selectAllExchangeMails();">').appendTo('div#msgNavigation');
+        jQuery('div#msgNavigation').get(0).innerHTML = jQuery('div#msgNavigation').get(0).innerHTML+'alle Börsen';
+      }
     }
   }
 }
@@ -91,9 +96,18 @@ function selectAllReferralMails() {
   allMails = jQuery('tr', jQuery('div#msgwindow'));
   for (var i= 1; i < allMails.length; i++) {
     subject = jQuery(jQuery(allMails[i]).children()[1]).text();
-	if (subject == 'Überweisung angenommen' || subject == 'Überweisung zurückgewiesen') {
-		jQuery(jQuery(jQuery(allMails[i]).children()[3]).children()[0]).attr('checked', true);
-	}
+    if (subject == 'Überweisung angenommen' || subject == 'Überweisung zurückgewiesen') {
+      jQuery(jQuery(jQuery(allMails[i]).children()[3]).children()[0]).attr('checked', true);
+    }
+  }
+}
+function selectAllExchangeMails() {
+  allMails = jQuery('tr', jQuery('div#msgwindow'));
+  for (var i= 1; i < allMails.length; i++) {
+    subject = jQuery(jQuery(allMails[i]).children()[1]).text();
+    if (subject == 'Patient an der Börse verkauft') {
+      jQuery(jQuery(jQuery(allMails[i]).children()[3]).children()[0]).attr('checked', true);
+    }
   }
 }
 //End SampleScript
